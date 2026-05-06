@@ -1,12 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo } from "react";
-import { useComboGame, GameResult, getXpToNextLevel } from "@/game/combo-store";
+import { useComboGame, GameResult, getXpToNextLevel, getDailyLeaderboard } from "@/game/combo-store";
 import { ComboCard, ComboCategory, RARITY_POINTS, getRank, calculateRisk, getPotentialText } from "@/game/combo-cards";
 import { MobileFrame } from "@/components/Common";
 import { CanvasBackground } from "@/components/CanvasBackground";
 import { sounds } from "@/utils/audio";
-import { Eye, Sparkles, Zap, ArrowLeft, Star, Trophy, RotateCcw, Play, CheckCircle2, RefreshCw } from "lucide-react";
+import { Eye, Sparkles, Zap, ArrowLeft, Star, Trophy, RotateCcw, Play, CheckCircle2, RefreshCw, Calendar, Users } from "lucide-react";
 
 export const Route = createFileRoute("/combo")({ component: ComboGame });
 
@@ -52,9 +52,15 @@ function ComboGame() {
             </button>
           </div>
           <div className="flex items-center gap-2">
+            {store.isDailyMode && (
+              <div className="flex items-center gap-1 rounded-full bg-amber-eclipse/20 px-2 py-1 ring-1 ring-amber-eclipse/40">
+                <Calendar className="h-3 w-3 text-amber-eclipse" />
+                <span className="font-display text-[8px] text-amber-eclipse uppercase tracking-widest">Daily</span>
+              </div>
+            )}
             <div className="flex items-center gap-1 rounded-full bg-card/60 px-2.5 py-1 ring-1 ring-gold/30 backdrop-blur-sm">
               <Trophy className="h-3 w-3 text-gold" />
-              <span className="font-display text-[10px] text-foreground">{highScore}</span>
+              <span className="font-display text-[10px] text-foreground">{store.isDailyMode ? store.dailyHighScore : store.highScore}</span>
             </div>
           </div>
         </header>
@@ -68,20 +74,63 @@ function ComboGame() {
             >
               <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="text-center">
                 <h1 className="font-display text-5xl tracking-[0.2em] gold-text mb-2">REVERIE</h1>
-                <p className="text-[10px] uppercase tracking-[0.4em] text-gold/60 mb-2">Arcade Combo</p>
-                
-                <div className="mb-8 flex flex-col items-center gap-1">
+                <div className="mb-4 flex flex-col items-center gap-1">
                    {store.level < 2 && <p className="text-[8px] uppercase tracking-widest text-muted-foreground/60">Liv. 2: Sblocca Carte Leggendarie</p>}
-                   {store.level === 2 && <p className="text-[8px] uppercase tracking-widest text-gold/60">Liv. 3: Nuovi Temi Onirici</p>}
-                   {store.level >= 3 && <p className="text-[8px] uppercase tracking-widest text-mystic-glow/60">Livello Massimo Raggiunto</p>}
+                   {store.level >= 2 && <p className="text-[8px] uppercase tracking-widest text-gold/60">Livello Massimo Raggiunto</p>}
+                </div>
+
+                {/* Daily Leaderboard Simulation */}
+                <div className="mb-8 w-64 rounded-2xl bg-card/30 p-4 ring-1 ring-gold/10 backdrop-blur-sm">
+                   <div className="flex items-center gap-2 mb-3 border-b border-gold/10 pb-2">
+                      <Users className="h-3 w-3 text-gold/60" />
+                      <span className="text-[9px] uppercase tracking-widest text-gold/60">Classifica Odierna</span>
+                   </div>
+                   <div className="space-y-2">
+                      {getDailyLeaderboard(new Date().getDate()).map((entry, i) => (
+                        <div key={i} className="flex justify-between items-center text-[10px]">
+                           <span className="text-muted-foreground flex items-center gap-2">
+                              <span className="text-[8px] w-3 opacity-40">{i+1}</span>
+                              {entry.name}
+                           </span>
+                           <span className="font-display text-gold/80">{entry.score}</span>
+                        </div>
+                      ))}
+                      {store.dailyHighScore > 0 && (
+                        <div className="mt-2 pt-2 border-t border-gold/10 flex justify-between items-center text-[10px]">
+                           <span className="text-emerald font-bold">Tu</span>
+                           <span className="font-display text-emerald">{store.dailyHighScore}</span>
+                        </div>
+                      )}
+                   </div>
                 </div>
 
                 <div className="flex flex-col gap-4 items-center">
-                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startGame(false)} className="w-64 rounded-2xl gold-frame bg-gradient-to-r from-mystic to-mystic-glow py-6 font-display text-xl uppercase tracking-[0.25em] text-foreground shadow-2xl">
+                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startGame(false)} className="w-64 rounded-2xl gold-frame bg-gradient-to-r from-mystic to-mystic-glow py-4 font-display text-xl uppercase tracking-[0.25em] text-foreground shadow-2xl">
                     <span className="flex items-center justify-center gap-3"><Play className="h-6 w-6 fill-current" />GIOCA</span>
                   </motion.button>
-                  <button onClick={() => startGame(true)} className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground hover:text-gold transition-colors py-2">SFIDA DEL GIORNO</button>
+                  
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} 
+                    onClick={() => startGame(true)} 
+                    className="w-64 rounded-2xl border-2 border-amber-eclipse/40 bg-amber-eclipse/5 py-4 font-display text-xs uppercase tracking-[0.25em] text-amber-eclipse glow-gold"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      SFIDA DEL GIORNO
+                    </span>
+                  </motion.button>
                 </div>
+
+                {store.dailyBestCombo && (
+                   <div className="mt-8 flex flex-col items-center gap-2">
+                      <p className="text-[8px] uppercase tracking-widest text-gold/40">La tua miglior combo di oggi</p>
+                      <div className="flex gap-2">
+                         {store.dailyBestCombo.cards.map((c, i) => (
+                           <div key={i} className="size-8 flex items-center justify-center rounded-lg bg-card/40 ring-1 ring-gold/20 text-sm">{c.icon}</div>
+                         ))}
+                      </div>
+                   </div>
+                )}
               </motion.div>
             </motion.div>
           )}

@@ -14,6 +14,7 @@ export interface GameResult {
   rerollsUsed: number;
   xpEarned: number;
   leveledUp: boolean;
+  date: string;
 }
 
 interface ComboState {
@@ -33,6 +34,9 @@ interface ComboState {
   // History/Best
   lastResult: GameResult | null;
   highScore: number;
+  dailyHighScore: number;
+  dailyBestCombo: GameResult | null;
+  lastDailyDate: string | null;
 
   // Actions
   startGame: (daily?: boolean) => void;
@@ -65,6 +69,18 @@ function pickSeeded<T>(arr: T[], n: number, seed: number): T[] {
   return result;
 }
 
+export const getDailyLeaderboard = (seed: number) => {
+  const names = ["Sognatore", "Luna", "Ombra", "Foschia", "Zenit", "Abisso", "Aura", "Eco"];
+  const entries = [];
+  let currentSeed = seed;
+  for (let i = 0; i < 5; i++) {
+    const nameIdx = Math.floor(seededRandom(currentSeed++) * names.length);
+    const score = 150 + Math.floor(seededRandom(currentSeed++) * 350);
+    entries.push({ name: names[nameIdx], score });
+  }
+  return entries.sort((a, b) => b.score - a.score);
+};
+
 export const useComboGame = create<ComboState>()(
   persist(
     (set, get) => ({
@@ -81,8 +97,19 @@ export const useComboGame = create<ComboState>()(
       
       lastResult: null,
       highScore: 0,
+      dailyHighScore: 0,
+      dailyBestCombo: null,
+      lastDailyDate: null,
 
       startGame: (daily = false) => {
+        const todayStr = new Date().toISOString().split("T")[0];
+        const state = get();
+        
+        // Reset daily high score if it's a new day
+        if (state.lastDailyDate !== todayStr) {
+          set({ dailyHighScore: 0, dailyBestCombo: null, lastDailyDate: todayStr });
+        }
+
         set({
           phase: "idle",
           drawnCards: null,
@@ -97,7 +124,6 @@ export const useComboGame = create<ComboState>()(
         const { isDailyMode, level } = get();
         set({ phase: "drawing", drawnCards: null, currentResult: null });
 
-        // Filter cards by level (Legendary requires level 2)
         const availableCards = COMBO_CARDS.filter(c => {
           if (c.rarity === "legendary") return level >= 2;
           return true;
@@ -172,24 +198,37 @@ export const useComboGame = create<ComboState>()(
       },
 
       keepCombo: () => {
-        const { drawnCards, currentResult, rerollsLeft, totalRerolls, highScore } = get();
+        const { drawnCards, currentResult, rerollsLeft, totalRerolls, highScore, dailyHighScore, isDailyMode } = get();
         if (!drawnCards || !currentResult) return;
 
         const xpToGain = Math.round(currentResult.score * XP_PER_SCORE);
         const { leveledUp } = get().addXp(xpToGain);
+        const todayStr = new Date().toISOString().split("T")[0];
 
         const gameResult: GameResult = {
           cards: drawnCards,
           scored: currentResult,
           rerollsUsed: totalRerolls - rerollsLeft,
           xpEarned: xpToGain,
-          leveledUp
+          leveledUp,
+          date: todayStr
         };
+
+        const newHighScore = Math.max(highScore, currentResult.score);
+        let newDailyHighScore = dailyHighScore;
+        let newDailyBestCombo = get().dailyBestCombo;
+
+        if (isDailyMode && currentResult.score > dailyHighScore) {
+          newDailyHighScore = currentResult.score;
+          newDailyBestCombo = gameResult;
+        }
 
         set({
           phase: "result",
           lastResult: gameResult,
-          highScore: Math.max(highScore, currentResult.score)
+          highScore: newHighScore,
+          dailyHighScore: newDailyHighScore,
+          dailyBestCombo: newDailyBestCombo
         });
       },
 
@@ -219,11 +258,14 @@ export const useComboGame = create<ComboState>()(
       }
     }),
     {
-      name: "reverie-progression-storage",
+      name: "reverie-meta-storage",
       partialize: (state) => ({ 
         level: state.level, 
         xp: state.xp,
-        highScore: state.highScore
+        highScore: state.highScore,
+        dailyHighScore: state.dailyHighScore,
+        dailyBestCombo: state.dailyBestCombo,
+        lastDailyDate: state.lastDailyDate
       }),
     }
   )
