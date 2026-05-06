@@ -12,7 +12,7 @@ class SoundEngine {
     }
   }
 
-  play(type: "draw" | "success" | "fail" | "tick" | "record") {
+  play(type: "draw" | "success" | "fail" | "tick" | "record" | "lock" | "reroll" | "shuffle" | "victory") {
     try {
       this.init();
       if (!this.ctx) return;
@@ -36,11 +36,54 @@ class SoundEngine {
           osc.stop(now + 0.1);
           break;
 
+        case "lock":
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(880, now);
+          osc.frequency.setValueAtTime(440, now + 0.05);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+          osc.start(now);
+          osc.stop(now + 0.15);
+          break;
+
+        case "reroll":
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(200, now);
+          osc.frequency.exponentialRampToValueAtTime(600, now + 0.2);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+          osc.start(now);
+          osc.stop(now + 0.2);
+          break;
+
+        case "shuffle":
+          osc.type = "sine";
+          for (let i = 0; i < 5; i++) {
+            osc.frequency.setValueAtTime(200 + Math.random() * 800, now + i * 0.05);
+          }
+          gain.gain.setValueAtTime(0.05, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+          break;
+
+        case "victory":
+          osc.type = "square";
+          const melody = [523.25, 659.25, 783.99, 1046.50];
+          melody.forEach((freq, i) => {
+            osc.frequency.setValueAtTime(freq, now + i * 0.1);
+          });
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+          osc.start(now);
+          osc.stop(now + 0.5);
+          break;
+
         case "success":
           osc.type = "triangle";
-          osc.frequency.setValueAtTime(523.25, now); // C5
-          osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
-          osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+          osc.frequency.setValueAtTime(523.25, now); 
+          osc.frequency.setValueAtTime(659.25, now + 0.1); 
+          osc.frequency.setValueAtTime(783.99, now + 0.2); 
           gain.gain.setValueAtTime(0.2, now);
           gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
           osc.start(now);

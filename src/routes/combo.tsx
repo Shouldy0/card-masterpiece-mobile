@@ -1,12 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useComboGame, GameResult, getXpToNextLevel, getDailyLeaderboard } from "@/game/combo-store";
 import { ComboCard, ComboCategory, RARITY_POINTS, getRank, calculateRisk, getPotentialText } from "@/game/combo-cards";
 import { MobileFrame } from "@/components/Common";
 import { CanvasBackground } from "@/components/CanvasBackground";
 import { sounds } from "@/utils/audio";
-import { Eye, Sparkles, Zap, ArrowLeft, Star, Trophy, RotateCcw, Play, CheckCircle2, RefreshCw, Calendar, Users } from "lucide-react";
+import { Eye, Sparkles, Zap, ArrowLeft, Star, Trophy, RotateCcw, Play, CheckCircle2, RefreshCw, Calendar, Users, Ghost } from "lucide-react";
 
 export const Route = createFileRoute("/combo")({ component: ComboGame });
 
@@ -20,15 +20,34 @@ function ComboGame() {
   const store = useComboGame();
   const { phase, drawnCards, currentResult, rerollsLeft, highScore, startGame, reroll, keepCombo, resetAll } = store;
   const navigate = useNavigate();
+  const [showShuffle, setShowShuffle] = useState(false);
 
   // Sound triggers
   useEffect(() => {
-    if (phase === "drawing") sounds.play("draw");
+    if (phase === "drawing") {
+      setShowShuffle(true);
+      sounds.play("shuffle");
+      setTimeout(() => {
+        setShowShuffle(false);
+        sounds.play("draw");
+      }, 600);
+    }
     if (phase === "result") {
       if (store.lastResult && store.lastResult.scored.score >= store.highScore) sounds.play("record");
-      else if (store.lastResult && store.lastResult.scored.stars >= 4) sounds.play("success");
+      else if (store.lastResult && store.lastResult.scored.stars >= 4) sounds.play("victory");
+      else sounds.play("success");
     }
   }, [phase]);
+
+  const handleReroll = () => {
+    sounds.play("reroll");
+    reroll();
+  };
+
+  const handleKeep = () => {
+    sounds.play("lock");
+    keepCombo();
+  };
 
   if (phase === "result") return <ResultScreen result={store.lastResult} highScore={highScore} onRestart={() => startGame(store.isDailyMode)} onExit={() => { resetAll(); navigate({ to: "/home" }); }} />;
 
@@ -38,7 +57,7 @@ function ComboGame() {
       
       <MobileFrame className="mx-auto px-4 pb-6 pt-3 h-full max-w-md shadow-none ring-0 bg-transparent flex flex-col">
         {/* Header */}
-        <header className="flex items-center justify-between">
+        <header className="flex items-center justify-between z-10">
           <div className="flex items-center gap-2">
             <div className="relative flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-mystic to-abyss ring-1 ring-gold/40 shadow-lg">
               <span className="font-display text-xs font-bold text-gold">{store.level}</span>
@@ -108,35 +127,14 @@ function ComboGame() {
                   <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startGame(false)} className="w-64 rounded-2xl gold-frame bg-gradient-to-r from-mystic to-mystic-glow py-4 font-display text-xl uppercase tracking-[0.25em] text-foreground shadow-2xl">
                     <span className="flex items-center justify-center gap-3"><Play className="h-6 w-6 fill-current" />GIOCA</span>
                   </motion.button>
-                  
-                  <motion.button 
-                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} 
-                    onClick={() => startGame(true)} 
-                    className="w-64 rounded-2xl border-2 border-amber-eclipse/40 bg-amber-eclipse/5 py-4 font-display text-xs uppercase tracking-[0.25em] text-amber-eclipse glow-gold"
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      SFIDA DEL GIORNO
-                    </span>
-                  </motion.button>
+                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startGame(true)} className="w-64 rounded-2xl border-2 border-amber-eclipse/40 bg-amber-eclipse/5 py-4 font-display text-xs uppercase tracking-[0.25em] text-amber-eclipse glow-gold"><span className="flex items-center justify-center gap-2"><Calendar className="h-4 w-4" />SFIDA DEL GIORNO</span></motion.button>
                 </div>
-
-                {store.dailyBestCombo && (
-                   <div className="mt-8 flex flex-col items-center gap-2">
-                      <p className="text-[8px] uppercase tracking-widest text-gold/40">La tua miglior combo di oggi</p>
-                      <div className="flex gap-2">
-                         {store.dailyBestCombo.cards.map((c, i) => (
-                           <div key={i} className="size-8 flex items-center justify-center rounded-lg bg-card/40 ring-1 ring-gold/20 text-sm">{c.icon}</div>
-                         ))}
-                      </div>
-                   </div>
-                )}
               </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Game Stats (during play) */}
+        {/* Game Stats */}
         {phase !== "idle" && (
           <div className="mt-4 flex justify-center gap-4">
              <div className="flex flex-col items-center">
@@ -151,9 +149,10 @@ function ComboGame() {
         )}
 
         {/* Main Game Area */}
-        <div className="flex-1 flex flex-col justify-center gap-3 mt-4">
+        <div className="flex-1 flex flex-col justify-center gap-3 mt-4 relative">
           <AnimatePresence mode="wait">
-            {phase === "drawing" && (
+            {showShuffle && <DeckShuffle key="shuffle" />}
+            {phase === "drawing" && !showShuffle && (
               <motion.div key="drawing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center gap-2">
                 {[0, 1, 2].map((i) => <DrawingSlot key={i} index={i} />)}
               </motion.div>
@@ -169,27 +168,17 @@ function ComboGame() {
           <AnimatePresence>
             {phase === "decision" && currentResult && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-2 px-2 text-center">
-                {/* Risk Indicator */}
                 {(() => {
                   const risk = calculateRisk(currentResult);
                   const potential = getPotentialText(currentResult);
                   return (
                     <div className="mb-4 flex flex-col items-center gap-2">
-                      <motion.div 
-                        animate={risk.level === "High" ? { scale: [1, 1.05, 1], rotate: [-0.5, 0.5, -0.5] } : {}}
-                        transition={{ repeat: Infinity, duration: 1.5 }}
-                        className={`rounded-full px-3 py-1 text-[8px] font-bold uppercase tracking-[0.2em] ring-1 ${risk.level === "High" ? "bg-rose/10 ring-rose/50 text-rose" : risk.level === "Medium" ? "bg-amber-eclipse/10 ring-amber-eclipse/50 text-amber-eclipse" : "bg-emerald/10 ring-emerald/50 text-emerald"}`}
-                      >
-                        Rischio: {risk.level}
-                      </motion.div>
-                      <h3 className={`font-display text-base uppercase tracking-widest ${currentResult.stars >= 4 ? "gold-text" : "text-foreground"}`}>
-                        {potential}
-                      </h3>
+                      <motion.div animate={risk.level === "High" ? { scale: [1, 1.05, 1], rotate: [-0.5, 0.5, -0.5] } : {}} transition={{ repeat: Infinity, duration: 1.5 }} className={`rounded-full px-3 py-1 text-[8px] font-bold uppercase tracking-[0.2em] ring-1 ${risk.level === "High" ? "bg-rose/10 ring-rose/50 text-rose" : risk.level === "Medium" ? "bg-amber-eclipse/10 ring-amber-eclipse/50 text-amber-eclipse" : "bg-emerald/10 ring-emerald/50 text-emerald"}`}>Rischio: {risk.level}</motion.div>
+                      <h3 className={`font-display text-base uppercase tracking-widest ${currentResult.stars >= 4 ? "gold-text" : "text-foreground"}`}>{potential}</h3>
                       <p className="text-[9px] uppercase tracking-wider text-muted-foreground/60">{risk.description}</p>
                     </div>
                   );
                 })()}
-
                 <div className="flex justify-center gap-0.5 mb-1">
                   {Array.from({ length: 5 }).map((_, i) => <Star key={i} className={`h-4 w-4 ${i < currentResult.stars ? "text-gold fill-gold drop-shadow-[0_0_8px_rgba(255,215,0,0.5)]" : "text-muted-foreground/20"}`} />)}
                 </div>
@@ -205,35 +194,13 @@ function ComboGame() {
           {phase === "decision" && currentResult && (
             <>
               <motion.button 
-                initial={{ scale: 0.9 }} 
-                animate={{ 
-                  scale: 1,
-                  boxShadow: calculateRisk(currentResult).level === "High" ? ["0 0 0px rgba(255,215,0,0)", "0 0 20px rgba(255,215,0,0.3)", "0 0 0px rgba(255,215,0,0)"] : "0 0 0px rgba(0,0,0,0)"
-                }} 
-                transition={calculateRisk(currentResult).level === "High" ? { repeat: Infinity, duration: 1 } : {}}
-                whileTap={{ scale: 0.95 }}
-                onClick={keepCombo}
+                initial={{ scale: 0.9 }} animate={{ scale: 1, boxShadow: calculateRisk(currentResult).level === "High" ? ["0 0 0px rgba(255,215,0,0)", "0 0 20px rgba(255,215,0,0.3)", "0 0 0px rgba(255,215,0,0)"] : "0 0 0px rgba(0,0,0,0)" }} transition={calculateRisk(currentResult).level === "High" ? { repeat: Infinity, duration: 1 } : {}} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.95 }}
+                onClick={handleKeep}
                 className={`w-full max-w-xs rounded-2xl gold-frame py-4 font-display text-lg uppercase tracking-[0.25em] transition-all shadow-2xl ${calculateRisk(currentResult).level === "High" ? "bg-gradient-to-r from-gold-dim via-gold to-gold-dim text-abyss" : "bg-card/40 text-gold ring-1 ring-gold/30"}`}
               >
-                <span className="flex items-center justify-center gap-2">
-                  <CheckCircle2 className="h-5 w-5" />
-                  CONFERMA
-                </span>
+                <span className="flex items-center justify-center gap-2"><CheckCircle2 className="h-5 w-5" />CONFERMA</span>
               </motion.button>
-              
-              <motion.button 
-                disabled={rerollsLeft <= 0}
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
-                whileTap={{ scale: 0.95 }}
-                onClick={reroll}
-                className={`w-full max-w-xs rounded-2xl border-2 py-3 font-display text-xs uppercase tracking-widest transition-all ${rerollsLeft > 0 ? "border-mystic/40 text-mystic-glow bg-mystic/5 hover:bg-mystic/15" : "border-card/10 text-muted-foreground/20 cursor-not-allowed"}`}
-              >
-                <span className="flex items-center justify-center gap-2">
-                  <RefreshCw className={`h-4 w-4 ${rerollsLeft > 0 ? "animate-spin-slow" : ""}`} />
-                  RERROLL ({rerollsLeft})
-                </span>
-              </motion.button>
+              <motion.button disabled={rerollsLeft <= 0} initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileHover={rerollsLeft > 0 ? { scale: 1.02, x: [0, -2, 2, 0] } : {}} whileTap={{ scale: 0.95 }} onClick={handleReroll} className={`w-full max-w-xs rounded-2xl border-2 py-3 font-display text-xs uppercase tracking-widest transition-all ${rerollsLeft > 0 ? "border-mystic/40 text-mystic-glow bg-mystic/5 hover:bg-mystic/15" : "border-card/10 text-muted-foreground/20 cursor-not-allowed"}`}><span className="flex items-center justify-center gap-2"><RefreshCw className={`h-4 w-4 ${rerollsLeft > 0 ? "animate-spin-slow" : ""}`} />RERROLL ({rerollsLeft})</span></motion.button>
             </>
           )}
         </div>
@@ -251,6 +218,7 @@ function ResultScreen({ result, highScore, onRestart, onExit }: { result: GameRe
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-abyss">
       <CanvasBackground />
+      {result.scored.stars >= 4 && <ParticleLayer color={result.scored.stars >= 5 ? "oklch(0.82 0.13 80)" : "oklch(0.55 0.22 295)"} />}
       <MobileFrame className="mx-auto px-6 pb-8 pt-12 items-center justify-center text-center h-full max-w-md bg-transparent flex flex-col">
         <AnimatePresence>
           {result.leveledUp && (
@@ -259,42 +227,22 @@ function ResultScreen({ result, highScore, onRestart, onExit }: { result: GameRe
             </motion.div>
           )}
         </AnimatePresence>
-
         <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} className="relative flex size-40 items-center justify-center rounded-full bg-gradient-to-br from-card/80 to-abyss/80 ring-4 ring-gold/20 shadow-2xl backdrop-blur-md">
           <span className={`font-display text-8xl font-bold ${color}`}>{rank}</span>
           <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0, 0.5, 0] }} transition={{ duration: 2, repeat: Infinity }} className="absolute -inset-6 rounded-full border-2 border-gold/30" />
         </motion.div>
-        
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
           <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground">Punteggio Finale</p>
           <h1 className="font-display text-7xl gold-text mt-1 drop-shadow-[0_0_15px_rgba(255,215,0,0.5)]">{result.scored.score}</h1>
           <div className="mt-4 flex flex-col items-center gap-2">
-            <div className="flex justify-between w-48 text-[9px] uppercase tracking-widest text-gold/60">
-              <span>Livello {store.level}</span>
-              <span>+{result.xpEarned} XP</span>
-            </div>
-            <div className="h-1.5 w-48 overflow-hidden rounded-full bg-card/60 ring-1 ring-gold/20">
-               <motion.div 
-                 className="h-full bg-gradient-to-r from-gold to-amber-eclipse" 
-                 initial={{ width: 0 }} 
-                 animate={{ width: `${xpPct}%` }}
-                 transition={{ duration: 1.5, ease: "easeOut" }}
-               />
-            </div>
+            <div className="flex justify-between w-48 text-[9px] uppercase tracking-widest text-gold/60"><span>Livello {store.level}</span><span>+{result.xpEarned} XP</span></div>
+            <div className="h-1.5 w-48 overflow-hidden rounded-full bg-card/60 ring-1 ring-gold/20"><motion.div className="h-full bg-gradient-to-r from-gold to-amber-eclipse" initial={{ width: 0 }} animate={{ width: `${xpPct}%` }} transition={{ duration: 1.5, ease: "easeOut" }} /></div>
           </div>
         </motion.div>
-
         <div className="mt-8 grid grid-cols-2 gap-4 w-full max-w-xs">
-          <div className="bg-card/30 rounded-2xl p-4 ring-1 ring-gold/10 backdrop-blur-sm">
-            <p className="text-xl font-display text-gold">{result.scored.stars}</p>
-            <p className="text-[8px] uppercase text-muted-foreground">Stelle</p>
-          </div>
-          <div className="bg-card/30 rounded-2xl p-4 ring-1 ring-gold/10 backdrop-blur-sm">
-            <p className="text-xl font-display text-mystic-glow">{result.rerollsUsed}</p>
-            <p className="text-[8px] uppercase text-muted-foreground">Rerolls</p>
-          </div>
+          <div className="bg-card/30 rounded-2xl p-4 ring-1 ring-gold/10 backdrop-blur-sm"><p className="text-xl font-display text-gold">{result.scored.stars}</p><p className="text-[8px] uppercase text-muted-foreground">Stelle</p></div>
+          <div className="bg-card/30 rounded-2xl p-4 ring-1 ring-gold/10 backdrop-blur-sm"><p className="text-xl font-display text-mystic-glow">{result.rerollsUsed}</p><p className="text-[8px] uppercase text-muted-foreground">Rerolls</p></div>
         </div>
-
         <div className="mt-10 flex w-full flex-col gap-4 max-w-xs">
           <button onClick={onRestart} className="w-full rounded-2xl gold-frame bg-gradient-to-r from-mystic to-mystic-glow py-5 font-display text-lg uppercase tracking-[0.3em] text-foreground shadow-xl">RIPROVA</button>
           <button onClick={onExit} className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground hover:text-gold transition-colors py-2">TORNA ALLA HOME</button>
@@ -304,12 +252,38 @@ function ResultScreen({ result, highScore, onRestart, onExit }: { result: GameRe
   );
 }
 
+function DeckShuffle() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full">
+      <div className="relative size-32">
+        {[0, 1, 2, 3].map((i) => (
+          <motion.div 
+            key={i}
+            initial={{ y: 0, rotate: 0 }}
+            animate={{ 
+              y: [-10 * i, 0, -10 * i], 
+              rotate: [0, (i - 1.5) * 10, 0],
+              x: [0, (i % 2 === 0 ? 40 : -40), 0]
+            }}
+            transition={{ duration: 0.4, repeat: 1, ease: "easeInOut" }}
+            className="absolute inset-0 rounded-2xl bg-gradient-to-br from-card/80 to-abyss/80 ring-2 ring-gold/20 shadow-xl flex items-center justify-center overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,oklch(0.15_0.05_280),oklch(0.15_0.05_280)_5px,oklch(0.12_0.04_280)_5px,oklch(0.12_0.04_280)_10px)] opacity-20" />
+            <Eye className="h-8 w-8 text-gold/20" />
+          </motion.div>
+        ))}
+      </div>
+      <p className="mt-8 text-[8px] uppercase tracking-[0.5em] text-gold/40 animate-pulse">Sincronizzazione Onirica...</p>
+    </div>
+  );
+}
+
 function DrawingSlot({ index }: { index: number }) {
   return (
-    <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="relative w-full max-w-xs rounded-xl bg-card/60 p-4 ring-1 ring-gold/20 overflow-hidden h-[84px] backdrop-blur-sm">
+    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: index * 0.1 }} className="relative w-full max-w-xs rounded-xl bg-card/60 p-4 ring-1 ring-gold/20 overflow-hidden h-[84px] backdrop-blur-sm">
       <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,oklch(0.15_0.05_280),oklch(0.15_0.05_280)_10px,oklch(0.12_0.04_280)_10px,oklch(0.12_0.04_280)_20px)] opacity-30" />
       <div className="relative flex h-full items-center justify-center">
-        <motion.div animate={{ rotate: 360, scale: [1, 1.2, 1] }} transition={{ duration: 1.2, repeat: Infinity }}><Sparkles className="h-8 w-8 text-gold/30" /></motion.div>
+        <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}><Sparkles className="h-8 w-8 text-gold/30" /></motion.div>
       </div>
     </motion.div>
   );
@@ -318,10 +292,17 @@ function DrawingSlot({ index }: { index: number }) {
 function DrawnCard({ card, index }: { card: ComboCard; index: number }) {
   const m = catMeta[card.category];
   const pts = RARITY_POINTS[card.rarity];
-  const rarityStyles: Record<string, string> = { common: "ring-muted-foreground/30", rare: "ring-azure/60 shadow-[0_0_15px_rgba(100,200,255,0.15)]", epic: "ring-mystic/70 shadow-[0_0_20px_rgba(200,100,255,0.25)]", legendary: "ring-gold/80 shadow-[0_0_30px_rgba(255,215,0,0.35)]" };
+  const rarityStyles: Record<string, string> = { common: "ring-muted-foreground/30", rare: "ring-azure/60 shadow-[0_0_15px_rgba(100,200,255,0.1)]", epic: "ring-mystic/70 shadow-[0_0_20px_rgba(200,100,255,0.2)]", legendary: "ring-gold/80 shadow-[0_0_30px_rgba(255,215,0,0.3)]" };
 
   return (
-    <motion.div initial={{ opacity: 0, rotateY: 90, scale: 0.8 }} animate={{ opacity: 1, rotateY: 0, scale: 1 }} transition={{ delay: index * 0.1, type: "spring", damping: 12 }} className={`relative w-full max-w-xs rounded-2xl bg-gradient-to-r ${m.gradient} p-4 ring-1 ${rarityStyles[card.rarity]} overflow-hidden shadow-2xl`}>
+    <motion.div 
+      initial={{ opacity: 0, x: -50, rotateY: 90 }} 
+      animate={{ opacity: 1, x: 0, rotateY: 0 }} 
+      transition={{ delay: index * 0.2, duration: 0.5, type: "spring" }}
+      whileHover={{ scale: 1.05, rotateZ: 0.5, y: -5 }}
+      whileTap={{ scale: 0.98 }}
+      className={`relative w-full max-w-xs rounded-2xl bg-gradient-to-r ${m.gradient} p-4 ring-1 ${rarityStyles[card.rarity]} overflow-hidden shadow-2xl cursor-pointer transition-shadow`}
+    >
       <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full blur-3xl opacity-40" style={{ background: m.bgGlow }} />
       <div className="relative flex items-center gap-4">
         <div className="flex size-12 items-center justify-center rounded-xl bg-abyss/70 ring-1 ring-gold/30 text-2xl shadow-inner">{card.icon}</div>
@@ -333,9 +314,28 @@ function DrawnCard({ card, index }: { card: ComboCard; index: number }) {
           <p className="font-display text-base text-foreground truncate mt-0.5">{card.name}</p>
         </div>
       </div>
-      <div className="mt-2 flex gap-1.5 flex-wrap">
-        {card.synergyTags.slice(0, 2).map(tag => <span key={tag} className="text-[7px] uppercase tracking-wider text-muted-foreground/60 bg-abyss/40 px-2 py-0.5 rounded-full ring-1 ring-white/5">{tag}</span>)}
-      </div>
     </motion.div>
+  );
+}
+
+function ParticleLayer({ color }: { color: string }) {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
+      {Array.from({ length: 20 }).map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ x: "50%", y: "50%", scale: 0, opacity: 1 }}
+          animate={{ 
+            x: `${Math.random() * 100}%`, 
+            y: `${Math.random() * 100}%`, 
+            scale: [0, 1, 0], 
+            opacity: [1, 0.5, 0] 
+          }}
+          transition={{ duration: 2 + Math.random() * 2, repeat: Infinity, delay: Math.random() * 2 }}
+          className="absolute size-1 rounded-full"
+          style={{ backgroundColor: color, boxShadow: `0 0 10px ${color}` }}
+        />
+      ))}
+    </div>
   );
 }
