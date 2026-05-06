@@ -78,18 +78,36 @@ function Home() {
 
         {/* Main Actions */}
         <div className="w-full max-w-xs space-y-4">
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate({ to: "/combo" })} className="w-full py-5 rounded-2xl bg-gradient-to-r from-gold via-amber-eclipse to-gold text-abyss font-display text-xl font-bold uppercase tracking-[0.3em] shadow-[0_0_30px_rgba(255,215,0,0.3)]">
-            ENTRA NEL SOGNO
+          <motion.button 
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }} 
+            onClick={play} 
+            className="w-full py-5 rounded-2xl bg-gradient-to-r from-mystic via-mystic-glow to-mystic text-foreground font-display text-xl font-bold uppercase tracking-[0.3em] shadow-[0_0_30px_rgba(150,100,255,0.4)] ring-2 ring-gold/20"
+          >
+            GIOCA BATTAGLIA
+          </motion.button>
+
+          <motion.button 
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }} 
+            onClick={() => navigate({ to: "/combo" })} 
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-gold via-amber-eclipse to-gold text-abyss font-display text-sm font-bold uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(255,215,0,0.2)]"
+          >
+            MODALITÀ SOGNO
           </motion.button>
           
-          <div className="grid grid-cols-2 gap-4">
-              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate({ to: "/collection" })} className="py-4 rounded-2xl bg-card/20 border border-gold/20 flex flex-col items-center justify-center gap-2 group">
-                <Trophy className="h-5 w-5 text-gold group-hover:scale-110 transition-transform" />
-                <span className="text-[8px] uppercase tracking-widest text-gold/60">Collezione</span>
+          <div className="grid grid-cols-3 gap-3 pt-4">
+              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate({ to: "/deck" })} className="py-3 rounded-xl bg-card/20 border border-gold/10 flex flex-col items-center justify-center gap-1 group">
+                <Library className="h-4 w-4 text-gold group-hover:scale-110 transition-transform" />
+                <span className="text-[7px] uppercase tracking-widest text-gold/60">Mazzi</span>
               </motion.button>
-              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="py-4 rounded-2xl bg-card/20 border border-gold/5 flex flex-col items-center justify-center gap-2 opacity-40 cursor-not-allowed">
-                <Sparkles className="h-5 w-5 text-mystic-glow" />
-                <span className="text-[8px] uppercase tracking-widest text-mystic-glow/60">Emporio</span>
+              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate({ to: "/collection" })} className="py-3 rounded-xl bg-card/20 border border-gold/10 flex flex-col items-center justify-center gap-1 group">
+                <Trophy className="h-4 w-4 text-gold group-hover:scale-110 transition-transform" />
+                <span className="text-[7px] uppercase tracking-widest text-gold/60">Collezione</span>
+              </motion.button>
+              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate({ to: "/shop" })} className="py-3 rounded-xl bg-card/20 border border-gold/10 flex flex-col items-center justify-center gap-1 group opacity-40">
+                <ShoppingBag className="h-4 w-4 text-gold" />
+                <span className="text-[7px] uppercase tracking-widest text-gold/60">Shop</span>
               </motion.button>
           </div>
         </div>
