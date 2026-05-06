@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { MobileFrame } from "@/components/Common";
 import { BottomNav } from "@/components/BottomNav";
 import { useGame } from "@/game/store";
-import { Coins, Diamond, Plus, Library, BookOpen, ShoppingBag, Sparkles, Crown, Eye } from "lucide-react";
+import { Coins, Diamond, Plus, Library, BookOpen, ShoppingBag, Sparkles, Crown, Eye, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/home")({ component: Home });
 
@@ -84,11 +84,12 @@ function Home() {
         </button>
 
         {/* shortcuts */}
-        <div className="mt-6 grid w-full grid-cols-3 gap-3">
+        <div className="mt-6 grid w-full grid-cols-4 gap-2">
           {[
             { to: "/deck", icon: Library, label: "Mazzi" },
             { to: "/collection", icon: BookOpen, label: "Collezione" },
             { to: "/shop", icon: ShoppingBag, label: "Negozio" },
+            { to: "/combo", icon: Zap, label: "Combo" },
           ].map((s) => {
             const Icon = s.icon;
             return (

@@ -27,6 +27,7 @@ import { Route as EventsRouteImport } from './routes/events'
 import { Route as EndRouteImport } from './routes/end'
 import { Route as DeckRouteImport } from './routes/deck'
 import { Route as ConnectionRouteImport } from './routes/connection'
+import { Route as ComboRouteImport } from './routes/combo'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -120,6 +121,11 @@ const ConnectionRoute = ConnectionRouteImport.update({
   path: '/connection',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ComboRoute = ComboRouteImport.update({
+  id: '/combo',
+  path: '/combo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CollectionRoute = CollectionRouteImport.update({
   id: '/collection',
   path: '/collection',
@@ -134,6 +140,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/collection': typeof CollectionRoute
+  '/combo': typeof ComboRoute
   '/connection': typeof ConnectionRoute
   '/deck': typeof DeckRoute
   '/end': typeof EndRoute
@@ -156,6 +163,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/collection': typeof CollectionRoute
+  '/combo': typeof ComboRoute
   '/connection': typeof ConnectionRoute
   '/deck': typeof DeckRoute
   '/end': typeof EndRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/collection': typeof CollectionRoute
+  '/combo': typeof ComboRoute
   '/connection': typeof ConnectionRoute
   '/deck': typeof DeckRoute
   '/end': typeof EndRoute
@@ -203,6 +212,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/collection'
+    | '/combo'
     | '/connection'
     | '/deck'
     | '/end'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/collection'
+    | '/combo'
     | '/connection'
     | '/deck'
     | '/end'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/collection'
+    | '/combo'
     | '/connection'
     | '/deck'
     | '/end'
@@ -270,6 +282,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CollectionRoute: typeof CollectionRoute
+  ComboRoute: typeof ComboRoute
   ConnectionRoute: typeof ConnectionRoute
   DeckRoute: typeof DeckRoute
   EndRoute: typeof EndRoute
@@ -418,6 +431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConnectionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/combo': {
+      id: '/combo'
+      path: '/combo'
+      fullPath: '/combo'
+      preLoaderRoute: typeof ComboRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/collection': {
       id: '/collection'
       path: '/collection'
@@ -438,6 +458,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CollectionRoute: CollectionRoute,
+  ComboRoute: ComboRoute,
   ConnectionRoute: ConnectionRoute,
   DeckRoute: DeckRoute,
   EndRoute: EndRoute,
@@ -460,3 +481,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
