@@ -17,6 +17,17 @@ const catMeta: Record<ComboCategory, { label: string; color: string; gradient: s
   action: { label: "AZIONE", color: "text-amber-eclipse", gradient: "from-[oklch(0.38_0.14_60)] to-[oklch(0.15_0.06_50)]", bgGlow: "oklch(0.78 0.16 60 / 40%)" },
 };
 
+function HandDrawnFilter() {
+  return (
+    <svg className="hidden">
+      <filter id="sketchy">
+        <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
+      </filter>
+    </svg>
+  );
+}
+
 function ComboGame() {
   const store = useComboGame();
   const { phase, drawnCards, currentResult, rerollsLeft, highScore, startGame, reroll, keepCombo, resetAll } = store;
@@ -69,7 +80,8 @@ function ComboGame() {
   if (phase === "result") return <ResultScreen result={store.lastResult} highScore={highScore} onRestart={handleRestart} onExit={() => { resetAll(); navigate({ to: "/home" }); }} />;
 
   return (
-    <div className="relative h-[100dvh] w-screen overflow-hidden bg-abyss flex items-center justify-center">
+    <div className="relative h-[100dvh] w-screen overflow-hidden bg-abyss flex items-center justify-center font-serif">
+      <HandDrawnFilter />
       <CanvasBackground />
       <AnimatePresence>
         {isShowingAd && <AdBreakOverlay />}
@@ -199,6 +211,14 @@ function ComboGame() {
                     </div>
                   );
                 })()}
+
+                <motion.p 
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                  className="mb-4 italic text-[11px] leading-relaxed text-gold/80 font-serif max-w-[280px] mx-auto px-2 border-l-2 border-gold/20"
+                >
+                  "{currentResult.narration}"
+                </motion.p>
+
                 <div className="flex justify-center gap-0.5 mb-1">
                   {Array.from({ length: 5 }).map((_, i) => <Star key={i} className={`h-4 w-4 ${i < currentResult.stars ? "text-gold fill-gold drop-shadow-[0_0_8px_rgba(255,215,0,0.5)]" : "text-muted-foreground/20"}`} />)}
                 </div>
@@ -354,26 +374,39 @@ function DrawingSlot({ index }: { index: number }) {
 function DrawnCard({ card, index }: { card: ComboCard; index: number }) {
   const m = catMeta[card.category];
   const pts = RARITY_POINTS[card.rarity];
-  const rarityStyles: Record<string, string> = { common: "ring-muted-foreground/30", rare: "ring-azure/60 shadow-[0_0_15px_rgba(100,200,255,0.1)]", epic: "ring-mystic/70 shadow-[0_0_20px_rgba(200,100,255,0.2)]", legendary: "ring-gold/80 shadow-[0_0_30px_rgba(255,215,0,0.3)]" };
+  const rarityStyles: Record<string, string> = { 
+    common: "ring-muted-foreground/20 grayscale-[20%]", 
+    rare: "ring-azure/40 shadow-[0_0_20px_rgba(100,200,255,0.1)]", 
+    epic: "ring-mystic/50 shadow-[0_0_25px_rgba(200,100,255,0.15)]", 
+    legendary: "ring-gold/60 shadow-[0_0_40px_rgba(255,215,0,0.25)]" 
+  };
 
   return (
     <motion.div 
       initial={{ opacity: 0, x: -50, rotateY: 90 }} 
       animate={{ opacity: 1, x: 0, rotateY: 0 }} 
       transition={{ delay: index * 0.2, duration: 0.5, type: "spring" }}
-      whileHover={{ scale: 1.05, rotateZ: 0.5, y: -5 }}
+      whileHover={{ scale: 1.05, rotateZ: (index - 1) * 2, y: -5 }}
       whileTap={{ scale: 0.98 }}
-      className={`relative w-full max-w-xs rounded-2xl bg-gradient-to-r ${m.gradient} p-4 ring-1 ${rarityStyles[card.rarity]} overflow-hidden shadow-2xl cursor-pointer transition-shadow`}
+      className={`relative w-full max-w-xs rounded-[2rem] bg-gradient-to-br ${m.gradient} p-5 ring-2 ${rarityStyles[card.rarity]} overflow-hidden shadow-2xl cursor-pointer transition-shadow`}
+      style={{ filter: "url(#sketchy)" }}
     >
-      <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full blur-3xl opacity-40" style={{ background: m.bgGlow }} />
-      <div className="relative flex items-center gap-4">
-        <div className="flex size-12 items-center justify-center rounded-xl bg-abyss/70 ring-1 ring-gold/30 text-2xl shadow-inner">{card.icon}</div>
+      {/* Parchment Texture Overlay */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/parchment.png')" }} />
+      <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full blur-3xl opacity-30" style={{ background: m.bgGlow }} />
+      
+      <div className="relative flex items-center gap-5">
+        <div className="flex size-14 items-center justify-center rounded-2xl bg-abyss/60 ring-1 ring-gold/20 text-3xl shadow-inner transform rotate-[-2deg]">
+          {card.icon}
+        </div>
         <div className="flex-1 min-w-0 text-left">
           <div className="flex items-center justify-between">
-            <span className={`text-[8px] font-display uppercase tracking-widest ${m.color}`}>{m.label}</span>
-            <span className="text-[10px] font-display text-gold/80">+{pts}</span>
+            <span className={`text-[9px] font-display uppercase tracking-[0.2em] ${m.color} opacity-80`}>{m.label}</span>
+            <span className="text-[10px] font-display text-gold/60">+{pts}</span>
           </div>
-          <p className="font-display text-base text-foreground truncate mt-0.5">{card.name}</p>
+          <p className="font-display text-lg text-foreground truncate mt-0.5 tracking-wide leading-tight">
+            {card.name}
+          </p>
         </div>
       </div>
     </motion.div>

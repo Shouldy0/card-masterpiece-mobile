@@ -79,9 +79,10 @@ export interface ScoredCombo {
   score: number;
   rarityPoints: number;
   coherencePoints: number;
-  stars: 1 | 2 | 3 | 4 | 5;
+  stars: number;
   title: string;
   feedback: string;
+  narration: string;
   bonuses: string[];
 }
 
@@ -110,6 +111,17 @@ const FEEDBACK_TABLE: { min: number; stars: 1 | 2 | 3 | 4 | 5; title: string; fe
   { min: 40,  stars: 2, title: "Bizzarra ma Creativa",      feedback: "Strano accostamento... ma c'è un filo nascosto." },
   { min: 0,   stars: 1, title: "Combo Caotica",             feedback: "I frammenti non si parlano. Ma il caos ha il suo fascino." },
 ];
+
+function generateStory(c: ComboCard, s: ComboCard, a: ComboCard): string {
+  const templates = [
+    `C'era una volta ${c.name}, che tra le ombre di ${s.name} decise di ${a.name.toLowerCase()}.`,
+    `In un sogno perduto, ${c.name} scelse di ${a.name.toLowerCase()} nel cuore di ${s.name}.`,
+    `${c.name} sentì il richiamo di ${s.name} e non poté fare a meno di ${a.name.toLowerCase()}.`,
+    `Tutto cambiò quando ${c.name} osò ${a.name.toLowerCase()} presso ${s.name}.`,
+    `Si narra che ${c.name} ritorni ancora a ${s.name} per ${a.name.toLowerCase()}.`,
+  ];
+  return templates[Math.floor(Math.random() * templates.length)];
+}
 
 export function scoreCombo(character: ComboCard, setting: ComboCard, action: ComboCard): ScoredCombo {
   const allTags = [...character.synergyTags, ...setting.synergyTags, ...action.synergyTags];
@@ -157,6 +169,7 @@ export function scoreCombo(character: ComboCard, setting: ComboCard, action: Com
     stars: entry.stars,
     title: entry.title,
     feedback: entry.feedback,
+    narration: generateStory(c, s, a),
     bonuses,
   };
 }
