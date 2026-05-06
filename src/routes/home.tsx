@@ -99,11 +99,11 @@ function Home() {
           <div className="grid grid-cols-3 gap-3 pt-4">
               <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate({ to: "/deck" })} className="py-3 rounded-xl bg-card/20 border border-gold/10 flex flex-col items-center justify-center gap-1 group">
                 <Library className="h-4 w-4 text-gold group-hover:scale-110 transition-transform" />
-                <span className="text-[7px] uppercase tracking-widest text-gold/60">Mazzi</span>
+                <span className="text-[7px] uppercase tracking-widest text-gold/60">Mente</span>
               </motion.button>
               <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate({ to: "/collection" })} className="py-3 rounded-xl bg-card/20 border border-gold/10 flex flex-col items-center justify-center gap-1 group">
                 <Trophy className="h-4 w-4 text-gold group-hover:scale-110 transition-transform" />
-                <span className="text-[7px] uppercase tracking-widest text-gold/60">Collezione</span>
+                <span className="text-[7px] uppercase tracking-widest text-gold/60">Memorie</span>
               </motion.button>
               <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate({ to: "/shop" })} className="py-3 rounded-xl bg-card/20 border border-gold/10 flex flex-col items-center justify-center gap-1 group opacity-40">
                 <ShoppingBag className="h-4 w-4 text-gold" />

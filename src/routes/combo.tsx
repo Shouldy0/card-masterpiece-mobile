@@ -78,7 +78,14 @@ function ComboGame() {
     });
   };
 
-  if (isPreloading) return <Preloader onComplete={() => setIsPreloading(false)} />;
+  if (isPreloading) return <Preloader onComplete={() => {
+    setIsPreloading(false);
+    // Instant Hook: Skip the start menu on first load
+    if (phase === "idle") {
+      startGame(false);
+      sounds.play("signature");
+    }
+  }} />;
   if (phase === "result") return <ResultScreen result={store.lastResult} highScore={highScore} onRestart={handleRestart} onExit={handleExit} />;
 
   return (
@@ -137,6 +144,17 @@ function ComboGame() {
 
             {phase === "decision" && drawnCards && (
               <motion.div key="cards" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center gap-3 w-full">
+                {/* Hook Text: Only on first interaction or very high resonance */}
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center mb-2"
+                >
+                  <p className="text-[10px] uppercase tracking-[0.4em] text-gold/60 font-bold animate-pulse">
+                    Scegli la tua prima memoria
+                  </p>
+                </motion.div>
+
                 {/* Event Banner (Part of Card Layer) */}
                 {activeEvent && (
                   <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className={`w-full max-w-xs rounded-2xl ${UI_THEME.glass} p-3 text-center border-t-2 border-gold/40`}>
@@ -145,61 +163,65 @@ function ComboGame() {
                   </motion.div>
                 )}
 
-                <div className="space-y-3 w-full flex flex-col items-center">
+                <motion.div 
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="space-y-3 w-full flex flex-col items-center"
+                >
                   {drawnCards.map((card, i) => <DrawnCard key={card.id} card={card} index={i} variant={activeVariant} />)}
-                </div>
+                </motion.div>
 
                 {/* Feedback Area */}
                 {currentResult && (
                   <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-xs mt-2 text-center space-y-4">
                     {/* Synergy Meter */}
                     <div className="space-y-1.5">
-                       <div className="flex justify-between items-center px-1">
-                          <span className={UI_THEME.text_caption}>Risonanza Onirica</span>
-                          <span className="text-[10px] font-display text-gold font-bold">{currentResult.synergyLevel}%</span>
-                       </div>
-                       <div className="h-2 w-full bg-card/60 rounded-full overflow-hidden ring-1 ring-gold/10">
-                          <motion.div className="h-full bg-gradient-to-r from-mystic via-gold to-mystic" initial={{ width: 0 }} animate={{ width: `${currentResult.synergyLevel}%` }} transition={{ type: "spring", bounce: 0.2 }} />
-                       </div>
-                    </div>
+            <div className="flex justify-between items-center px-1">
+               <span className={UI_THEME.text_caption}>Chiarezza Attuale</span>
+               <span className="text-[10px] font-display text-gold font-bold">{currentResult.synergyLevel}%</span>
+            </div>
+            <div className="h-2 w-full bg-card/60 rounded-full overflow-hidden ring-1 ring-gold/10">
+               <motion.div className="h-full bg-gradient-to-r from-mystic via-gold to-mystic" initial={{ width: 0 }} animate={{ width: `${currentResult.synergyLevel}%` }} transition={{ type: "spring", bounce: 0.2 }} />
+            </div>
+         </div>
 
-                    <div className="flex flex-col gap-1 items-center">
-                       <h3 className={`${UI_THEME.text_h2} ${currentResult.stars >= 4 ? "gold-text" : "text-foreground"}`}>{currentResult.title}</h3>
-                       <div className="flex gap-2">
-                         {currentResult.penalties.map(p => <span key={p} className="text-[8px] font-bold text-rose uppercase tracking-widest px-2 py-0.5 bg-rose/10 rounded-full ring-1 ring-rose/30 animate-pulse">{p}</span>)}
-                         {currentResult.bonuses.slice(0, 1).map(b => <span key={b} className="text-[8px] font-bold text-gold uppercase tracking-widest px-2 py-0.5 bg-gold/10 rounded-full ring-1 ring-gold/30">{b}</span>)}
-                       </div>
-                    </div>
-                  </motion.div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </main>
+         <div className="flex flex-col gap-1 items-center">
+            <h3 className={`${UI_THEME.text_h2} ${currentResult.stars >= 4 ? "gold-text" : "text-foreground"}`}>{currentResult.title}</h3>
+            <div className="flex gap-2">
+              {currentResult.penalties.map(p => <span key={p} className="text-[8px] font-bold text-rose uppercase tracking-widest px-2 py-0.5 bg-rose/10 rounded-full ring-1 ring-rose/30 animate-pulse">{p}</span>)}
+              {currentResult.bonuses.slice(0, 1).map(b => <span key={b} className="text-[8px] font-bold text-gold uppercase tracking-widest px-2 py-0.5 bg-gold/10 rounded-full ring-1 ring-gold/30">{b}</span>)}
+            </div>
+         </div>
+      </motion.div>
+    )}
+  </motion.div>
+)}
+</AnimatePresence>
+</main>
 
-        {/* LAYER 3: UI OVERLAY (FOOTER ACTIONS) */}
-        <footer className="relative z-20 flex flex-col items-center gap-3 h-32 justify-end">
-          {phase === "decision" && (
-            <>
-              <motion.button 
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.95 }}
-                onClick={() => { sounds.play("lock"); keepCombo(); }}
-                className={`${UI_THEME.premium_btn} w-full max-w-xs py-5 bg-gradient-to-r from-gold via-amber-eclipse to-gold text-abyss font-bold shadow-2xl ring-2 ring-gold/50`}
-              >
-                CONFERMA VISIONE
-              </motion.button>
-              
-              <button 
-                disabled={rerollsLeft <= 0} 
-                onClick={() => { sounds.play("reroll"); reroll(); }}
-                className={`${UI_THEME.premium_btn} w-full max-w-xs py-3 border border-gold/30 text-gold/60 flex items-center justify-center gap-2 disabled:opacity-20`}
-              >
-                <RefreshCw className={`h-4 w-4 ${rerollsLeft > 0 ? "animate-spin-slow" : ""}`} />
-                RERROLL ({rerollsLeft})
-              </button>
-            </>
-          )}
-        </footer>
+{/* LAYER 3: UI OVERLAY (FOOTER ACTIONS) */}
+<footer className="relative z-20 flex flex-col items-center gap-3 h-32 justify-end">
+{phase === "decision" && (
+<>
+  <motion.button 
+    whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.95 }}
+    onClick={() => { sounds.play("lock"); keepCombo(); }}
+    className={`${UI_THEME.premium_btn} w-full max-w-xs py-5 bg-gradient-to-r from-gold via-amber-eclipse to-gold text-abyss font-bold shadow-2xl ring-2 ring-gold/50`}
+  >
+    CONFERMA VISIONE
+  </motion.button>
+  
+  <button 
+    disabled={rerollsLeft <= 0} 
+    onClick={() => { sounds.play("reroll"); reroll(); }}
+    className={`${UI_THEME.premium_btn} w-full max-w-xs py-3 border border-gold/30 text-gold/60 flex items-center justify-center gap-2 disabled:opacity-20`}
+  >
+    <RefreshCw className={`h-4 w-4 ${rerollsLeft > 0 ? "animate-spin-slow" : ""}`} />
+    FRAMMENTA ({rerollsLeft})
+  </button>
+</>
+)}
+</footer>
       </MobileFrame>
     </div>
   );
@@ -220,17 +242,17 @@ function StartOverlay({ onPlay, onDaily, store }: { onPlay: () => void; onDaily:
         </motion.button>
       </div>
 
-      {/* Mini Leaderboard */}
+      {/* Mini Leaderboard: Top Clarity */}
       <div className="mt-12 w-full max-w-[280px] p-4 rounded-3xl bg-card/20 ring-1 ring-gold/10 backdrop-blur-sm">
         <div className="flex items-center gap-2 mb-3 border-b border-gold/5 pb-2">
           <Users className="h-3 w-3 text-gold/40" />
-          <span className="text-[8px] uppercase tracking-widest text-gold/40">Sognatori Recenti</span>
+          <span className="text-[8px] uppercase tracking-widest text-gold/40">Sognatori Più Lucidi</span>
         </div>
         <div className="space-y-2">
           {getDailyLeaderboard(new Date().getDate()).slice(0, 3).map((e, i) => (
             <div key={i} className="flex justify-between text-[10px] items-center">
               <span className="text-muted-foreground/60">#{i+1} {e.name}</span>
-              <span className="font-display text-gold/60">{e.score}</span>
+              <span className="font-display text-gold/60">{e.score} Chiarezza</span>
             </div>
           ))}
         </div>
@@ -295,13 +317,14 @@ function ResultScreen({ result, highScore, onRestart, onExit }: { result: GameRe
         </motion.div>
         
         <div className="space-y-2">
-          <p className={UI_THEME.text_caption}>Risultato Finale</p>
+          <p className={UI_THEME.text_caption}>Grado di Lucidità</p>
           <h1 className="font-display text-8xl gold-text">{result.scored.score}</h1>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-gold/60">Chiarezza Totale</p>
         </div>
 
         <div className="w-full max-w-xs space-y-4">
           <div className="flex justify-between text-[10px] uppercase tracking-widest text-gold/60">
-            <span>Livello {store.level}</span>
+            <span>Sintonizzazione {store.level}</span>
             <span>+{result.xpEarned} XP</span>
           </div>
           <div className="h-2 w-full bg-card/40 rounded-full overflow-hidden ring-1 ring-gold/10">
@@ -310,13 +333,13 @@ function ResultScreen({ result, highScore, onRestart, onExit }: { result: GameRe
         </div>
 
         <div className="w-full max-w-xs grid grid-cols-2 gap-3">
-          <div className="bg-card/20 p-4 rounded-3xl ring-1 ring-gold/10"><p className="text-2xl font-display text-gold">{result.scored.stars}</p><p className={UI_THEME.text_caption}>Stelle</p></div>
-          <div className="bg-card/20 p-4 rounded-3xl ring-1 ring-gold/10"><p className="text-2xl font-display text-mystic-glow">{result.rerollsUsed}</p><p className={UI_THEME.text_caption}>Rerolls</p></div>
+          <div className="bg-card/20 p-4 rounded-3xl ring-1 ring-gold/10"><p className="text-2xl font-display text-gold">{result.scored.stars}</p><p className={UI_THEME.text_caption}>Sincronia</p></div>
+          <div className="bg-card/20 p-4 rounded-3xl ring-1 ring-gold/10"><p className="text-2xl font-display text-mystic-glow">{result.rerollsUsed}</p><p className={UI_THEME.text_caption}>Frammenti</p></div>
         </div>
 
         <div className="w-full max-w-xs flex flex-col gap-4">
           <button onClick={onRestart} className={`${UI_THEME.premium_btn} py-5 bg-gold text-abyss font-bold shadow-xl`}>RIPROVA</button>
-          <button onClick={onExit} className={UI_THEME.text_caption}>Esci alla Home</button>
+          <button onClick={onExit} className={UI_THEME.text_caption}>Torna alla Home</button>
         </div>
       </MobileFrame>
     </div>
@@ -349,6 +372,8 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
   };
 
   useEffect(() => {
+    // Target 2.5s total (2500ms). With 100ms interval, we need ~25 steps.
+    // Average increment should be around 4-5.
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
@@ -356,21 +381,27 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
           handlePreloadComplete();
           return 100;
         }
-        const next = prev + Math.floor(Math.random() * 8) + 2;
-        if (next > prev && next < 100) sounds.play("whoosh");
+        
+        // Faster climb, smooth steps
+        const step = Math.floor(Math.random() * 5) + 3;
+        const next = prev + step;
+        
+        // Play whoosh less frequently (every ~20%)
+        if (Math.floor(next/20) > Math.floor(prev/20) && next < 100) {
+          sounds.play("whoosh");
+        }
+        
         return Math.min(100, next);
       });
-    }, 500);
+    }, 100);
     return () => clearInterval(interval);
   }, []);
 
   const handlePreloadComplete = () => {
-    sounds.play("chime");
-    setTimeout(() => {
-      setIsExiting(true);
-      sounds.play("dream_enter");
-      setTimeout(onComplete, 1500);
-    }, 500);
+    setIsExiting(true);
+    sounds.play("dream_enter");
+    // Fast cut to game in 400ms
+    setTimeout(onComplete, 450);
   };
 
   const messages = [
@@ -408,8 +439,8 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
 
   return (
     <motion.div 
-      animate={isExiting ? { scale: 1.1, opacity: 0 } : { scale: 1, opacity: 1 }}
-      transition={{ duration: 1.5, ease: "easeInOut" }}
+      animate={isExiting ? { opacity: 0 } : { opacity: 1 }}
+      transition={{ duration: 0.3 }}
       className="absolute inset-0 z-[100] bg-abyss flex flex-col items-center justify-center p-8 text-center cursor-pointer select-none overflow-hidden"
       onMouseDown={handleInteraction}
       onTouchStart={handleInteraction}
@@ -449,33 +480,60 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
 
       <motion.div 
         initial={{ opacity: 0, scale: 0.8 }}
-        animate={isExiting ? { scale: 15, opacity: 0, filter: "blur(20px)" } : { opacity: 1, scale: 1, filter: "blur(0px)" }}
-        transition={{ duration: 1.5, ease: "easeIn" }}
+        animate={isExiting ? { scale: 10, opacity: 0, filter: "blur(8px)" } : { opacity: 1, scale: 1, filter: "blur(0px)" }}
+        transition={{ duration: 0.4, ease: "easeIn" }}
         className="relative mb-12 z-20"
       >
         <div className="absolute inset-0 bg-gold/20 blur-3xl rounded-full" />
         <motion.div 
-          animate={{ scale: [1, 1.05, 1] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ 
+            scale: progress >= 100 ? [1, 1.15, 1] : [1, 1.05, 1],
+            boxShadow: progress >= 100 ? "0 0 40px rgba(255, 215, 0, 0.4)" : "0 0 0px rgba(255, 215, 0, 0)"
+          }}
+          transition={{ 
+            scale: { duration: progress >= 100 ? 0.6 : 4, repeat: progress >= 100 ? 0 : Infinity, ease: "easeInOut" },
+            boxShadow: { duration: 0.6 }
+          }}
           className="relative size-32 ring-2 ring-gold/30 rounded-full flex items-center justify-center"
         >
           <Eye className="size-12 text-gold" />
           
-          {/* Rotating Rings */}
+          {/* Synchronizing Rings: converging inward based on progress */}
           <motion.div 
-            animate={{ rotate: 360 }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-[-4px] border border-gold/10 rounded-full"
+            animate={{ 
+              rotate: 360,
+              inset: `${-4 - (1 - progress / 100) * 40}px`,
+              opacity: 0.1 + (progress / 100) * 0.4
+            }}
+            transition={{ 
+              rotate: { duration: 10, repeat: Infinity, ease: "linear" },
+              inset: { duration: 0.5, ease: "easeOut" }
+            }}
+            className="absolute border border-gold/40 rounded-full"
           />
           <motion.div 
-            animate={{ rotate: -360 }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-[-12px] border border-gold/5 rounded-full"
+            animate={{ 
+              rotate: -360,
+              inset: `${-12 - (1 - progress / 100) * 60}px`,
+              opacity: 0.05 + (progress / 100) * 0.3
+            }}
+            transition={{ 
+              rotate: { duration: 15, repeat: Infinity, ease: "linear" },
+              inset: { duration: 0.7, ease: "easeOut" }
+            }}
+            className="absolute border border-gold/30 rounded-full"
           />
           <motion.div 
-            animate={{ rotate: 360 }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-[-24px] border-t border-gold/5 rounded-full"
+            animate={{ 
+              rotate: 360,
+              inset: `${-24 - (1 - progress / 100) * 80}px`,
+              opacity: 0.02 + (progress / 100) * 0.2
+            }}
+            transition={{ 
+              rotate: { duration: 25, repeat: Infinity, ease: "linear" },
+              inset: { duration: 0.9, ease: "easeOut" }
+            }}
+            className="absolute border-t border-gold/20 rounded-full"
           />
         </motion.div>
       </motion.div>
