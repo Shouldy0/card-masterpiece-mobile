@@ -36,82 +36,86 @@ function Home() {
         </div>
       </header>
 
-      {/* missioni / pass */}
-      <div className="mt-6 flex items-start justify-between px-6">
-        <Link to="/events" className="flex flex-col items-center gap-1">
-          <div className="flex size-12 items-center justify-center rounded-xl gold-frame bg-mystic/20">
-            <Sparkles className="h-5 w-5 text-gold" />
-          </div>
-          <span className="text-[10px] text-muted-foreground">Missioni</span>
+      {/* UTILITY BAR: Missioni / Pass / Ranked */}
+      <div className="mt-4 flex items-center justify-center gap-3 px-6 flex-wrap">
+        <Link to="/events" className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-card/10 ring-1 ring-gold/10 hover:bg-card/20 transition-all group">
+          <Sparkles className="h-4 w-4 text-gold/60 group-hover:text-gold" />
+          <span className="text-[9px] uppercase tracking-widest text-gold/60 group-hover:text-gold">Missioni</span>
         </Link>
-        <Link to="/pass" className="flex flex-col items-center gap-1">
-          <div className="flex size-12 items-center justify-center rounded-xl gold-frame bg-mystic/20">
-            <Crown className="h-5 w-5 text-gold" />
-          </div>
-          <span className="text-[10px] text-muted-foreground">Pass</span>
+        <Link to="/pass" className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-card/10 ring-1 ring-gold/10 hover:bg-card/20 transition-all group">
+          <Crown className="h-4 w-4 text-gold/60 group-hover:text-gold" />
+          <span className="text-[9px] uppercase tracking-widest text-gold/60 group-hover:text-gold">Pass</span>
+        </Link>
+        <Link to="/ranked" className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-card/10 ring-1 ring-gold/10 hover:bg-card/20 transition-all group">
+          <Trophy className="h-4 w-4 text-gold/60 group-hover:text-gold" />
+          <span className="text-[9px] uppercase tracking-widest text-gold/60 group-hover:text-gold">Ranked</span>
         </Link>
       </div>
 
-      {/* hero */}
-      <div className="relative mt-8 flex flex-1 flex-col items-center justify-end px-6 pb-4">
+      {/* HERO SECTION */}
+      <div className="relative mt-4 flex flex-1 flex-col items-center justify-center px-6 pb-12">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="relative"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.5 }}
+          className="relative mb-12"
         >
-          <div className="absolute -inset-16 -z-10 rounded-full bg-mystic/30 blur-3xl" />
-          <div className="absolute left-1/2 top-2 -z-10 h-64 w-64 -translate-x-1/2 rounded-full bg-gradient-to-b from-mystic-glow/40 via-mystic/20 to-transparent blur-2xl" />
+          <div className="absolute -inset-16 rounded-full bg-mystic/20 blur-3xl" />
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.1, 1],
+              opacity: [0.3, 0.5, 0.3] 
+            }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute left-1/2 top-1/2 -z-10 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-mystic-glow/30 via-gold/10 to-transparent blur-2xl" 
+          />
+          
+          <div className="relative flex flex-col items-center">
+            <motion.h1
+              initial={{ opacity: 0, letterSpacing: "0.5em" }}
+              animate={{ opacity: 1, letterSpacing: "0.4em" }}
+              transition={{ duration: 1.2 }}
+              className="font-display text-6xl gold-text"
+            >
+              REVERIE
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="mt-2 text-[10px] uppercase tracking-[0.4em] text-gold/40"
+            >
+              Sintonizza la tua coscienza
+            </motion.p>
+          </div>
         </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, letterSpacing: "0.5em" }}
-          animate={{ opacity: 1, letterSpacing: "0.3em" }}
-          transition={{ duration: 1.2 }}
-          className="font-display text-5xl tracking-[0.3em] gold-text"
-        >
-          REVERIE
-        </motion.h1>
-        <p className="mt-1 text-[10px] uppercase tracking-[0.35em] text-muted-foreground mb-12">
-          Sintonizza la tua coscienza
-        </p>
-
-        {/* Main Actions */}
+        {/* PRIMARY ACTIONS: Clean & Large */}
         <div className="w-full max-w-xs space-y-4">
           <motion.button 
-            whileHover={{ scale: 1.05 }} 
-            whileTap={{ scale: 0.95 }} 
+            whileHover={{ scale: 1.02 }} 
+            whileTap={{ scale: 0.98 }} 
             onClick={play} 
-            className="w-full py-5 rounded-2xl bg-gradient-to-r from-mystic via-mystic-glow to-mystic text-foreground font-display text-xl font-bold uppercase tracking-[0.3em] shadow-[0_0_30px_rgba(150,100,255,0.4)] ring-2 ring-gold/20"
+            className="w-full py-6 rounded-[2.5rem] bg-gradient-to-br from-mystic via-mystic-glow to-mystic text-foreground font-display text-xl font-bold uppercase tracking-[0.3em] shadow-[0_10px_40px_rgba(150,100,255,0.3)] border border-gold/20"
           >
             GIOCA BATTAGLIA
           </motion.button>
 
           <motion.button 
-            whileHover={{ scale: 1.05 }} 
-            whileTap={{ scale: 0.95 }} 
+            whileHover={{ scale: 1.02 }} 
+            whileTap={{ scale: 0.98 }} 
             onClick={() => navigate({ to: "/combo" })} 
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-gold via-amber-eclipse to-gold text-abyss font-display text-sm font-bold uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(255,215,0,0.2)]"
+            className="w-full py-4 rounded-[2rem] bg-gradient-to-r from-abyss/40 via-card/40 to-abyss/40 text-gold font-display text-sm font-bold uppercase tracking-[0.3em] shadow-xl border border-gold/20 backdrop-blur-md"
           >
             MODALITÀ SOGNO
           </motion.button>
-          
-          <div className="grid grid-cols-3 gap-3 pt-4">
-              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate({ to: "/deck" })} className="py-3 rounded-xl bg-card/20 border border-gold/10 flex flex-col items-center justify-center gap-1 group">
-                <Library className="h-4 w-4 text-gold group-hover:scale-110 transition-transform" />
-                <span className="text-[7px] uppercase tracking-widest text-gold/60">Mente</span>
-              </motion.button>
-              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate({ to: "/collection" })} className="py-3 rounded-xl bg-card/20 border border-gold/10 flex flex-col items-center justify-center gap-1 group">
-                <Trophy className="h-4 w-4 text-gold group-hover:scale-110 transition-transform" />
-                <span className="text-[7px] uppercase tracking-widest text-gold/60">Memorie</span>
-              </motion.button>
-              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate({ to: "/shop" })} className="py-3 rounded-xl bg-card/20 border border-gold/10 flex flex-col items-center justify-center gap-1 group opacity-40">
-                <ShoppingBag className="h-4 w-4 text-gold" />
-                <span className="text-[7px] uppercase tracking-widest text-gold/60">Shop</span>
-              </motion.button>
+
+          <div className="pt-8 text-center">
+             <p className="text-[8px] uppercase tracking-[0.5em] text-gold/20">Esplora le profondità del tuo inconscio</p>
           </div>
         </div>
       </div>
+
 
       <BottomNav />
     </MobileFrame>

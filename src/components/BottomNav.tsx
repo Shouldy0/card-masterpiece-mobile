@@ -4,11 +4,9 @@ import { cn } from "@/lib/utils";
 
 const items = [
   { to: "/home", label: "Home", icon: Home },
-  { to: "/deck", label: "Mazzi", icon: Library },
-  { to: "/collection", label: "Collezione", icon: BookOpen },
+  { to: "/deck", label: "Mente", icon: Library },
+  { to: "/collection", label: "Memorie", icon: BookOpen },
   { to: "/shop", label: "Negozio", icon: ShoppingBag },
-  { to: "/ranked", label: "Ranked", icon: Trophy },
-  { to: "/events", label: "Eventi", icon: Calendar },
   { to: "/profile", label: "Profilo", icon: User },
 ] as const;
 
