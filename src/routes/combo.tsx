@@ -6,7 +6,7 @@ import { ComboCard, ComboCategory, RARITY_POINTS, getRank, calculateRisk, getPot
 import { MobileFrame } from "@/components/Common";
 import { CanvasBackground } from "@/components/CanvasBackground";
 import { sounds } from "@/utils/audio";
-import { Eye, Sparkles, Zap, ArrowLeft, Star, Trophy, RotateCcw, Play, CheckCircle2, RefreshCw, Calendar, Users, Ghost } from "lucide-react";
+import { Eye, Sparkles, Zap, ArrowLeft, Star, Trophy, RotateCcw, Play, CheckCircle2, RefreshCw, Calendar, Users, Ghost, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/combo")({ component: ComboGame });
 
@@ -20,7 +20,14 @@ function ComboGame() {
   const store = useComboGame();
   const { phase, drawnCards, currentResult, rerollsLeft, highScore, startGame, reroll, keepCombo, resetAll } = store;
   const navigate = useNavigate();
+  const [isPreloading, setIsPreloading] = useState(true);
   const [showShuffle, setShowShuffle] = useState(false);
+
+  // Preload sequence
+  useEffect(() => {
+    const timer = setTimeout(() => setIsPreloading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Sound triggers
   useEffect(() => {
@@ -49,13 +56,14 @@ function ComboGame() {
     keepCombo();
   };
 
+  if (isPreloading) return <Preloader />;
   if (phase === "result") return <ResultScreen result={store.lastResult} highScore={highScore} onRestart={() => startGame(store.isDailyMode)} onExit={() => { resetAll(); navigate({ to: "/home" }); }} />;
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-abyss">
+    <div className="relative h-[100dvh] w-screen overflow-hidden bg-abyss flex items-center justify-center">
       <CanvasBackground />
       
-      <MobileFrame className="mx-auto px-4 pb-6 pt-3 h-full max-w-md shadow-none ring-0 bg-transparent flex flex-col">
+      <MobileFrame className="w-full max-w-md h-full px-4 pb-6 pt-3 shadow-none ring-0 bg-transparent flex flex-col relative z-10">
         {/* Header */}
         <header className="flex items-center justify-between z-10">
           <div className="flex items-center gap-2">
@@ -89,9 +97,9 @@ function ComboGame() {
           {phase === "idle" && (
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-abyss/40 backdrop-blur-sm"
+              className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-abyss/40 backdrop-blur-sm px-6"
             >
-              <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="text-center">
+              <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} className="text-center w-full">
                 <h1 className="font-display text-5xl tracking-[0.2em] gold-text mb-2">REVERIE</h1>
                 <div className="mb-4 flex flex-col items-center gap-1">
                    {store.level < 2 && <p className="text-[8px] uppercase tracking-widest text-muted-foreground/60">Liv. 2: Sblocca Carte Leggendarie</p>}
@@ -99,12 +107,12 @@ function ComboGame() {
                 </div>
 
                 {/* Daily Leaderboard Simulation */}
-                <div className="mb-8 w-64 rounded-2xl bg-card/30 p-4 ring-1 ring-gold/10 backdrop-blur-sm">
+                <div className="mb-8 w-full max-w-xs mx-auto rounded-2xl bg-card/30 p-4 ring-1 ring-gold/10 backdrop-blur-sm">
                    <div className="flex items-center gap-2 mb-3 border-b border-gold/10 pb-2">
                       <Users className="h-3 w-3 text-gold/60" />
                       <span className="text-[9px] uppercase tracking-widest text-gold/60">Classifica Odierna</span>
                    </div>
-                   <div className="space-y-2">
+                   <div className="space-y-2 text-left">
                       {getDailyLeaderboard(new Date().getDate()).map((entry, i) => (
                         <div key={i} className="flex justify-between items-center text-[10px]">
                            <span className="text-muted-foreground flex items-center gap-2">
@@ -124,10 +132,10 @@ function ComboGame() {
                 </div>
 
                 <div className="flex flex-col gap-4 items-center">
-                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startGame(false)} className="w-64 rounded-2xl gold-frame bg-gradient-to-r from-mystic to-mystic-glow py-4 font-display text-xl uppercase tracking-[0.25em] text-foreground shadow-2xl">
+                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startGame(false)} className="w-full max-w-xs rounded-2xl gold-frame bg-gradient-to-r from-mystic to-mystic-glow py-4 font-display text-xl uppercase tracking-[0.25em] text-foreground shadow-2xl">
                     <span className="flex items-center justify-center gap-3"><Play className="h-6 w-6 fill-current" />GIOCA</span>
                   </motion.button>
-                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startGame(true)} className="w-64 rounded-2xl border-2 border-amber-eclipse/40 bg-amber-eclipse/5 py-4 font-display text-xs uppercase tracking-[0.25em] text-amber-eclipse glow-gold"><span className="flex items-center justify-center gap-2"><Calendar className="h-4 w-4" />SFIDA DEL GIORNO</span></motion.button>
+                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startGame(true)} className="w-full max-w-xs rounded-2xl border-2 border-amber-eclipse/40 bg-amber-eclipse/5 py-4 font-display text-xs uppercase tracking-[0.25em] text-amber-eclipse glow-gold"><span className="flex items-center justify-center gap-2"><Calendar className="h-4 w-4" />SFIDA DEL GIORNO</span></motion.button>
                 </div>
               </motion.div>
             </motion.div>
@@ -136,7 +144,7 @@ function ComboGame() {
 
         {/* Game Stats */}
         {phase !== "idle" && (
-          <div className="mt-4 flex justify-center gap-4">
+          <div className="mt-4 flex justify-center gap-4 z-10">
              <div className="flex flex-col items-center">
                <span className="text-[8px] uppercase tracking-widest text-muted-foreground">Rerolls</span>
                <div className="flex gap-1 mt-1">
@@ -149,7 +157,7 @@ function ComboGame() {
         )}
 
         {/* Main Game Area */}
-        <div className="flex-1 flex flex-col justify-center gap-3 mt-4 relative">
+        <div className="flex-1 flex flex-col justify-center gap-3 mt-4 relative z-10">
           <AnimatePresence mode="wait">
             {showShuffle && <DeckShuffle key="shuffle" />}
             {phase === "drawing" && !showShuffle && (
@@ -190,7 +198,7 @@ function ComboGame() {
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-auto mb-4 flex flex-col items-center gap-3">
+        <div className="mt-auto mb-4 flex flex-col items-center gap-3 z-10">
           {phase === "decision" && currentResult && (
             <>
               <motion.button 
@@ -209,6 +217,26 @@ function ComboGame() {
   );
 }
 
+function Preloader() {
+  return (
+    <div className="h-[100dvh] w-screen bg-abyss flex flex-col items-center justify-center relative overflow-hidden">
+      <CanvasBackground />
+      <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="z-10 text-center px-6">
+        <h1 className="font-display text-6xl tracking-[0.3em] gold-text mb-4">REVERIE</h1>
+        <div className="w-64 h-1 bg-card/60 rounded-full overflow-hidden mb-3 ring-1 ring-gold/20">
+           <motion.div 
+             className="h-full bg-gradient-to-r from-mystic via-gold to-mystic" 
+             initial={{ x: "-100%" }} 
+             animate={{ x: "0%" }} 
+             transition={{ duration: 1.8, ease: "easeInOut" }}
+           />
+        </div>
+        <p className="text-[10px] uppercase tracking-[0.5em] text-gold/40 animate-pulse">Sincronizzazione Frammenti...</p>
+      </motion.div>
+    </div>
+  );
+}
+
 function ResultScreen({ result, highScore, onRestart, onExit }: { result: GameResult | null; highScore: number; onRestart: () => void; onExit: () => void }) {
   if (!result) return null;
   const store = useComboGame();
@@ -216,10 +244,10 @@ function ResultScreen({ result, highScore, onRestart, onExit }: { result: GameRe
   const xpPct = (store.xp / getXpToNextLevel(store.level)) * 100;
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-abyss">
+    <div className="relative h-[100dvh] w-screen overflow-hidden bg-abyss flex items-center justify-center">
       <CanvasBackground />
       {result.scored.stars >= 4 && <ParticleLayer color={result.scored.stars >= 5 ? "oklch(0.82 0.13 80)" : "oklch(0.55 0.22 295)"} />}
-      <MobileFrame className="mx-auto px-6 pb-8 pt-12 items-center justify-center text-center h-full max-w-md bg-transparent flex flex-col">
+      <MobileFrame className="w-full max-w-md px-6 pb-8 pt-12 items-center justify-center text-center h-full bg-transparent flex flex-col relative z-10">
         <AnimatePresence>
           {result.leveledUp && (
             <motion.div initial={{ scale: 0, y: 50 }} animate={{ scale: 1, y: 0 }} className="absolute top-20 z-50 rounded-2xl bg-gradient-to-r from-gold via-amber-eclipse to-gold p-px shadow-[0_0_40px_rgba(255,215,0,0.4)]">
