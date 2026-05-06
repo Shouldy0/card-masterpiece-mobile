@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo } from "react";
 import { useComboGame, GameResult } from "@/game/combo-store";
-import { ComboCard, ComboCategory, RARITY_POINTS, getRank } from "@/game/combo-cards";
+import { ComboCard, ComboCategory, RARITY_POINTS, getRank, calculateRisk, getPotentialText } from "@/game/combo-cards";
 import { MobileFrame } from "@/components/Common";
 import { CanvasBackground } from "@/components/CanvasBackground";
 import { sounds } from "@/utils/audio";
@@ -101,15 +101,36 @@ function ComboGame() {
             )}
           </AnimatePresence>
 
-          {/* Feedback Info */}
+          {/* Decision Feedback */}
           <AnimatePresence>
             {phase === "decision" && currentResult && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-2 px-2 text-center">
+                {/* Risk Indicator */}
+                {(() => {
+                  const risk = calculateRisk(currentResult);
+                  const potential = getPotentialText(currentResult);
+                  return (
+                    <div className="mb-4 flex flex-col items-center gap-2">
+                      <motion.div 
+                        animate={risk.level === "High" ? { scale: [1, 1.05, 1], rotate: [-0.5, 0.5, -0.5] } : {}}
+                        transition={{ repeat: Infinity, duration: 1.5 }}
+                        className={`rounded-full px-3 py-1 text-[8px] font-bold uppercase tracking-[0.2em] ring-1 ${risk.level === "High" ? "bg-rose/10 ring-rose/50 text-rose" : risk.level === "Medium" ? "bg-amber-eclipse/10 ring-amber-eclipse/50 text-amber-eclipse" : "bg-emerald/10 ring-emerald/50 text-emerald"}`}
+                      >
+                        Rischio: {risk.level}
+                      </motion.div>
+                      <h3 className={`font-display text-base uppercase tracking-widest ${currentResult.stars >= 4 ? "gold-text" : "text-foreground"}`}>
+                        {potential}
+                      </h3>
+                      <p className="text-[9px] uppercase tracking-wider text-muted-foreground/60">{risk.description}</p>
+                    </div>
+                  );
+                })()}
+
                 <div className="flex justify-center gap-0.5 mb-1">
-                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className={`h-3.5 w-3.5 ${i < currentResult.stars ? "text-gold fill-gold drop-shadow-[0_0_5px_rgba(255,215,0,0.5)]" : "text-muted-foreground/20"}`} />)}
+                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className={`h-4 w-4 ${i < currentResult.stars ? "text-gold fill-gold drop-shadow-[0_0_8px_rgba(255,215,0,0.5)]" : "text-muted-foreground/20"}`} />)}
                 </div>
-                <h3 className="font-display text-sm gold-text uppercase tracking-widest">{currentResult.title}</h3>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{currentResult.score} punti • {currentResult.bonuses.length > 0 ? currentResult.bonuses[0] : "Combinazione Onirica"}</p>
+                <h3 className="font-display text-xs gold-text uppercase tracking-[0.2em]">{currentResult.title}</h3>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{currentResult.score} punti • {currentResult.bonuses.length > 0 ? currentResult.bonuses[0] : "Sinergia Onirica"}</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -117,21 +138,32 @@ function ComboGame() {
 
         {/* Action Buttons */}
         <div className="mt-auto mb-4 flex flex-col items-center gap-3">
-          {phase === "decision" && (
+          {phase === "decision" && currentResult && (
             <>
               <motion.button 
-                initial={{ scale: 0.9 }} animate={{ scale: 1 }} whileTap={{ scale: 0.95 }}
+                initial={{ scale: 0.9 }} 
+                animate={{ 
+                  scale: 1,
+                  boxShadow: calculateRisk(currentResult).level === "High" ? ["0 0 0px rgba(255,215,0,0)", "0 0 20px rgba(255,215,0,0.3)", "0 0 0px rgba(255,215,0,0)"] : "0 0 0px rgba(0,0,0,0)"
+                }} 
+                transition={calculateRisk(currentResult).level === "High" ? { repeat: Infinity, duration: 1 } : {}}
+                whileTap={{ scale: 0.95 }}
                 onClick={keepCombo}
-                className="w-full max-w-xs rounded-2xl gold-frame bg-gradient-to-r from-gold-dim via-gold to-gold-dim py-4 font-display text-lg uppercase tracking-[0.2em] text-abyss shadow-2xl"
+                className={`w-full max-w-xs rounded-2xl gold-frame py-4 font-display text-lg uppercase tracking-[0.25em] transition-all shadow-2xl ${calculateRisk(currentResult).level === "High" ? "bg-gradient-to-r from-gold-dim via-gold to-gold-dim text-abyss" : "bg-card/40 text-gold ring-1 ring-gold/30"}`}
               >
-                <span className="flex items-center justify-center gap-2"><CheckCircle2 className="h-5 w-5" />TIENI</span>
+                <span className="flex items-center justify-center gap-2">
+                  <CheckCircle2 className="h-5 w-5" />
+                  CONFERMA
+                </span>
               </motion.button>
               
               <motion.button 
                 disabled={rerollsLeft <= 0}
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                whileTap={{ scale: 0.95 }}
                 onClick={reroll}
-                className={`w-full max-w-xs rounded-2xl border-2 py-3 font-display text-xs uppercase tracking-widest transition-all ${rerollsLeft > 0 ? "border-mystic text-mystic-glow bg-mystic/10 hover:bg-mystic/20" : "border-card/20 text-muted-foreground/40 cursor-not-allowed"}`}
+                className={`w-full max-w-xs rounded-2xl border-2 py-3 font-display text-xs uppercase tracking-widest transition-all ${rerollsLeft > 0 ? "border-mystic/40 text-mystic-glow bg-mystic/5 hover:bg-mystic/15" : "border-card/10 text-muted-foreground/20 cursor-not-allowed"}`}
               >
                 <span className="flex items-center justify-center gap-2">
                   <RefreshCw className={`h-4 w-4 ${rerollsLeft > 0 ? "animate-spin-slow" : ""}`} />

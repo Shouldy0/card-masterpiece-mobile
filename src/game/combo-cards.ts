@@ -195,3 +195,25 @@ export function generateFunnyCombo() {
     text: templates[Math.floor(Math.random() * templates.length)],
   };
 }
+
+export type RiskLevel = "Low" | "Medium" | "High";
+
+export function calculateRisk(scored: ScoredCombo): { level: RiskLevel; color: string; description: string } {
+  const { stars, score } = scored;
+  
+  if (stars >= 4 || score >= 200) {
+    return { level: "High", color: "text-rose", description: "Difficile ottenere di meglio" };
+  }
+  if (stars === 3 || score >= 100) {
+    return { level: "Medium", color: "text-amber-eclipse", description: "Combo solida, potresti rischiare" };
+  }
+  return { level: "Low", color: "text-emerald", description: "Vale la pena provare un reroll" };
+}
+
+export function getPotentialText(scored: ScoredCombo): string {
+  const { stars } = scored;
+  if (stars >= 5) return "Combinazione Leggendaria!";
+  if (stars === 4) return "Grande Potenziale";
+  if (stars === 3) return "Buona Sinergia";
+  return "Potenziale Basso";
+}
