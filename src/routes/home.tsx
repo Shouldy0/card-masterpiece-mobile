@@ -72,33 +72,26 @@ function Home() {
         >
           REVERIE
         </motion.h1>
-        <p className="mt-1 text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
-          Il tuo coraggio, la tua mente
+        <p className="mt-1 text-[10px] uppercase tracking-[0.35em] text-muted-foreground mb-12">
+          Sintonizza la tua coscienza
         </p>
 
-        <button
-          onClick={play}
-          className="mt-10 w-full max-w-xs rounded-full gold-frame bg-gradient-to-r from-mystic to-mystic-glow px-10 py-4 font-display text-lg uppercase tracking-[0.3em] text-foreground glow-mystic"
-        >
-          Gioca
-        </button>
-
-        {/* shortcuts */}
-        <div className="mt-6 grid w-full grid-cols-4 gap-2">
-          {[
-            { to: "/deck", icon: Library, label: "Mazzi" },
-            { to: "/collection", icon: BookOpen, label: "Collezione" },
-            { to: "/shop", icon: ShoppingBag, label: "Negozio" },
-            { to: "/combo", icon: Zap, label: "Combo" },
-          ].map((s) => {
-            const Icon = s.icon;
-            return (
-              <Link key={s.to} to={s.to} className="flex flex-col items-center gap-1 rounded-xl gold-frame bg-card/60 px-2 py-3">
-                <Icon className="h-5 w-5 text-gold" />
-                <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.label}</span>
-              </Link>
-            );
-          })}
+        {/* Main Actions */}
+        <div className="w-full max-w-xs space-y-4">
+          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate({ to: "/combo" })} className="w-full py-5 rounded-2xl bg-gradient-to-r from-gold via-amber-eclipse to-gold text-abyss font-display text-xl font-bold uppercase tracking-[0.3em] shadow-[0_0_30px_rgba(255,215,0,0.3)]">
+            ENTRA NEL SOGNO
+          </motion.button>
+          
+          <div className="grid grid-cols-2 gap-4">
+              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => navigate({ to: "/collection" })} className="py-4 rounded-2xl bg-card/20 border border-gold/20 flex flex-col items-center justify-center gap-2 group">
+                <Trophy className="h-5 w-5 text-gold group-hover:scale-110 transition-transform" />
+                <span className="text-[8px] uppercase tracking-widest text-gold/60">Collezione</span>
+              </motion.button>
+              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="py-4 rounded-2xl bg-card/20 border border-gold/5 flex flex-col items-center justify-center gap-2 opacity-40 cursor-not-allowed">
+                <Sparkles className="h-5 w-5 text-mystic-glow" />
+                <span className="text-[8px] uppercase tracking-widest text-mystic-glow/60">Emporio</span>
+              </motion.button>
+          </div>
         </div>
       </div>
 
