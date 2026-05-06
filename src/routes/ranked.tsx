@@ -1,0 +1,64 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { MobileFrame } from "@/components/Common";
+import { BottomNav } from "@/components/BottomNav";
+import { useGame } from "@/game/store";
+import { ArrowLeft, Crown, Package } from "lucide-react";
+
+export const Route = createFileRoute("/ranked")({ component: Ranked });
+
+function Ranked() {
+  const player = useGame((s) => s.player);
+  const startMatch = useGame((s) => s.startMatch);
+  const navigate = useNavigate();
+
+  return (
+    <MobileFrame>
+      <header className="flex items-center gap-2 px-4 pt-6">
+        <Link to="/home" className="flex size-9 items-center justify-center rounded-full bg-card/60 ring-1 ring-gold/30"><ArrowLeft className="h-4 w-4 text-gold" /></Link>
+        <h1 className="flex-1 text-center font-display text-lg gold-text tracking-widest">RANKED</h1>
+        <span className="size-9" />
+      </header>
+
+      <div className="mt-6 flex flex-col items-center px-6">
+        <div className="relative">
+          <div className="absolute -inset-10 rounded-full bg-mystic/30 blur-3xl" />
+          <div className="relative flex size-32 items-center justify-center rounded-full ring-2 ring-gold/70 bg-gradient-to-br from-mystic/40 to-abyss">
+            <Crown className="h-12 w-12 text-gold" />
+          </div>
+        </div>
+        <p className="mt-4 font-display text-2xl gold-text">{player.rank}</p>
+        <div className="mt-4 grid w-full max-w-xs grid-cols-2 gap-3">
+          <div className="rounded-xl gold-frame bg-card/60 p-3 text-center"><p className="text-[9px] uppercase text-muted-foreground">Punteggio</p><p className="font-display text-lg text-foreground">{player.rankPoints}</p></div>
+          <div className="rounded-xl gold-frame bg-card/60 p-3 text-center"><p className="text-[9px] uppercase text-muted-foreground">Prossimo</p><p className="font-display text-lg text-foreground">1.600</p></div>
+        </div>
+      </div>
+
+      <div className="mt-6 mx-4">
+        <p className="text-[10px] uppercase tracking-widest text-gold">Ricompense Stagionali</p>
+        <div className="mt-2 space-y-1.5">
+          {[{ p: 1000, claimed: true }, { p: 1500, claimed: false }, { p: 2000, claimed: false }, { p: 2500, claimed: false }].map((r) => (
+            <div key={r.p} className="flex items-center justify-between rounded-lg gold-frame bg-card/50 px-3 py-2">
+              <div className="flex items-center gap-2">
+                <Package className="h-4 w-4 text-mystic-glow" />
+                <span className="text-xs">{r.p.toLocaleString("it-IT")} pt</span>
+              </div>
+              <span className={`text-[10px] uppercase tracking-widest ${r.claimed ? "text-gold" : "text-muted-foreground"}`}>{r.claimed ? "Ottenuto" : player.rankPoints >= r.p ? "Riscatta" : "Bloccato"}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-auto p-4">
+        <button
+          onClick={() => { startMatch(); navigate({ to: "/vs" }); }}
+          className="w-full rounded-full gold-frame bg-gradient-to-r from-mystic to-mystic-glow py-3 font-display text-sm uppercase tracking-widest text-foreground glow-mystic"
+        >
+          Gioca Ranked
+        </button>
+        <p className="mt-2 text-center text-[10px] text-muted-foreground">Fine stagione tra: 12g 18h 24m</p>
+      </div>
+
+      <BottomNav />
+    </MobileFrame>
+  );
+}
