@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo } from "react";
-import { useComboGame, GameResult } from "@/game/combo-store";
+import { useComboGame, GameResult, getXpToNextLevel } from "@/game/combo-store";
 import { ComboCard, ComboCategory, RARITY_POINTS, getRank, calculateRisk, getPotentialText } from "@/game/combo-cards";
 import { MobileFrame } from "@/components/Common";
 import { CanvasBackground } from "@/components/CanvasBackground";
@@ -39,10 +39,18 @@ function ComboGame() {
       <MobileFrame className="mx-auto px-4 pb-6 pt-3 h-full max-w-md shadow-none ring-0 bg-transparent flex flex-col">
         {/* Header */}
         <header className="flex items-center justify-between">
-          <button onClick={() => { resetAll(); navigate({ to: "/home" }); }} className="flex items-center gap-1.5 rounded-full bg-card/40 px-2.5 py-1 ring-1 ring-gold/30 text-gold hover:bg-card/60 transition-colors backdrop-blur-sm">
-            <ArrowLeft className="h-3.5 w-3.5" />
-            <span className="text-[9px] uppercase tracking-widest font-display">Esci</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <div className="relative flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-mystic to-abyss ring-1 ring-gold/40 shadow-lg">
+              <span className="font-display text-xs font-bold text-gold">{store.level}</span>
+              <div className="absolute -bottom-1 w-full h-0.5 bg-card overflow-hidden rounded-full">
+                 <motion.div className="h-full bg-gold" initial={{ width: 0 }} animate={{ width: `${(store.xp / getXpToNextLevel(store.level)) * 100}%` }} />
+              </div>
+            </div>
+            <button onClick={() => { resetAll(); navigate({ to: "/home" }); }} className="flex items-center gap-1.5 rounded-full bg-card/40 px-2.5 py-1 ring-1 ring-gold/30 text-gold hover:bg-card/60 transition-colors backdrop-blur-sm">
+              <ArrowLeft className="h-3.5 w-3.5" />
+              <span className="text-[9px] uppercase tracking-widest font-display">Esci</span>
+            </button>
+          </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1 rounded-full bg-card/60 px-2.5 py-1 ring-1 ring-gold/30 backdrop-blur-sm">
               <Trophy className="h-3 w-3 text-gold" />
@@ -60,7 +68,14 @@ function ComboGame() {
             >
               <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="text-center">
                 <h1 className="font-display text-5xl tracking-[0.2em] gold-text mb-2">REVERIE</h1>
-                <p className="text-[10px] uppercase tracking-[0.4em] text-gold/60 mb-12">Arcade Combo</p>
+                <p className="text-[10px] uppercase tracking-[0.4em] text-gold/60 mb-2">Arcade Combo</p>
+                
+                <div className="mb-8 flex flex-col items-center gap-1">
+                   {store.level < 2 && <p className="text-[8px] uppercase tracking-widest text-muted-foreground/60">Liv. 2: Sblocca Carte Leggendarie</p>}
+                   {store.level === 2 && <p className="text-[8px] uppercase tracking-widest text-gold/60">Liv. 3: Nuovi Temi Onirici</p>}
+                   {store.level >= 3 && <p className="text-[8px] uppercase tracking-widest text-mystic-glow/60">Livello Massimo Raggiunto</p>}
+                </div>
+
                 <div className="flex flex-col gap-4 items-center">
                   <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => startGame(false)} className="w-64 rounded-2xl gold-frame bg-gradient-to-r from-mystic to-mystic-glow py-6 font-display text-xl uppercase tracking-[0.25em] text-foreground shadow-2xl">
                     <span className="flex items-center justify-center gap-3"><Play className="h-6 w-6 fill-current" />GIOCA</span>
@@ -180,12 +195,22 @@ function ComboGame() {
 
 function ResultScreen({ result, highScore, onRestart, onExit }: { result: GameResult | null; highScore: number; onRestart: () => void; onExit: () => void }) {
   if (!result) return null;
+  const store = useComboGame();
   const { rank, color } = getRank(result.scored.score);
+  const xpPct = (store.xp / getXpToNextLevel(store.level)) * 100;
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-abyss">
       <CanvasBackground />
       <MobileFrame className="mx-auto px-6 pb-8 pt-12 items-center justify-center text-center h-full max-w-md bg-transparent flex flex-col">
+        <AnimatePresence>
+          {result.leveledUp && (
+            <motion.div initial={{ scale: 0, y: 50 }} animate={{ scale: 1, y: 0 }} className="absolute top-20 z-50 rounded-2xl bg-gradient-to-r from-gold via-amber-eclipse to-gold p-px shadow-[0_0_40px_rgba(255,215,0,0.4)]">
+              <div className="rounded-2xl bg-abyss px-8 py-3 font-display text-xs font-bold uppercase tracking-[0.4em] text-gold">Level Up!</div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} className="relative flex size-40 items-center justify-center rounded-full bg-gradient-to-br from-card/80 to-abyss/80 ring-4 ring-gold/20 shadow-2xl backdrop-blur-md">
           <span className={`font-display text-8xl font-bold ${color}`}>{rank}</span>
           <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0, 0.5, 0] }} transition={{ duration: 2, repeat: Infinity }} className="absolute -inset-6 rounded-full border-2 border-gold/30" />
@@ -194,7 +219,20 @@ function ResultScreen({ result, highScore, onRestart, onExit }: { result: GameRe
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
           <p className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground">Punteggio Finale</p>
           <h1 className="font-display text-7xl gold-text mt-1 drop-shadow-[0_0_15px_rgba(255,215,0,0.5)]">{result.scored.score}</h1>
-          <p className="text-[9px] uppercase tracking-widest text-gold/60 mt-2">Record Personale: {highScore}</p>
+          <div className="mt-4 flex flex-col items-center gap-2">
+            <div className="flex justify-between w-48 text-[9px] uppercase tracking-widest text-gold/60">
+              <span>Livello {store.level}</span>
+              <span>+{result.xpEarned} XP</span>
+            </div>
+            <div className="h-1.5 w-48 overflow-hidden rounded-full bg-card/60 ring-1 ring-gold/20">
+               <motion.div 
+                 className="h-full bg-gradient-to-r from-gold to-amber-eclipse" 
+                 initial={{ width: 0 }} 
+                 animate={{ width: `${xpPct}%` }}
+                 transition={{ duration: 1.5, ease: "easeOut" }}
+               />
+            </div>
+          </div>
         </motion.div>
 
         <div className="mt-8 grid grid-cols-2 gap-4 w-full max-w-xs">
