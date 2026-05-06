@@ -95,11 +95,10 @@ function Match() {
            </div>
         </div>
 
-        {/* Middle Hand (Opponent) */}
         <div className="flex justify-center -space-x-4 mt-2">
           {Array.from({ length: match.hand.ai.length }).map((_, i) => (
              <motion.div key={i} initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.05 }}>
-               <CardBack size="sm" className="rotate-180" />
+               <CardBack size="sm" />
              </motion.div>
           ))}
         </div>

@@ -64,7 +64,7 @@ class SoundEngine {
     }
   }
 
-  play(type: "draw" | "success" | "fail" | "tick" | "record" | "lock" | "reroll" | "shuffle" | "victory" | "pulse" | "whoosh" | "chime") {
+  play(type: "draw" | "success" | "fail" | "tick" | "record" | "lock" | "reroll" | "shuffle" | "victory" | "pulse" | "whoosh" | "chime" | "ripple" | "dream_enter") {
     try {
       this.init();
       if (!this.ctx) return;

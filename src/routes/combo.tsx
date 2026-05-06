@@ -56,7 +56,7 @@ function ComboGame() {
   const handleActionWithAd = async (action: () => void) => {
     // Show ad if: achievement unlocked OR daily completed OR generic game over
     const shouldShowAd = store.lastResult?.leveledUp || 
-                        store.lastResult?.scored.stars >= 4 || 
+                        (store.lastResult?.scored.stars ?? 0) >= 4 || 
                         store.isDailyMode;
     
     if (shouldShowAd) {
@@ -183,7 +183,7 @@ function ComboGame() {
             <>
               <motion.button 
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.95 }}
-                onClick={() => sounds.play("lock") || keepCombo()}
+                onClick={() => { sounds.play("lock"); keepCombo(); }}
                 className={`${UI_THEME.premium_btn} w-full max-w-xs py-5 bg-gradient-to-r from-gold via-amber-eclipse to-gold text-abyss font-bold shadow-2xl ring-2 ring-gold/50`}
               >
                 CONFERMA VISIONE
@@ -191,7 +191,7 @@ function ComboGame() {
               
               <button 
                 disabled={rerollsLeft <= 0} 
-                onClick={() => sounds.play("reroll") || reroll()}
+                onClick={() => { sounds.play("reroll"); reroll(); }}
                 className={`${UI_THEME.premium_btn} w-full max-w-xs py-3 border border-gold/30 text-gold/60 flex items-center justify-center gap-2 disabled:opacity-20`}
               >
                 <RefreshCw className={`h-4 w-4 ${rerollsLeft > 0 ? "animate-spin-slow" : ""}`} />
@@ -240,7 +240,8 @@ function StartOverlay({ onPlay, onDaily, store }: { onPlay: () => void; onDaily:
 }
 
 function DrawnCard({ card, index, variant }: { card: Card; index: number; variant: any }) {
-  const m = getCatMeta(variant)[card.type as keyof typeof catMeta] || getCatMeta(variant).character;
+  const meta = getCatMeta(variant);
+  const m = meta[card.type as keyof typeof meta] || meta.character;
   const rarityStyles: Record<string, string> = { 
     common: "ring-white/10", 
     rare: "ring-azure/30 shadow-[0_0_20px_rgba(100,200,255,0.1)]", 
@@ -551,7 +552,7 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
           Tocca per sintonizzare l'audio
         </motion.p>
       )}
-    </div>
+    </motion.div>
   );
 }
 

@@ -32,14 +32,16 @@ export class DeckEngine {
    */
   static generateProceduralCard(type: CardType, variant: GameVariant): Card {
     const isPositive = Math.random() > 0.5;
-    const adjPool = isPositive ? [...this.ADJECTIVES.positive, ...this.ADJECTIVES.neutral] : [...this.ADJECTIVES.negative, ...this.ADJECTIVES.neutral];
+    const adjPool = isPositive ? [...DeckEngine.ADJECTIVES.positive, ...DeckEngine.ADJECTIVES.neutral] : [...DeckEngine.ADJECTIVES.negative, ...DeckEngine.ADJECTIVES.neutral];
     const adj = adjPool[Math.floor(Math.random() * adjPool.length)];
     
     // Customize nouns based on variant labels if possible
-    const noun = this.NOUNS[type as keyof typeof this.NOUNS] || variant.theme.labels[type] || "Entità";
+    const nounPool = DeckEngine.NOUNS[type as keyof typeof DeckEngine.NOUNS] || [];
+    const noun = nounPool[Math.floor(Math.random() * nounPool.length)] || variant.theme.labels[type] || "Entità";
     
     const name = Math.random() > 0.3 ? `${noun} ${adj}` : `${adj} ${noun}`;
-    const icon = this.ICONS[type as keyof typeof this.ICONS][Math.floor(Math.random() * this.ICONS[type as keyof typeof this.ICONS].length)];
+    const iconPool = DeckEngine.ICONS[type as keyof typeof DeckEngine.ICONS] || [];
+    const icon = iconPool[Math.floor(Math.random() * iconPool.length)] || "❓";
     
     const rarities: CardRarity[] = ["common", "rare", "epic", "legendary"];
     const rarityWeights = [0.6, 0.25, 0.1, 0.05];
@@ -51,10 +53,10 @@ export class DeckEngine {
       if (rVal <= cumulative) { rarity = rarities[i]; break; }
     }
 
-    const tags = [type];
-    if (this.ADJECTIVES.positive.includes(adj)) tags.push("peaceful", "truth", "holy");
-    if (this.ADJECTIVES.negative.includes(adj)) tags.push("dark", "lost", "fire");
-    if (this.ADJECTIVES.neutral.includes(adj)) tags.push("mystery", "ancient", "magic");
+    const tags: string[] = [type];
+    if (DeckEngine.ADJECTIVES.positive.includes(adj)) tags.push("peaceful", "truth", "holy");
+    if (DeckEngine.ADJECTIVES.negative.includes(adj)) tags.push("dark", "lost", "fire");
+    if (DeckEngine.ADJECTIVES.neutral.includes(adj)) tags.push("mystery", "ancient", "magic");
     
     return {
       id: `proc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
