@@ -29,17 +29,17 @@ function Settings() {
       <div className="mt-4 flex-1 space-y-1 px-4">
         {tab === "Gioco" && (
           <>
-            <Slider label="Velocità Animazioni" value={settings.animSpeed} onChange={(v) => toggleSetting("animSpeed", v)} />
+            <Slider label="Velocità Animazioni" value={settings.animSpeed} onChange={(v: number) => toggleSetting("animSpeed", v)} />
             <Toggle label="Mostra Effetti" value={true} onChange={() => {}} />
-            <Toggle label="Suggerimenti" value={settings.hints} onChange={(v) => toggleSetting("hints", v)} />
+            <Toggle label="Suggerimenti" value={settings.hints} onChange={(v: boolean) => toggleSetting("hints", v)} />
             <Toggle label="Conferma Fine Turno" value={true} onChange={() => {}} />
             <Row label="Lingua" value={settings.language} />
-            <Toggle label="Vibrazione" value={settings.vibration} onChange={(v) => toggleSetting("vibration", v)} />
+            <Toggle label="Vibrazione" value={settings.vibration} onChange={(v: boolean) => toggleSetting("vibration", v)} />
           </>
         )}
         {tab === "Audio" && (
           <>
-            <Toggle label="Audio" value={settings.soundOn} onChange={(v) => toggleSetting("soundOn", v)} />
+            <Toggle label="Audio" value={settings.soundOn} onChange={(v: boolean) => toggleSetting("soundOn", v)} />
             <Slider label="Musica" value={0.7} onChange={() => {}} />
             <Slider label="Effetti Sonori" value={0.9} onChange={() => {}} />
           </>

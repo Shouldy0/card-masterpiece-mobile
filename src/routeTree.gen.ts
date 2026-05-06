@@ -10,11 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VsRouteImport } from './routes/vs'
+import { Route as TitlesRouteImport } from './routes/titles'
+import { Route as StatsRouteImport } from './routes/stats'
+import { Route as ShopRouteImport } from './routes/shop'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as RankedRouteImport } from './routes/ranked'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PassRouteImport } from './routes/pass'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as NewsRouteImport } from './routes/news'
 import { Route as MatchRouteImport } from './routes/match'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as HistoryRouteImport } from './routes/history'
+import { Route as EventsRouteImport } from './routes/events'
 import { Route as EndRouteImport } from './routes/end'
+import { Route as DeckRouteImport } from './routes/deck'
+import { Route as ConnectionRouteImport } from './routes/connection'
+import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as IndexRouteImport } from './routes/index'
 
 const VsRoute = VsRouteImport.update({
@@ -22,14 +35,54 @@ const VsRoute = VsRouteImport.update({
   path: '/vs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TitlesRoute = TitlesRouteImport.update({
+  id: '/titles',
+  path: '/titles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatsRoute = StatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RankedRoute = RankedRouteImport.update({
+  id: '/ranked',
+  path: '/ranked',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PassRoute = PassRouteImport.update({
+  id: '/pass',
+  path: '/pass',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MatchRoute = MatchRouteImport.update({
@@ -42,9 +95,34 @@ const HomeRoute = HomeRouteImport.update({
   path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EndRoute = EndRouteImport.update({
   id: '/end',
   path: '/end',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeckRoute = DeckRouteImport.update({
+  id: '/deck',
+  path: '/deck',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConnectionRoute = ConnectionRouteImport.update({
+  id: '/connection',
+  path: '/connection',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionRoute = CollectionRouteImport.update({
+  id: '/collection',
+  path: '/collection',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -55,62 +133,160 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/collection': typeof CollectionRoute
+  '/connection': typeof ConnectionRoute
+  '/deck': typeof DeckRoute
   '/end': typeof EndRoute
+  '/events': typeof EventsRoute
+  '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/match': typeof MatchRoute
+  '/news': typeof NewsRoute
   '/onboarding': typeof OnboardingRoute
+  '/pass': typeof PassRoute
+  '/profile': typeof ProfileRoute
+  '/ranked': typeof RankedRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
+  '/shop': typeof ShopRoute
+  '/stats': typeof StatsRoute
+  '/titles': typeof TitlesRoute
   '/vs': typeof VsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/collection': typeof CollectionRoute
+  '/connection': typeof ConnectionRoute
+  '/deck': typeof DeckRoute
   '/end': typeof EndRoute
+  '/events': typeof EventsRoute
+  '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/match': typeof MatchRoute
+  '/news': typeof NewsRoute
   '/onboarding': typeof OnboardingRoute
+  '/pass': typeof PassRoute
+  '/profile': typeof ProfileRoute
+  '/ranked': typeof RankedRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
+  '/shop': typeof ShopRoute
+  '/stats': typeof StatsRoute
+  '/titles': typeof TitlesRoute
   '/vs': typeof VsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/collection': typeof CollectionRoute
+  '/connection': typeof ConnectionRoute
+  '/deck': typeof DeckRoute
   '/end': typeof EndRoute
+  '/events': typeof EventsRoute
+  '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/match': typeof MatchRoute
+  '/news': typeof NewsRoute
   '/onboarding': typeof OnboardingRoute
+  '/pass': typeof PassRoute
+  '/profile': typeof ProfileRoute
+  '/ranked': typeof RankedRoute
   '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
+  '/shop': typeof ShopRoute
+  '/stats': typeof StatsRoute
+  '/titles': typeof TitlesRoute
   '/vs': typeof VsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/collection'
+    | '/connection'
+    | '/deck'
     | '/end'
+    | '/events'
+    | '/history'
     | '/home'
     | '/match'
+    | '/news'
     | '/onboarding'
+    | '/pass'
+    | '/profile'
+    | '/ranked'
     | '/search'
+    | '/settings'
+    | '/shop'
+    | '/stats'
+    | '/titles'
     | '/vs'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/end' | '/home' | '/match' | '/onboarding' | '/search' | '/vs'
+  to:
+    | '/'
+    | '/collection'
+    | '/connection'
+    | '/deck'
+    | '/end'
+    | '/events'
+    | '/history'
+    | '/home'
+    | '/match'
+    | '/news'
+    | '/onboarding'
+    | '/pass'
+    | '/profile'
+    | '/ranked'
+    | '/search'
+    | '/settings'
+    | '/shop'
+    | '/stats'
+    | '/titles'
+    | '/vs'
   id:
     | '__root__'
     | '/'
+    | '/collection'
+    | '/connection'
+    | '/deck'
     | '/end'
+    | '/events'
+    | '/history'
     | '/home'
     | '/match'
+    | '/news'
     | '/onboarding'
+    | '/pass'
+    | '/profile'
+    | '/ranked'
     | '/search'
+    | '/settings'
+    | '/shop'
+    | '/stats'
+    | '/titles'
     | '/vs'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CollectionRoute: typeof CollectionRoute
+  ConnectionRoute: typeof ConnectionRoute
+  DeckRoute: typeof DeckRoute
   EndRoute: typeof EndRoute
+  EventsRoute: typeof EventsRoute
+  HistoryRoute: typeof HistoryRoute
   HomeRoute: typeof HomeRoute
   MatchRoute: typeof MatchRoute
+  NewsRoute: typeof NewsRoute
   OnboardingRoute: typeof OnboardingRoute
+  PassRoute: typeof PassRoute
+  ProfileRoute: typeof ProfileRoute
+  RankedRoute: typeof RankedRoute
   SearchRoute: typeof SearchRoute
+  SettingsRoute: typeof SettingsRoute
+  ShopRoute: typeof ShopRoute
+  StatsRoute: typeof StatsRoute
+  TitlesRoute: typeof TitlesRoute
   VsRoute: typeof VsRoute
 }
 
@@ -123,6 +299,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/titles': {
+      id: '/titles'
+      path: '/titles'
+      fullPath: '/titles'
+      preLoaderRoute: typeof TitlesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stats': {
+      id: '/stats'
+      path: '/stats'
+      fullPath: '/stats'
+      preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search': {
       id: '/search'
       path: '/search'
@@ -130,11 +334,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ranked': {
+      id: '/ranked'
+      path: '/ranked'
+      fullPath: '/ranked'
+      preLoaderRoute: typeof RankedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pass': {
+      id: '/pass'
+      path: '/pass'
+      fullPath: '/pass'
+      preLoaderRoute: typeof PassRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/match': {
@@ -151,11 +383,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/end': {
       id: '/end'
       path: '/end'
       fullPath: '/end'
       preLoaderRoute: typeof EndRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/deck': {
+      id: '/deck'
+      path: '/deck'
+      fullPath: '/deck'
+      preLoaderRoute: typeof DeckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/connection': {
+      id: '/connection'
+      path: '/connection'
+      fullPath: '/connection'
+      preLoaderRoute: typeof ConnectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collection': {
+      id: '/collection'
+      path: '/collection'
+      fullPath: '/collection'
+      preLoaderRoute: typeof CollectionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -170,11 +437,24 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CollectionRoute: CollectionRoute,
+  ConnectionRoute: ConnectionRoute,
+  DeckRoute: DeckRoute,
   EndRoute: EndRoute,
+  EventsRoute: EventsRoute,
+  HistoryRoute: HistoryRoute,
   HomeRoute: HomeRoute,
   MatchRoute: MatchRoute,
+  NewsRoute: NewsRoute,
   OnboardingRoute: OnboardingRoute,
+  PassRoute: PassRoute,
+  ProfileRoute: ProfileRoute,
+  RankedRoute: RankedRoute,
   SearchRoute: SearchRoute,
+  SettingsRoute: SettingsRoute,
+  ShopRoute: ShopRoute,
+  StatsRoute: StatsRoute,
+  TitlesRoute: TitlesRoute,
   VsRoute: VsRoute,
 }
 export const routeTree = rootRouteImport
