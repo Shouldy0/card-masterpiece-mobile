@@ -6,7 +6,8 @@ import { ComboCard, ComboCategory, RARITY_POINTS, getRank, calculateRisk, getPot
 import { MobileFrame } from "@/components/Common";
 import { CanvasBackground } from "@/components/CanvasBackground";
 import { sounds } from "@/utils/audio";
-import { Eye, Sparkles, Zap, ArrowLeft, Star, Trophy, RotateCcw, Play, CheckCircle2, RefreshCw, Calendar, Users, Ghost, Loader2 } from "lucide-react";
+import { ads } from "@/utils/ads";
+import { Eye, Sparkles, Zap, ArrowLeft, Star, Trophy, RotateCcw, Play, CheckCircle2, RefreshCw, Calendar, Users, Ghost, Loader2, PlayCircle } from "lucide-react";
 
 export const Route = createFileRoute("/combo")({ component: ComboGame });
 
@@ -21,6 +22,7 @@ function ComboGame() {
   const { phase, drawnCards, currentResult, rerollsLeft, highScore, startGame, reroll, keepCombo, resetAll } = store;
   const navigate = useNavigate();
   const [isPreloading, setIsPreloading] = useState(true);
+  const [isShowingAd, setIsShowingAd] = useState(false);
   const [showShuffle, setShowShuffle] = useState(false);
 
   // Preload sequence
@@ -56,12 +58,22 @@ function ComboGame() {
     keepCombo();
   };
 
+  const handleRestart = async () => {
+    setIsShowingAd(true);
+    await ads.showInterstitial();
+    setIsShowingAd(false);
+    startGame(store.isDailyMode);
+  };
+
   if (isPreloading) return <Preloader />;
-  if (phase === "result") return <ResultScreen result={store.lastResult} highScore={highScore} onRestart={() => startGame(store.isDailyMode)} onExit={() => { resetAll(); navigate({ to: "/home" }); }} />;
+  if (phase === "result") return <ResultScreen result={store.lastResult} highScore={highScore} onRestart={handleRestart} onExit={() => { resetAll(); navigate({ to: "/home" }); }} />;
 
   return (
     <div className="relative h-[100dvh] w-screen overflow-hidden bg-abyss flex items-center justify-center">
       <CanvasBackground />
+      <AnimatePresence>
+        {isShowingAd && <AdBreakOverlay />}
+      </AnimatePresence>
       
       <MobileFrame className="w-full max-w-md h-full px-4 pb-6 pt-3 shadow-none ring-0 bg-transparent flex flex-col relative z-10">
         {/* Header */}
@@ -234,6 +246,28 @@ function Preloader() {
         <p className="text-[10px] uppercase tracking-[0.5em] text-gold/40 animate-pulse">Sincronizzazione Frammenti...</p>
       </motion.div>
     </div>
+  );
+}
+
+function AdBreakOverlay() {
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-abyss/90 backdrop-blur-md"
+    >
+      <div className="text-center p-8 rounded-3xl bg-card/20 ring-1 ring-gold/20">
+        <PlayCircle className="h-12 w-12 text-gold mx-auto mb-4 animate-pulse" />
+        <h2 className="font-display text-xl gold-text mb-2 tracking-widest uppercase">Breve Pausa</h2>
+        <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-6">Il sogno riprenderà tra un istante</p>
+        <div className="w-48 h-1 bg-card rounded-full overflow-hidden">
+           <motion.div 
+             className="h-full bg-gold" 
+             initial={{ width: 0 }} animate={{ width: "100%" }} 
+             transition={{ duration: 1.5, ease: "linear" }} 
+           />
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
