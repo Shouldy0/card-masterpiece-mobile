@@ -38,11 +38,6 @@ function ComboGame() {
   const catMeta = useMemo(() => getCatMeta(activeVariant), [activeVariant]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsPreloading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
     if (phase === "drawing") {
       setShowShuffle(true);
       sounds.play("shuffle");
@@ -83,7 +78,7 @@ function ComboGame() {
     });
   };
 
-  if (isPreloading) return <Preloader />;
+  if (isPreloading) return <Preloader onComplete={() => setIsPreloading(false)} />;
   if (phase === "result") return <ResultScreen result={store.lastResult} highScore={highScore} onRestart={handleRestart} onExit={handleExit} />;
 
   return (
@@ -327,16 +322,264 @@ function ResultScreen({ result, highScore, onRestart, onExit }: { result: GameRe
   );
 }
 
-function Preloader() {
+function Preloader({ onComplete }: { onComplete: () => void }) {
+  const [progress, setProgress] = useState(0);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [messageIndex, setMessageIndex] = useState(0);
+  const [ripples, setRipples] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [isExiting, setIsExiting] = useState(false);
+
+  const handleInteraction = (e: React.MouseEvent | React.TouchEvent) => {
+    const x = "clientX" in e ? e.clientX : e.touches[0].clientX;
+    const y = "clientY" in e ? e.clientY : e.touches[0].clientY;
+    
+    const id = Date.now();
+    setRipples((prev) => [...prev, { id, x, y }]);
+    setTimeout(() => {
+      setRipples((prev) => prev.filter((r) => r.id !== id));
+    }, 1500);
+
+    if (!hasInteracted) {
+      setHasInteracted(true);
+      sounds.startAmbient();
+    } else {
+      sounds.play("ripple");
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          handlePreloadComplete();
+          return 100;
+        }
+        const next = prev + Math.floor(Math.random() * 8) + 2;
+        if (next > prev && next < 100) sounds.play("whoosh");
+        return Math.min(100, next);
+      });
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handlePreloadComplete = () => {
+    sounds.play("chime");
+    setTimeout(() => {
+      setIsExiting(true);
+      sounds.play("dream_enter");
+      setTimeout(onComplete, 1500);
+    }, 500);
+  };
+
+  const messages = [
+    "Sincronizzazione dei ricordi...",
+    "Allineamento frammenti...",
+    "Accesso a Reverie...",
+    "Ogni carta custodisce un ricordo...",
+    "Nessuna combinazione è casuale...",
+    "Alcune storie scelgono te...",
+    "Sintonizzazione coscienza..."
+  ];
+
+  useEffect(() => {
+    const msgInterval = setInterval(() => {
+      setMessageIndex((prev) => (prev + 1) % messages.length);
+    }, 2000);
+    return () => clearInterval(msgInterval);
+  }, []);
+
+  // Ambient pulse effect
+  useEffect(() => {
+    if (!hasInteracted) return;
+    const pulseInterval = setInterval(() => sounds.play("pulse"), 2000);
+    return () => clearInterval(pulseInterval);
+  }, [hasInteracted]);
+
+  const handleStartAudio = () => {
+    setHasInteracted(true);
+    sounds.startAmbient();
+  };
+
+  useEffect(() => {
+    return () => sounds.stopAmbient();
+  }, []);
+
   return (
-    <div className="h-[100dvh] w-screen bg-abyss flex flex-col items-center justify-center">
+    <motion.div 
+      animate={isExiting ? { scale: 1.1, opacity: 0 } : { scale: 1, opacity: 1 }}
+      transition={{ duration: 1.5, ease: "easeInOut" }}
+      className="absolute inset-0 z-[100] bg-abyss flex flex-col items-center justify-center p-8 text-center cursor-pointer select-none overflow-hidden"
+      onMouseDown={handleInteraction}
+      onTouchStart={handleInteraction}
+    >
+      {/* Visual Ripples */}
+      <AnimatePresence>
+        {ripples.map((r) => (
+          <motion.div
+            key={r.id}
+            initial={{ opacity: 0.5, scale: 0, x: r.x, y: r.y }}
+            animate={{ opacity: 0, scale: 4 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="fixed pointer-events-none size-20 -ml-10 -mt-10 rounded-full border border-gold/30"
+            style={{ left: 0, top: 0 }}
+          />
+        ))}
+      </AnimatePresence>
+      {/* Background Color Shift */}
+      <motion.div 
+        animate={{ 
+          background: [
+            "radial-gradient(circle at center, oklch(0.2 0.05 280), oklch(0.1 0.03 280))",
+            "radial-gradient(circle at center, oklch(0.15 0.04 250), oklch(0.08 0.02 250))",
+            "radial-gradient(circle at center, oklch(0.2 0.05 280), oklch(0.1 0.03 280))"
+          ] 
+        }}
+        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+        className="absolute inset-0 -z-20"
+      />
+
       <CanvasBackground />
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="z-10 text-center">
-        <h1 className={UI_THEME.text_h1}>REVERIE</h1>
-        <div className="w-48 h-1 bg-card/40 rounded-full mt-6 overflow-hidden relative">
-          <motion.div className="absolute inset-0 bg-gold" initial={{ x: "-100%" }} animate={{ x: "0%" }} transition={{ duration: 2 }} />
-        </div>
+      <LoadingParticles />
+
+      {/* Vignette Overlay */}
+      <div className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
+
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={isExiting ? { scale: 15, opacity: 0, filter: "blur(20px)" } : { opacity: 1, scale: 1, filter: "blur(0px)" }}
+        transition={{ duration: 1.5, ease: "easeIn" }}
+        className="relative mb-12 z-20"
+      >
+        <div className="absolute inset-0 bg-gold/20 blur-3xl rounded-full" />
+        <motion.div 
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className="relative size-32 ring-2 ring-gold/30 rounded-full flex items-center justify-center"
+        >
+          <Eye className="size-12 text-gold" />
+          
+          {/* Rotating Rings */}
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-[-4px] border border-gold/10 rounded-full"
+          />
+          <motion.div 
+            animate={{ rotate: -360 }}
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-[-12px] border border-gold/5 rounded-full"
+          />
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-[-24px] border-t border-gold/5 rounded-full"
+          />
+        </motion.div>
       </motion.div>
+
+      <div className="z-20">
+        <h1 className="font-display text-4xl tracking-[0.5em] gold-text mb-2 drop-shadow-[0_0_15px_rgba(255,215,0,0.4)]">
+          REVERIE
+        </h1>
+        
+        <div className="h-6 mb-8 flex items-center justify-center">
+          <AnimatePresence mode="wait">
+            <motion.p 
+              key={messageIndex}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              className="text-[9px] uppercase tracking-[0.3em] text-gold/80 font-medium"
+            >
+              {messages[messageIndex]}
+            </motion.p>
+          </AnimatePresence>
+        </div>
+      </div>
+      
+      <div className="w-full max-w-[200px] space-y-3 z-20">
+        <div className="relative h-1.5 w-full bg-card/20 rounded-full overflow-hidden ring-1 ring-gold/10">
+          {/* Progress Fill */}
+          <motion.div 
+            className="h-full bg-gradient-to-r from-mystic via-gold to-mystic relative"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
+            {/* Glow Head */}
+            <motion.div 
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1, repeat: Infinity }}
+              className="absolute right-0 top-0 h-full w-4 bg-white blur-md"
+            />
+          </motion.div>
+
+          {/* Scanning Glow */}
+          <motion.div 
+            animate={{ left: ["-100%", "200%"] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+            className="absolute top-0 h-full w-20 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+          />
+        </div>
+
+        <div className="flex justify-between items-center px-1">
+          <div className="flex gap-1">
+             {Array.from({ length: 3 }).map((_, i) => (
+               <motion.div 
+                key={i}
+                animate={{ opacity: [0.2, 0.6, 0.2] }}
+                transition={{ duration: 1, delay: i * 0.2, repeat: Infinity }}
+                className="size-1 rounded-full bg-gold/40"
+               />
+             ))}
+          </div>
+          <p className="text-[10px] font-display text-gold/60 tabular-nums">
+            {Math.round(progress)}%
+          </p>
+        </div>
+      </div>
+
+      {!hasInteracted && (
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="absolute bottom-12 text-[8px] uppercase tracking-[0.4em] text-gold/40 animate-bounce"
+        >
+          Tocca per sintonizzare l'audio
+        </motion.p>
+      )}
+    </div>
+  );
+}
+
+function LoadingParticles() {
+  return (
+    <div className="absolute inset-0 -z-10 pointer-events-none">
+      {Array.from({ length: 15 }).map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ 
+            opacity: 0,
+            x: `${Math.random() * 100}%`,
+            y: `${Math.random() * 100}%`,
+            scale: Math.random() * 0.5 + 0.5
+          }}
+          animate={{ 
+            opacity: [0, 0.4, 0],
+            y: [`${Math.random() * 100}%`, `${Math.random() * 100}%`],
+            x: [`${Math.random() * 100}%`, `${Math.random() * 100}%`]
+          }}
+          transition={{ 
+            duration: 10 + Math.random() * 10,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="absolute size-1 bg-gold/40 rounded-full blur-[1px]"
+        />
+      ))}
     </div>
   );
 }
