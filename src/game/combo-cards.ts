@@ -169,7 +169,7 @@ export function scoreCombo(character: ComboCard, setting: ComboCard, action: Com
     stars: entry.stars,
     title: entry.title,
     feedback: entry.feedback,
-    narration: generateStory(c, s, a),
+    narration: generateStory(character, setting, action),
     bonuses,
   };
 }
@@ -229,4 +229,12 @@ export function getPotentialText(scored: ScoredCombo): string {
   if (stars === 4) return "Grande Potenziale";
   if (stars === 3) return "Buona Sinergia";
   return "Potenziale Basso";
+}
+
+export function getRank(score: number): { rank: string; color: string } {
+  if (score >= 250) return { rank: "S", color: "text-gold glow-gold" };
+  if (score >= 180) return { rank: "A", color: "text-mystic-glow shadow-mystic" };
+  if (score >= 120) return { rank: "B", color: "text-azure" };
+  if (score >= 70) return { rank: "C", color: "text-amber-eclipse" };
+  return { rank: "D", color: "text-muted-foreground" };
 }

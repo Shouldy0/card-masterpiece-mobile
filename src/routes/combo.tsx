@@ -1,6 +1,6 @@
+import React, { useEffect, useMemo, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
 import { useComboGame, GameResult, getXpToNextLevel, getDailyLeaderboard } from "@/game/combo-store";
 import { ComboCard, ComboCategory, RARITY_POINTS, getRank, calculateRisk, getPotentialText } from "@/game/combo-cards";
 import { MobileFrame } from "@/components/Common";
@@ -9,7 +9,6 @@ import { sounds } from "@/utils/audio";
 import { ads } from "@/utils/ads";
 import { Eye, Sparkles, Zap, ArrowLeft, Star, Trophy, RotateCcw, Play, CheckCircle2, RefreshCw, Calendar, Users, Ghost, Loader2, PlayCircle } from "lucide-react";
 
-export const Route = createFileRoute("/combo")({ component: ComboGame });
 
 const catMeta: Record<ComboCategory, { label: string; color: string; gradient: string; bgGlow: string }> = {
   character: { label: "PERSONAGGIO", color: "text-mystic-glow", gradient: "from-[oklch(0.35_0.18_295)] to-[oklch(0.15_0.08_280)]", bgGlow: "oklch(0.55 0.22 295 / 40%)" },
@@ -434,3 +433,5 @@ function ParticleLayer({ color }: { color: string }) {
     </div>
   );
 }
+
+export const Route = createFileRoute("/combo")({ component: ComboGame });
