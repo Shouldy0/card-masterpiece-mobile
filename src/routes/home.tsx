@@ -4,6 +4,7 @@ import { MobileFrame } from "@/components/Common";
 import { BottomNav } from "@/components/BottomNav";
 import { useGame } from "@/game/store";
 import { Coins, Diamond, Plus, Library, BookOpen, ShoppingBag, Sparkles, Crown, Eye, Zap, Trophy } from "lucide-react";
+import { useSound } from "@/hooks/useSound";
 
 export const Route = createFileRoute("/home")({ component: Home });
 
@@ -11,8 +12,9 @@ function Home() {
   const player = useGame((s) => s.player);
   const startMatch = useGame((s) => s.startMatch);
   const navigate = useNavigate();
+  const { play } = useSound();
 
-  const play = () => { startMatch(); navigate({ to: "/vs" }); };
+  const play_btn = () => { play("whoosh"); startMatch(); navigate({ to: "/vs" }); };
 
   return (
     <MobileFrame>
