@@ -190,25 +190,3 @@ function TypeToggle({ active, onClick, icon, color }: { active: boolean; onClick
 }
 
 export const Route = createFileRoute("/collection")({ component: Collection });
-
-function TypeToggle({ active, onClick, icon, color }: { active: boolean; onClick: () => void; icon: React.ReactNode; color: string }) {
-  const colors: Record<string, string> = {
-    gold: "text-gold ring-gold/40 bg-gold/10",
-    azure: "text-azure ring-azure/40 bg-azure/10",
-    mystic: "text-mystic-glow ring-mystic-glow/40 bg-mystic-glow/10",
-    emerald: "text-emerald ring-emerald/40 bg-emerald/10"
-  };
-
-  return (
-    <button 
-      onClick={onClick}
-      className={`size-7 rounded-full flex items-center justify-center ring-1 transition-all ${
-        active ? colors[color] : "text-white/20 ring-white/10 hover:ring-white/20"
-      }`}
-    >
-      {icon}
-    </button>
-  );
-}
-
-export const Route = createFileRoute("/collection")({ component: Collection });
