@@ -11,6 +11,8 @@ import { GameCard } from "@/components/GameCard";
 import { TERRITORIES, CardDef } from "@/game/cards";
 import { X, Info, Layers, Sword, Heart } from "lucide-react";
 
+import { BottomNav } from "@/components/BottomNav";
+
 type CollectionTab = "CARTE" | "BOARD" | "EFFETTI";
 
 function Collection() {
@@ -35,10 +37,10 @@ function Collection() {
       <div className="absolute top-[-10%] left-[-10%] size-64 bg-mystic/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] size-64 bg-gold/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <MobileFrame className="w-full max-w-md h-full px-4 pb-4 pt-6 flex flex-col relative z-10 overflow-hidden bg-transparent">
+      <MobileFrame className="w-full max-w-md h-full flex flex-col relative z-10 overflow-hidden bg-transparent pt-[env(safe-area-inset-top,24px)]">
         
         {/* Header Title */}
-        <header className="flex items-center justify-between mb-8">
+        <header className="flex items-center justify-between mb-6 px-4">
           <div className="flex flex-col">
             <span className="font-display text-[8px] text-gold/40 tracking-[0.5em] uppercase font-black">Archivio Onirico</span>
             <h1 className="font-display text-xl text-gold tracking-widest uppercase mt-1">Collezione</h1>
@@ -54,26 +56,28 @@ function Collection() {
         </header>
 
         {/* Tabs */}
-        <div className="flex p-1.5 bg-black/40 backdrop-blur-md rounded-2xl ring-1 ring-gold/20 mb-8 shadow-2xl">
-          {(["CARTE", "BOARD", "EFFETTI"] as CollectionTab[]).map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2.5 rounded-xl text-[9px] font-black tracking-[0.3em] uppercase transition-all duration-300 ${
-                activeTab === tab 
-                  ? "bg-gold/20 text-gold ring-1 ring-gold/40 shadow-[0_0_20px_rgba(255,215,0,0.2)]" 
-                  : "text-white/20 hover:text-white/50"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
+        <div className="px-4 mb-6">
+          <div className="flex p-1.5 bg-black/40 backdrop-blur-md rounded-2xl ring-1 ring-gold/20 shadow-2xl">
+            {(["CARTE", "BOARD", "EFFETTI"] as CollectionTab[]).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`flex-1 py-2.5 rounded-xl text-[9px] font-black tracking-[0.3em] uppercase transition-all duration-300 ${
+                  activeTab === tab 
+                    ? "bg-gold/20 text-gold ring-1 ring-gold/40 shadow-[0_0_20px_rgba(255,215,0,0.2)]" 
+                    : "text-white/20 hover:text-white/50"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
         </div>
 
         {activeTab === "CARTE" && (
           <>
             {/* Stats & Search */}
-            <div className="flex items-center justify-between gap-4 mb-6">
+            <div className="flex items-center justify-between gap-4 mb-6 px-4">
               <div className="flex flex-col px-1">
                 <span className="text-[7px] uppercase tracking-[0.3em] text-gold/40 font-black">Sincronia</span>
                 <span className="font-display text-base text-white">{player.collection.length}<span className="text-gold/40 text-[10px] ml-1">/ {CARDS.length}</span></span>
@@ -99,7 +103,7 @@ function Collection() {
             </div>
 
             {/* Card Grid */}
-            <main className="flex-1 overflow-y-auto pr-1 custom-scrollbar pb-28">
+            <main className="flex-1 overflow-y-auto pr-1 custom-scrollbar pb-40 px-4">
               <div className="grid grid-cols-3 gap-y-8 gap-x-4">
                 <AnimatePresence mode="popLayout">
                   {filteredCards.map((card, i) => {
@@ -133,7 +137,7 @@ function Collection() {
             </main>
 
             {/* Bottom Filter Bar */}
-            <div className="absolute bottom-6 left-4 right-4 z-20">
+            <div className="absolute bottom-[100px] left-4 right-4 z-20 pb-[env(safe-area-inset-bottom,0px)]">
               <div className="bg-black/60 backdrop-blur-2xl ring-1 ring-gold/30 rounded-2xl p-2.5 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-t border-white/5">
                 <button className="flex items-center gap-3 px-4 py-2 rounded-xl bg-gold/10 ring-1 ring-gold/20 group">
                   <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gold/80">Filtri Avanzati</span>
@@ -152,7 +156,7 @@ function Collection() {
         )}
 
         {activeTab === "BOARD" && (
-          <main className="flex-1 overflow-y-auto space-y-4 pb-20 custom-scrollbar">
+          <main className="flex-1 overflow-y-auto space-y-4 pb-40 px-4 custom-scrollbar">
             {TERRITORIES.map((t, i) => (
               <motion.div 
                 key={t.id}
@@ -174,7 +178,7 @@ function Collection() {
         )}
 
         {activeTab === "EFFETTI" && (
-          <main className="flex-1 overflow-y-auto space-y-4 pb-20 custom-scrollbar">
+          <main className="flex-1 overflow-y-auto space-y-4 pb-40 px-4 custom-scrollbar">
             <EffectItem 
               icon={<Sword className="size-5 text-gold" />} 
               label="POTERE" 
@@ -202,6 +206,11 @@ function Collection() {
             />
           </main>
         )}
+
+        {/* Persistent Bottom Nav */}
+        <div className="mt-auto pb-[env(safe-area-inset-bottom,0px)]">
+          <BottomNav />
+        </div>
 
         {/* Card Detail Modal (Discovery Mode) */}
         <AnimatePresence>
