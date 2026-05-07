@@ -97,7 +97,7 @@ function Home() {
           <motion.button 
             whileHover={{ scale: 1.02 }} 
             whileTap={{ scale: 0.98 }} 
-            onClick={play} 
+            onClick={play_btn} 
             className="w-full py-6 rounded-[2.5rem] bg-gradient-to-br from-mystic via-mystic-glow to-mystic text-foreground font-display text-xl font-bold uppercase tracking-[0.3em] shadow-[0_10px_40px_rgba(150,100,255,0.3)] border border-gold/20"
           >
             GIOCA BATTAGLIA
