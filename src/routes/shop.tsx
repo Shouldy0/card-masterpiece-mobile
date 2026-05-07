@@ -5,6 +5,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { useGame } from "@/game/store";
 import { ArrowLeft, Coins, Diamond, Sparkles, Package, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import { useSound } from "@/hooks/useSound";
 
 export const Route = createFileRoute("/shop")({ component: Shop });
 
