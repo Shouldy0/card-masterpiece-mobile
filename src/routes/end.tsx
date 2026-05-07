@@ -14,20 +14,15 @@ function End() {
   const exit = useGame((s) => s.exitMatch);
   const startMatch = useGame((s) => s.startMatch);
   const navigate = useNavigate();
-<<<<<<< HEAD
+  const { play } = useSound();
 
   useEffect(() => {
     sounds.startSceneMusic("end");
-  }, []);
-
-=======
-  const { play } = useSound();
-  useEffect(() => {
     if (match?.result === "win") play("victory");
     else if (match?.result === "lose") play("fail");
     else if (match?.result === "draw") play("chime");
   }, [match?.result, play]);
->>>>>>> 55b4bc3f7662235b8d9d4fa235d1ce134458d389
+
   if (!match || !match.territoryResults) {
     navigate({ to: "/home" });
     return null;

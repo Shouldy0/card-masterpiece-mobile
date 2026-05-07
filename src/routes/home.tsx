@@ -16,16 +16,12 @@ function Home() {
   const navigate = useNavigate();
   const { play } = useSound();
 
-<<<<<<< HEAD
   useEffect(() => {
     sounds.startSceneMusic("home");
     return () => {};
   }, []);
 
-  const play = () => { startMatch(); navigate({ to: "/vs" }); };
-=======
   const play_btn = () => { play("whoosh"); startMatch(); navigate({ to: "/vs" }); };
->>>>>>> 55b4bc3f7662235b8d9d4fa235d1ce134458d389
 
   return (
     <MobileFrame>
@@ -82,7 +78,7 @@ function Home() {
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             className="absolute left-1/2 top-1/2 -z-10 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-mystic-glow/30 via-gold/10 to-transparent blur-2xl" 
           />
-          
+           
           <div className="relative flex flex-col items-center">
             <motion.h1
               initial={{ opacity: 0, letterSpacing: "0.5em" }}
@@ -128,7 +124,6 @@ function Home() {
           </div>
         </div>
       </div>
-
 
       <BottomNav />
     </MobileFrame>

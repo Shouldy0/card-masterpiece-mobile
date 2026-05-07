@@ -12,8 +12,6 @@ const tabs = ["Gioco", "Audio", "Grafica", "Account"] as const;
 function Settings() {
   const { settings, toggleSetting } = useGame();
   const [tab, setTab] = useState<typeof tabs[number]>("Gioco");
-  const [musicVol, setMusicVol] = useState(0.7);
-  const [sfxVol, setSfxVol] = useState(0.9);
 
   const handleSoundToggle = (v: boolean) => {
     toggleSetting("soundOn", v);
@@ -21,8 +19,12 @@ function Settings() {
   };
 
   const handleMusicVol = (v: number) => {
-    setMusicVol(v);
+    toggleSetting("musicVolume", v);
     sounds.setMusicVolume(v);
+  };
+
+  const handleSfxVol = (v: number) => {
+    toggleSetting("sfxVolume", v);
   };
 
   return (
@@ -52,15 +54,9 @@ function Settings() {
         )}
         {tab === "Audio" && (
           <>
-<<<<<<< HEAD
             <Toggle label="Audio" value={settings.soundOn} onChange={handleSoundToggle} />
-            <Slider label="Musica" value={musicVol} onChange={handleMusicVol} />
-            <Slider label="Effetti Sonori" value={sfxVol} onChange={setSfxVol} />
-=======
-            <Toggle label="Audio" value={settings.soundOn} onChange={(v: boolean) => toggleSetting("soundOn", v)} />
-            <Slider label="Musica" value={settings.musicVolume} onChange={(v: number) => toggleSetting("musicVolume", v)} />
-            <Slider label="Effetti Sonori" value={settings.sfxVolume} onChange={(v: number) => toggleSetting("sfxVolume", v)} />
->>>>>>> 55b4bc3f7662235b8d9d4fa235d1ce134458d389
+            <Slider label="Musica" value={settings.musicVolume || 0.5} onChange={handleMusicVol} />
+            <Slider label="Effetti Sonori" value={settings.sfxVolume || 0.8} onChange={handleSfxVol} />
           </>
         )}
         {tab === "Grafica" && (
