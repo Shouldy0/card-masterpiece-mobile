@@ -5,6 +5,7 @@ import { MobileFrame } from "@/components/Common";
 import { useGame } from "@/game/store";
 import { CardBack } from "@/components/GameCard";
 import { Sparkles, Hand, Crown } from "lucide-react";
+import { useSound } from "@/hooks/useSound";
 
 export const Route = createFileRoute("/onboarding")({ component: Onboarding });
 
