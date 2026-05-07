@@ -101,7 +101,7 @@ function Collection() {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
                         transition={{ delay: i * 0.03 }}
-                        className="flex flex-col items-center gap-2"
+                        className="flex flex-col items-center"
                       >
                         <GameCard 
                           card={card} 
@@ -110,7 +110,6 @@ function Collection() {
                           glow={isOwned && card.rarity === 'leggendaria'}
                           onClick={() => isOwned && setSelectedCard(card)}
                         />
-                        <p className="text-[7px] font-medium text-gold/60 uppercase tracking-widest truncate w-full text-center">{card.name}</p>
                       </motion.div>
                     );
                   })}
