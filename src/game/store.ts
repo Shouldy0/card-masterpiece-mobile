@@ -107,19 +107,36 @@ interface AppStore {
   addGold: (n: number) => void;
 }
 
-function powerWithRules(card: CardDef, side: Side, territory: TerritoryId, buffs: number, weakensAgainst: number): number {
+function powerWithRules(state: MatchState, card: CardDef, side: Side, territory: TerritoryId): number {
   let p = card.power;
-  if (side === "player") p += buffs;
-  if (side === "ai") p += buffs;
-  // territory rules
+  const enemySide: Side = side === "player" ? "ai" : "player";
+  
+  // 1. BASE BUFFS / WEAKENS
+  p += state.buffs[side];
+  p -= state.weakens[enemySide];
+
+  // 2. FACTION PASSIVES (Master Synergy)
+  // Archetipo: +1 power for each other Archetipo card already in this territory
+  if (card.type === "archetipo") {
+    const others = state.board[territory].filter(o => o.side === side && cardsById[o.cardId]?.type === "archetipo").length;
+    p += others;
+  }
+
+  // Ricordo: +2 power if played in "memoria" territory
+  if (card.type === "ricordo" && territory === "memoria") {
+    p += 2;
+  }
+
+  // 3. TERRITORY GLOBAL RULES
   if (territory === "trauma") p -= 1;
   if (territory === "sogno" && side === "player") p += 1;
-  // weakens applied by enemy
-  p -= weakensAgainst;
+
   return Math.max(0, p);
 }
 
-function applyEffect(state: MatchState, card: CardDef, side: Side) {
+function applyEffect(state: MatchState, card: CardDef, side: Side, territory: TerritoryId) {
+  const enemySide: Side = side === "player" ? "ai" : "player";
+
   switch (card.effect.kind) {
     case "draw": {
       for (let i = 0; i < card.effect.amount; i++) {
@@ -137,6 +154,19 @@ function applyEffect(state: MatchState, card: CardDef, side: Side) {
     case "heal":
       state.hp[side] = Math.min(20, state.hp[side] + card.effect.amount);
       break;
+  }
+
+  // FACTION-SPECIFIC ON-PLAY TRIGGERS
+  // Maschera: Drains 1 Focus from the opponent
+  if (card.type === "maschera") {
+    state.focus[enemySide] = Math.max(0, state.focus[enemySide] - 1);
+    state.log.push(`${side === "player" ? "Hai" : "L'avversario ha"} drenato 1 Focus!`);
+  }
+
+  // Oblio: Next enemy card in this territory will have -2 Power
+  if (card.type === "oblio") {
+    state.log.push(`L'Oblio avvolge ${territory}.`);
+    // (Logic for this could be added to state if needed, keeping it simple for now)
   }
 }
 
@@ -161,8 +191,8 @@ function aiTurn(state: MatchState) {
     state.focus.ai -= card.cost;
     const idx = state.hand.ai.indexOf(card.id);
     if (idx >= 0) state.hand.ai.splice(idx, 1);
-    applyEffect(state, card, "ai");
-    const power = powerWithRules(card, "ai", territory, state.buffs.ai, state.weakens.player);
+    applyEffect(state, card, "ai", territory);
+    const power = powerWithRules(state, card, "ai", territory);
     state.board[territory].push({ uid: `ai-${state.turn}-${Math.random()}`, cardId: card.id, side: "ai", power });
     state.log.push(`Avversario gioca ${card.name} su ${territory}.`);
   }
@@ -254,8 +284,8 @@ export const useGame = create<AppStore>()(
         if (idx === -1) return s;
         m.hand.player.splice(idx, 1);
         m.focus.player -= card.cost;
-        applyEffect(m, card, "player");
-        const power = powerWithRules(card, "player", territory, m.buffs.player, m.weakens.ai);
+        applyEffect(m, card, "player", territory);
+        const power = powerWithRules(m, card, "player", territory);
         m.board[territory].push({ uid: `p-${m.turn}-${Math.random()}`, cardId, side: "player", power });
         m.log.push(`Giochi ${card.name} su ${territory}.`);
         return { match: m };

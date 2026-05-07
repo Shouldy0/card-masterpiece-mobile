@@ -1,6 +1,7 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
 import { MusicProvider } from "@/components/MusicProvider";
+import { motion, AnimatePresence } from "framer-motion";
 
 import appCss from "../styles.css?url";
 
@@ -72,6 +73,23 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return (<><Outlet /><Toaster /><MusicProvider /></>);
+  return (
+    <>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={window.location.pathname}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="h-full w-full overflow-hidden"
+        >
+          <Outlet />
+        </motion.div>
+      </AnimatePresence>
+      <Toaster />
+      <MusicProvider />
+    </>
+  );
 }
 

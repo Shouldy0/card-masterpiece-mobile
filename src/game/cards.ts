@@ -37,8 +37,8 @@ export const CARDS: CardDef[] = [
 
   // --- FAZIONE: RICORDO (ORO - FRAMMENTI SACRI) ---
   { id: "o1_chiave_antica", name: "Chiave Antica", type: "ricordo", cost: 1, power: 1, rarity: "comune", text: "Pesca 1 carta.", flavor: "Apre porte che avrei dovuto lasciare chiuse.", effect: { kind: "draw", amount: 1 }, art: "/eco_dimenticato_art_naked_1778156187502.png" },
-  { id: "o2_bosco_sacro", name: "Bosco Sacro", type: "ricordo", cost: 4, power: 6, rarity: "epica", text: "+1 Potere globale.", flavor: "Tutto era magico, finché non abbiamo iniziato a capire.", effect: { kind: "buff_self", amount: 1 }, art: "/cards/ricordo_02.png" },
-  { id: "o3_giocattolo", name: "Giocattolo Rotto", type: "ricordo", cost: 2, power: 3, rarity: "comune", text: "Innocenza perduta.", flavor: "Le promesse infrante non si possono riparare.", effect: { kind: "none" }, art: "/cards/ricordo_03.png" },
+  { id: "o2_bosco_sacro", name: "Bosco Sacro", type: "ricordo", cost: 4, power: 6, rarity: "epica", text: "+1 Potere globale.", flavor: "Tutto era magico, finché non abbiamo iniziato a capire.", effect: { kind: "buff_self", amount: 1 }, art: "/veglia_eterna_premium_art_1778155282876.png" },
+  { id: "o3_giocattolo", name: "Giocattolo Rotto", type: "ricordo", cost: 2, power: 3, rarity: "comune", text: "Innocenza perduta.", flavor: "Le promesse infrante non si possono riparare.", effect: { kind: "none" }, art: "/infanzia_perduta_premium_art_1778155220910.png" },
   { id: "o4_lettera", name: "Lettera Sigillata", type: "ricordo", cost: 2, power: 2, rarity: "rara", text: "Pesca 2 carte.", flavor: "Certe verità dovrebbero restare nel buio.", effect: { kind: "draw", amount: 2 }, art: "/frammento_verita_art_naked_1778156256968.png" },
   { id: "o5_cenere", name: "Cenere e Stelle", type: "ricordo", cost: 6, power: 9, rarity: "leggendaria", text: "+2 Potere globale.", flavor: "Siamo polvere di stelle destinata a tornare cenere.", effect: { kind: "buff_self", amount: 2 }, art: "/cards/ricordo_05.png" },
   { id: "o6_giardino", name: "Giardino Segreto", type: "ricordo", cost: 3, power: 4, rarity: "rara", text: "Cura 2 HP.", flavor: "Un luogo dove il tempo non osa entrare.", effect: { kind: "heal", amount: 2 }, art: "/catarsi_art_naked_1778156397123.png" },
@@ -65,7 +65,7 @@ export const CARDS: CardDef[] = [
   { id: "b3_oblio", name: "Oblio", type: "oblio", cost: 6, power: 8, rarity: "leggendaria", text: "Rimuovi 1 carta.", flavor: "Chi eri prima che il tempo ti mangiasse?", effect: { kind: "none" }, art: "/abisso_interiore_art_naked_1778156612010.png" },
   { id: "b4_neve", name: "Neve Eterna", type: "oblio", cost: 3, power: 4, rarity: "comune", text: "Freddo intenso.", flavor: "Ogni fiocco è un ricordo che si gela.", effect: { kind: "none" }, art: "/cards/oblio_04.png" },
   { id: "b5_cenere_blu", name: "Cenere Blu", type: "oblio", cost: 5, power: 7, rarity: "epica", text: "Debuff -2.", flavor: "Ciò che resta dopo che la speranza si è spenta.", effect: { kind: "weaken_enemy", amount: 2 }, art: "/cards/oblio_05.png" },
-  { id: "b6_abisso", name: "L'Abisso", type: "oblio", cost: 7, power: 11, rarity: "leggendaria", text: "Potere puro.", flavor: "L'oscurità è l'unica casa che ci accetta sempre.", effect: { kind: "none" }, art: "/abisso_interiore_art_naked_1778156612010.png" },
+  { id: "b6_abisso", name: "L'Abisso", type: "oblio", cost: 7, power: 11, rarity: "leggendaria", text: "Potere puro.", flavor: "L'oscurità è l'unica casa che ci accetta sempre.", effect: { kind: "none" }, art: "/abisso_interiore_premium_art_1778155344887.png" },
   { id: "b7_pioggia", name: "Pioggia Fredda", type: "oblio", cost: 2, power: 2, rarity: "comune", text: "Pesca 1 carta.", flavor: "Lacrime dal cielo di un mondo dimenticato.", effect: { kind: "draw", amount: 1 }, art: "/cards/oblio_07.png" },
   { id: "b8_fantasma", name: "Il Fantasma", type: "oblio", cost: 3, power: 4, rarity: "rara", text: "Invisibile.", flavor: "Un'eco che ha smesso di cercare una voce.", effect: { kind: "none" }, art: "/io_falso_art_naked_1778156881158.png" },
   { id: "b9_rovine", name: "Rovine", type: "oblio", cost: 4, power: 6, rarity: "rara", text: "Struttura fragile.", flavor: "Le fondamenta della mente stanno crollando.", effect: { kind: "none" }, art: "/cards/oblio_09.png" },
@@ -81,7 +81,7 @@ export const CARDS: CardDef[] = [
   { id: "s7_farfalla", name: "Farfalla Psichica", type: "sogno", cost: 3, power: 3, rarity: "rara", text: "Trasformazione.", flavor: "Il battito d'ali che scatena una tempesta mentale.", effect: { kind: "none" }, art: "/catarsi_art_naked_1778156397123.png" },
   { id: "s8_castello", name: "Castello d'Aria", type: "sogno", cost: 6, power: 9, rarity: "leggendaria", text: "+2 Potere.", flavor: "Un regno costruito su fondamenta di speranza pura.", effect: { kind: "buff_self", amount: 2 }, art: "/sogno_lucido_art_naked_1778156537397.png" },
   { id: "s9_rugiada", name: "Rugiada", type: "sogno", cost: 2, power: 2, rarity: "comune", text: "Cura 1 HP.", flavor: "La purezza di un attimo prima del mattino.", effect: { kind: "heal", amount: 1 }, art: "/catarsi_art_naked_1778156397123.png" },
-  { id: "s10_infinito", name: "L'Infinito", type: "sogno", cost: 8, power: 15, rarity: "leggendaria", text: "Trascendenza.", flavor: "Oltre il tempo, oltre il sogno, oltre te.", effect: { kind: "none" }, art: "/sogno_lucido_art_naked_1778156537397.png" },
+  { id: "s10_infinito", name: "L'Infinito", type: "sogno", cost: 8, power: 15, rarity: "leggendaria", text: "Trascendenza.", flavor: "Oltre il tempo, oltre il sogno, oltre te.", effect: { kind: "none" }, art: "/sogno_lucido_premium_art_1778155405841.png" },
 ];
 
 export const cardsById = Object.fromEntries(CARDS.map((c) => [c.id, c]));
