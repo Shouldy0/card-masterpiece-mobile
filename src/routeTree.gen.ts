@@ -29,6 +29,7 @@ import { Route as DeckRouteImport } from './routes/deck'
 import { Route as ConnectionRouteImport } from './routes/connection'
 import { Route as ComboRouteImport } from './routes/combo'
 import { Route as CollectionRouteImport } from './routes/collection'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 
 const VsRoute = VsRouteImport.update({
@@ -131,6 +132,11 @@ const CollectionRoute = CollectionRouteImport.update({
   path: '/collection',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -139,6 +145,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/collection': typeof CollectionRoute
   '/combo': typeof ComboRoute
   '/connection': typeof ConnectionRoute
@@ -162,6 +169,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/collection': typeof CollectionRoute
   '/combo': typeof ComboRoute
   '/connection': typeof ConnectionRoute
@@ -186,6 +194,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/collection': typeof CollectionRoute
   '/combo': typeof ComboRoute
   '/connection': typeof ConnectionRoute
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/collection'
     | '/combo'
     | '/connection'
@@ -234,6 +244,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/collection'
     | '/combo'
     | '/connection'
@@ -257,6 +268,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/auth'
     | '/collection'
     | '/combo'
     | '/connection'
@@ -281,6 +293,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   CollectionRoute: typeof CollectionRoute
   ComboRoute: typeof ComboRoute
   ConnectionRoute: typeof ConnectionRoute
@@ -445,6 +458,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -457,6 +477,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   CollectionRoute: CollectionRoute,
   ComboRoute: ComboRoute,
   ConnectionRoute: ConnectionRoute,

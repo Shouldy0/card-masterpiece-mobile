@@ -72,7 +72,21 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useGame } from "@/game/store";
+import { useEffect } from "react";
+
 function RootComponent() {
+  const setUser = useGame((s) => s.setUser);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+    return () => unsub();
+  }, [setUser]);
+
   return (
     <>
       <AnimatePresence mode="wait">

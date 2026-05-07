@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useGame } from "@/game/store";
+import { auth } from "@/lib/firebase";
 import { MobileFrame } from "@/components/Common";
 import { useSound } from "@/hooks/useSound";
 import { Eye } from "lucide-react";
@@ -29,10 +30,11 @@ function Loading() {
 
   useEffect(() => {
     if (progress >= 100) {
-      const t = setTimeout(() => navigate({ to: onboardingDone ? "/home" : "/onboarding" }), 400);
+      const user = auth.currentUser;
+      const t = setTimeout(() => navigate({ to: user ? "/home" : "/auth" }), 400);
       return () => clearTimeout(t);
     }
-  }, [progress, navigate, onboardingDone]);
+  }, [progress, navigate]);
 
   return (
     <MobileFrame className="items-center justify-center px-8 text-center">

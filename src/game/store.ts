@@ -63,7 +63,7 @@ export function createInitialMatch(playerDeck: string[]): MatchState {
   };
 }
 
-interface PlayerProgress {
+export interface PlayerProgress {
   level: number;
   xp: number;
   xpToNext: number;
@@ -107,6 +107,8 @@ interface AppStore {
   buyPack: (cost: number, currency: "gold" | "gems") => string[] | null;
   addGold: (n: number) => void;
   syncWithCloud: (userId: string) => Promise<void>;
+  user: any | null;
+  setUser: (user: any | null) => void;
 }
 
 function powerWithRules(state: MatchState, card: CardDef, side: Side, territory: TerritoryId): number {
@@ -402,8 +404,17 @@ export const useGame = create<AppStore>()(
         const { player } = get();
         await savePlayerToCloud(userId, player);
       },
+
+      user: null,
+      setUser: (user) => set({ user }),
     }),
-    { name: "reverie-store-v1" }
+    { 
+      name: "reverie-store-v1",
+      partialize: (state) => {
+        const { user, ...rest } = state;
+        return rest;
+      }
+    }
   )
 );
 
