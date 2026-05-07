@@ -81,10 +81,10 @@ function Home() {
            
           <div className="relative flex flex-col items-center">
             <motion.h1
-              initial={{ opacity: 0, letterSpacing: "0.5em" }}
-              animate={{ opacity: 1, letterSpacing: "0.4em" }}
+              initial={{ opacity: 0, letterSpacing: "0.5em", paddingLeft: "0.5em" }}
+              animate={{ opacity: 1, letterSpacing: "0.4em", paddingLeft: "0.4em" }}
               transition={{ duration: 1.2 }}
-              className="font-display text-6xl gold-text"
+              className="font-display text-6xl gold-text text-center"
             >
               REVERIE
             </motion.h1>
@@ -92,7 +92,7 @@ function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="mt-2 text-[10px] uppercase tracking-[0.4em] text-gold/40"
+              className="mt-2 text-[10px] uppercase tracking-[0.4em] text-gold/40 pl-[0.4em] text-center"
             >
               Sintonizza la tua coscienza
             </motion.p>
