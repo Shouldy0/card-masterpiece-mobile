@@ -8,6 +8,7 @@ import { FocusGems, Hexagon, MobileFrame } from "@/components/Common";
 import { sounds } from "@/utils/audio";
 import { Hourglass, Settings, Eye, Ghost, Zap, Trophy, Play, CheckCircle2, RefreshCw, Calendar, Users, Loader2, PlayCircle, Skull, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSound } from "@/hooks/useSound";
 
 export const Route = createFileRoute("/match")({ component: Match });
 
@@ -40,6 +41,7 @@ function Match() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState<string | null>(null);
   const [revealing, setRevealing] = useState<{ uid: string; territory: TerritoryId } | null>(null);
+  const { play } = useSound();
 
   useEffect(() => {
     sounds.startSceneMusic("match");
@@ -51,18 +53,31 @@ function Match() {
 
   useEffect(() => {
     if (match?.status === "ended") {
+      play(match.result === "win" ? "victory" : "fail");
       const t = setTimeout(() => navigate({ to: "/end" }), 1200);
       return () => clearTimeout(t);
     }
-  }, [match?.status, navigate]);
+  }, [match?.status, match?.result, navigate, play]);
 
   if (!match) return null;
+
+  const handleSelect = (id: string) => {
+    setSelected(selected === id ? null : id);
+    play("lock");
+  };
+
+  const handleEndTurn = () => {
+    play("ripple");
+    endTurn();
+    setTimeout(() => play("card_deal"), 250);
+  };
 
   const handlePlay = (territory: TerritoryId) => {
     if (!selected) return;
     const card = cardsById[selected];
     if (!card || card.cost > match.focus.player) { setSelected(null); return; }
     setRevealing({ uid: selected, territory });
+    play("card_flip");
     setTimeout(() => {
       playCard(selected, territory);
       setRevealing(null);
@@ -143,7 +158,7 @@ function Match() {
                 </div>
 
                 <button 
-                  onClick={() => endTurn()}
+                  onClick={handleEndTurn}
                   className="relative group overflow-hidden rounded-full p-px bg-gradient-to-r from-mystic via-gold to-mystic shadow-[0_0_30px_-5px_rgba(255,215,0,0.4)] transition-transform active:scale-95"
                 >
                   <div className="px-8 py-6 rounded-full bg-abyss flex flex-col items-center justify-center ring-1 ring-gold/20 group-hover:bg-card/40 transition-colors">
@@ -168,7 +183,7 @@ function Match() {
                 initial={{ y: 50, opacity: 0, rotate: (i - 2) * 5 }}
                 animate={{ y: 0, opacity: 1, rotate: (i - 2) * 5 }}
                 whileHover={{ y: -40, rotate: 0, zIndex: 50, scale: 1.1 }}
-                onClick={() => setSelected(selected === id ? null : id)}
+                onClick={() => handleSelect(id)}
                 className={cn(
                   "relative cursor-pointer transition-all",
                   selected === id ? "-translate-y-12 z-50 scale-110" : ""

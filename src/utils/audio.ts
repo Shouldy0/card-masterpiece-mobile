@@ -20,31 +20,15 @@ class SoundEngine {
   private oscillators: OscillatorNode[] = [];
   private filters: BiquadFilterNode[] = [];
   private ambientGain: GainNode | null = null;
-  private masterGain: GainNode | null = null;
-  private musicVolume: number = 0.7;
-  private soundEnabled: boolean = true;
-
-  setMusicVolume(vol: number) {
-    this.musicVolume = vol;
-    if (this.ambientGain && this.ctx) {
-      const config = this.currentScene ? this.sceneConfigs[this.currentScene] : null;
-      if (config) {
-        const now = this.ctx.currentTime;
-        this.ambientGain.gain.linearRampToValueAtTime(config.gain * vol, now + 0.3);
-      }
-    }
-  }
-
-  setSoundEnabled(enabled: boolean) {
-    this.soundEnabled = enabled;
-    if (!enabled) {
-      this.stopSceneMusic();
-    }
-  }
+  private musicBus: GainNode | null = null;
+  private sfxBus: GainNode | null = null;
+  private musicVol = 0.5;
+  private sfxVol = 0.8;
+  private muted = false;
 
   private sceneConfigs: Record<Exclude<SceneMusic, null>, SceneMusicConfig> = {
     home: {
-      frequencies: [110, 164.81, 220, 329.63], // A2, E3, A3, E4 - mystical open chord
+      frequencies: [110, 164.81, 220, 329.63],
       types: ["sine", "sine", "triangle", "sine"],
       filterFreq: 600,
       filterType: "lowpass",
@@ -52,7 +36,7 @@ class SoundEngine {
       detune: [0, 5, -3, 8]
     },
     vs: {
-      frequencies: [73.42, 146.83, 220], // D2, D3, A3 - tense interval
+      frequencies: [73.42, 146.83, 220],
       types: ["sawtooth", "sine", "triangle"],
       filterFreq: 800,
       filterType: "bandpass",
@@ -60,7 +44,7 @@ class SoundEngine {
       detune: [0, 10, -5]
     },
     match: {
-      frequencies: [130.81, 196, 261.63, 392], // C3, G3, C4, G4 - powerful fifth
+      frequencies: [130.81, 196, 261.63, 392],
       types: ["sine", "triangle", "sine", "triangle"],
       filterFreq: 1000,
       filterType: "lowpass",
@@ -68,7 +52,7 @@ class SoundEngine {
       detune: [0, 3, -2, 5]
     },
     end: {
-      frequencies: [220, 277.18, 329.63, 440], // A3, C#4, E4, A4 - resolution chord
+      frequencies: [220, 277.18, 329.63, 440],
       types: ["sine", "sine", "sine", "triangle"],
       filterFreq: 1200,
       filterType: "lowpass",
@@ -80,37 +64,65 @@ class SoundEngine {
   private init() {
     if (!this.ctx) {
       this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.musicBus = this.ctx.createGain();
+      this.musicBus.gain.value = this.muted ? 0 : this.musicVol;
+      this.musicBus.connect(this.ctx.destination);
+      this.sfxBus = this.ctx.createGain();
+      this.sfxBus.gain.value = this.muted ? 0 : this.sfxVol;
+      this.sfxBus.connect(this.ctx.destination);
     }
   }
 
-  /**
-   * Start background music for a specific scene
-   */
+  setVolumes(music: number, sfx: number, muted: boolean) {
+    this.musicVol = music;
+    this.sfxVol = sfx;
+    this.muted = muted;
+    if (this.musicBus) this.musicBus.gain.value = muted ? 0 : music;
+    if (this.sfxBus) this.sfxBus.gain.value = muted ? 0 : sfx;
+  }
+
+  setMusicVolume(vol: number) {
+    this.musicVol = vol;
+    if (this.musicBus && !this.muted) {
+      this.musicBus.gain.value = vol;
+    }
+  }
+
+  setSoundEnabled(enabled: boolean) {
+    this.muted = !enabled;
+    if (this.musicBus) this.musicBus.gain.value = enabled ? this.musicVol : 0;
+    if (this.sfxBus) this.sfxBus.gain.value = enabled ? this.sfxVol : 0;
+    if (!enabled) {
+      this.stopSceneMusic();
+    }
+  }
+
+  private getSfxBus(): AudioNode {
+    this.init();
+    return this.sfxBus!;
+  }
+
   startSceneMusic(scene: Exclude<SceneMusic, null>) {
     try {
-      if (!this.soundEnabled) return;
+      if (this.muted) return;
       if (this.currentScene === scene) return;
       this.init();
       if (!this.ctx) return;
 
-      // Stop current music with fade out
       if (this.ambientGain) {
         const now = this.ctx.currentTime;
         this.ambientGain.gain.linearRampToValueAtTime(0, now + 0.5);
-        // Schedule cleanup after fade
         setTimeout(() => this.cleanupOscillators(), 500);
       }
 
       const config = this.sceneConfigs[scene];
       const now = this.ctx.currentTime;
 
-      // Create master gain for this scene
       this.ambientGain = this.ctx.createGain();
       this.ambientGain.gain.setValueAtTime(0, now);
-      this.ambientGain.gain.linearRampToValueAtTime(config.gain * this.musicVolume, now + 1.5);
-      this.ambientGain.connect(this.ctx.destination);
+      this.ambientGain.gain.linearRampToValueAtTime(config.gain, now + 1.5);
+      this.ambientGain.connect(this.musicBus!);
 
-      // Create oscillators for this scene
       this.oscillators = [];
       this.filters = [];
 
@@ -141,9 +153,6 @@ class SoundEngine {
     }
   }
 
-  /**
-   * Stop all scene music
-   */
   stopSceneMusic() {
     if (this.ambientGain && this.ctx) {
       const now = this.ctx.currentTime;
@@ -168,16 +177,10 @@ class SoundEngine {
     }
   }
 
-  /**
-   * Legacy method - starts home ambient
-   */
   startAmbient() {
     this.startSceneMusic("home");
   }
 
-  /**
-   * Legacy method - stops ambient
-   */
   stopAmbient() {
     this.stopSceneMusic();
   }
@@ -186,50 +189,47 @@ class SoundEngine {
     try {
       this.init();
       if (!this.ctx) return;
-      
+       
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.getSfxBus());
 
       const now = this.ctx.currentTime;
 
       switch (type) {
         case "signature":
-          // REVERIE Signature Harmonic Tone
           osc.type = "sine";
           osc.frequency.setValueAtTime(440, now);
           osc.frequency.exponentialRampToValueAtTime(880, now + 0.8);
           gain.gain.setValueAtTime(0, now);
           gain.gain.linearRampToValueAtTime(0.1, now + 0.2);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
-          
+           
           const sub = this.ctx.createOscillator();
           const subGain = this.ctx.createGain();
           sub.type = "sine";
           sub.frequency.setValueAtTime(220, now);
           sub.connect(subGain);
-          subGain.connect(this.ctx.destination);
+          subGain.connect(this.getSfxBus());
           subGain.gain.setValueAtTime(0, now);
           subGain.gain.linearRampToValueAtTime(0.05, now + 0.4);
           subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
           sub.start(now);
           sub.stop(now + 1.2);
-          
+           
           osc.start(now);
           osc.stop(now + 1.2);
           break;
 
         case "card_flip":
-          // Mystical paper flip
           osc.type = "triangle";
           osc.frequency.setValueAtTime(600, now);
           osc.frequency.exponentialRampToValueAtTime(200, now + 0.15);
           gain.gain.setValueAtTime(0.05, now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-          
-          // Add a little noise for paper texture
+           
           const flipNoise = this.ctx.createBufferSource();
           const flipBuffer = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.1, this.ctx.sampleRate);
           const flipData = flipBuffer.getChannelData(0);
@@ -243,9 +243,9 @@ class SoundEngine {
           flipNG.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
           flipNoise.connect(flipFilter);
           flipFilter.connect(flipNG);
-          flipNG.connect(this.ctx.destination);
+          flipNG.connect(this.getSfxBus());
           flipNoise.start(now);
-          
+           
           osc.start(now);
           osc.stop(now + 0.2);
           break;
@@ -285,7 +285,7 @@ class SoundEngine {
           noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
           noise.connect(noiseFilter);
           noiseFilter.connect(noiseGain);
-          noiseGain.connect(this.ctx.destination);
+          noiseGain.connect(this.getSfxBus());
           noise.start(now);
           break;
 

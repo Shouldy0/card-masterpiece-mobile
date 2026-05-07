@@ -80,6 +80,8 @@ interface PlayerProgress {
 
 interface SettingsState {
   soundOn: boolean;
+  musicVolume: number;
+  sfxVolume: number;
   vibration: boolean;
   hints: boolean;
   animSpeed: number;
@@ -156,16 +158,8 @@ function aiTurn(state: MatchState) {
     }).sort((a, b) => a.diff - b.diff);
     const territory = scored[0].t;
     state.focus.ai -= card.cost;
-    state.hand.ai = state.hand.ai.filter((id) => id !== card.id || false);
-    // remove first occurrence
     const idx = state.hand.ai.indexOf(card.id);
-    // ensure removal (handle above bug)
-    if (idx === -1) {
-      const rebuild = [...state.hand.ai];
-      const i2 = rebuild.indexOf(card.id);
-      if (i2 >= 0) rebuild.splice(i2, 1);
-      state.hand.ai = rebuild;
-    }
+    if (idx >= 0) state.hand.ai.splice(idx, 1);
     applyEffect(state, card, "ai");
     const power = powerWithRules(card, "ai", territory, state.buffs.ai, state.weakens.player);
     state.board[territory].push({ uid: `ai-${state.turn}-${Math.random()}`, cardId: card.id, side: "ai", power });
@@ -207,7 +201,7 @@ export const useGame = create<AppStore>()(
         deck: buildStarterDeck(),
         title: "Sognatore",
       },
-      settings: { soundOn: true, vibration: true, hints: true, animSpeed: 1, language: "Italiano" },
+      settings: { soundOn: true, musicVolume: 0.5, sfxVolume: 0.8, vibration: true, hints: true, animSpeed: 1, language: "Italiano" },
       match: null,
       onboardingDone: false,
 

@@ -1,11 +1,29 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MobileFrame } from "@/components/Common";
 import { BottomNav } from "@/components/BottomNav";
-import { ArrowLeft, Sparkles, Calendar } from "lucide-react";
+import { useGame } from "@/game/store";
+import { useSound } from "@/hooks/useSound";
+import { ArrowLeft, Sparkles, Calendar, Trophy, Target, Coins, Check } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/events")({ component: Events });
 
+const MISSIONS = [
+  { id: "wins3", name: "Vinci 3 partite", progress: 2, target: 3, reward: 150, icon: Trophy },
+  { id: "play10", name: "Gioca 10 carte Maschera", progress: 7, target: 10, reward: 80, icon: Target },
+  { id: "spend6", name: "Spendi 6 Focus in un turno", progress: 6, target: 6, reward: 200, icon: Sparkles },
+];
+
 function Events() {
+  const addGold = useGame((s) => s.addGold);
+  const { play } = useSound();
+  const claim = (m: typeof MISSIONS[number]) => {
+    if (m.progress < m.target) return;
+    play("chime");
+    addGold(m.reward);
+    toast.success(`+${m.reward} oro raccolto`);
+  };
+
   return (
     <MobileFrame>
       <header className="flex items-center gap-2 px-4 pt-6">
@@ -36,7 +54,40 @@ function Events() {
         </div>
       </div>
 
-      <div className="mt-6 px-4">
+      <div className="mt-5 px-4">
+        <p className="text-[10px] uppercase tracking-widest text-gold">Sfide Settimanali</p>
+        <div className="mt-2 space-y-2">
+          {MISSIONS.map((m) => {
+            const Icon = m.icon;
+            const done = m.progress >= m.target;
+            return (
+              <div key={m.id} className="rounded-xl gold-frame bg-card/60 p-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex size-9 items-center justify-center rounded-lg bg-mystic/30 ring-1 ring-gold/40"><Icon className="h-4 w-4 text-gold" /></div>
+                  <div className="flex-1">
+                    <p className="text-xs">{m.name}</p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <div className="h-1 flex-1 overflow-hidden rounded-full bg-mystic/20">
+                        <div className="h-full bg-gradient-to-r from-mystic-glow to-gold" style={{ width: `${(m.progress / m.target) * 100}%` }} />
+                      </div>
+                      <span className="text-[10px] font-display text-gold">{m.progress}/{m.target}</span>
+                    </div>
+                  </div>
+                  <button
+                    disabled={!done}
+                    onClick={() => claim(m)}
+                    className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-[10px] uppercase tracking-widest gold-frame ${done ? "bg-gold/30 text-gold" : "bg-card/40 text-muted-foreground opacity-50"}`}
+                  >
+                    {done ? <Check className="h-3 w-3" /> : <Coins className="h-3 w-3" />} {m.reward}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mt-5 px-4">
         <p className="text-[10px] uppercase tracking-widest text-gold">Prossimi Eventi</p>
         <div className="mt-2 space-y-2">
           {[{ name: "Incubi della Notte", at: "Inizia tra: 1g 5h", icon: Sparkles }, { name: "Specchi Rotti", at: "Inizia tra: 5g 2h", icon: Calendar }].map((e) => {
@@ -54,7 +105,7 @@ function Events() {
         </div>
       </div>
 
-      <Link to="/news" className="mx-4 mt-6 block rounded-xl gold-frame bg-card/60 p-3 text-center text-[10px] uppercase tracking-widest text-muted-foreground">Vedi Notizie & Manutenzione →</Link>
+      <Link to="/news" className="mx-4 mt-5 mb-24 block rounded-xl gold-frame bg-card/60 p-3 text-center text-[10px] uppercase tracking-widest text-muted-foreground">Vedi Notizie & Manutenzione →</Link>
 
       <BottomNav />
     </MobileFrame>

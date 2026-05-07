@@ -6,6 +6,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { useGame } from "@/game/store";
 import { sounds } from "@/utils/audio";
 import { Coins, Diamond, Plus, Library, BookOpen, ShoppingBag, Sparkles, Crown, Eye, Zap, Trophy } from "lucide-react";
+import { useSound } from "@/hooks/useSound";
 
 export const Route = createFileRoute("/home")({ component: Home });
 
@@ -13,13 +14,18 @@ function Home() {
   const player = useGame((s) => s.player);
   const startMatch = useGame((s) => s.startMatch);
   const navigate = useNavigate();
+  const { play } = useSound();
 
+<<<<<<< HEAD
   useEffect(() => {
     sounds.startSceneMusic("home");
     return () => {};
   }, []);
 
   const play = () => { startMatch(); navigate({ to: "/vs" }); };
+=======
+  const play_btn = () => { play("whoosh"); startMatch(); navigate({ to: "/vs" }); };
+>>>>>>> 55b4bc3f7662235b8d9d4fa235d1ce134458d389
 
   return (
     <MobileFrame>
@@ -102,7 +108,7 @@ function Home() {
           <motion.button 
             whileHover={{ scale: 1.02 }} 
             whileTap={{ scale: 0.98 }} 
-            onClick={play} 
+            onClick={play_btn} 
             className="w-full py-6 rounded-[2.5rem] bg-gradient-to-br from-mystic via-mystic-glow to-mystic text-foreground font-display text-xl font-bold uppercase tracking-[0.3em] shadow-[0_10px_40px_rgba(150,100,255,0.3)] border border-gold/20"
           >
             GIOCA BATTAGLIA
