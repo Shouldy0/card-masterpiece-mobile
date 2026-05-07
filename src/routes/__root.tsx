@@ -1,5 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
+import { MusicProvider } from "@/components/MusicProvider";
 
 import appCss from "../styles.css?url";
 
