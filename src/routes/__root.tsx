@@ -81,6 +81,7 @@ function RootComponent() {
   const setUser = useGame((s) => s.setUser);
 
   useEffect(() => {
+    if (!auth) return;
     const unsub = onAuthStateChanged(auth, (user) => {
       setUser(user);
     });

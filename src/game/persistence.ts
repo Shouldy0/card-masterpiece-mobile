@@ -6,6 +6,7 @@ import { PlayerProgress } from "./store";
  * Salva i progressi del giocatore su Firebase
  */
 export async function savePlayerToCloud(userId: string, data: PlayerProgress) {
+  if (!db) return;
   try {
     const userRef = doc(db, "players", userId);
     await setDoc(userRef, data, { merge: true });
@@ -19,6 +20,7 @@ export async function savePlayerToCloud(userId: string, data: PlayerProgress) {
  * Carica i progressi del giocatore da Firebase
  */
 export async function loadPlayerFromCloud(userId: string): Promise<PlayerProgress | null> {
+  if (!db) return null;
   try {
     const userRef = doc(db, "players", userId);
     const snap = await getDoc(userRef);

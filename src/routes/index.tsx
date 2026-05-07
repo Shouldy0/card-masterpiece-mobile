@@ -30,7 +30,7 @@ function Loading() {
 
   useEffect(() => {
     if (progress >= 100) {
-      const user = auth.currentUser;
+      const user = auth?.currentUser;
       const t = setTimeout(() => navigate({ to: user ? "/home" : "/auth" }), 400);
       return () => clearTimeout(t);
     }
