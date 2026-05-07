@@ -46,79 +46,85 @@ export function GameCard({ card, size = "md", glow, faded, selected, onClick }: 
       whileHover={onClick ? { y: -5, scale: 1.02 } : undefined}
       whileTap={onClick ? { scale: 0.98 } : undefined}
       className={cn(
-        "relative shrink-0 rounded-[12px] overflow-hidden text-left transition-all duration-300",
+        "relative shrink-0 rounded-[12px] overflow-hidden text-left transition-all duration-500 group",
         sizes[size],
         faded && "grayscale opacity-50",
-        selected && "ring-2 ring-gold shadow-[0_0_30px_rgba(255,215,0,0.6)]",
-        glow && "shadow-[0_0_20px_rgba(168,85,247,0.5)]",
-        "bg-abyss shadow-2xl"
+        selected && "ring-2 ring-gold/60 shadow-[0_0_40px_rgba(255,215,0,0.4)]",
+        glow && "shadow-[0_0_20px_rgba(168,85,247,0.3)]",
+        "bg-black"
       )}
     >
-      {/* Background Art */}
+      {/* 1. CENTRAL ILLUSTRATION (Naked Art) */}
       <div className="absolute inset-0">
         <img
           src={card.art}
           alt={card.name}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
           loading="lazy"
         />
-        {/* Dark Vignette for UI Readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80" />
+        {/* Cinematic Vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/95" />
       </div>
 
-      {/* Ornate Gold Frame (CSS version) */}
-      <div className="pointer-events-none absolute inset-0 rounded-[12px] border-[1px] border-gold/40" />
-      <div className="pointer-events-none absolute inset-[1px] rounded-[11px] border-[0.5px] border-white/10" />
+      {/* 2. SHARED ORNATE FRAME (Absolute Consistency) */}
+      {/* Outer Glow */}
+      <div className="pointer-events-none absolute inset-0 rounded-[12px] border-[1px] border-gold/20" />
+      {/* The "Master" Metallic Frame */}
+      <div className="pointer-events-none absolute inset-[2px] rounded-[10px] border-[2px] border-double border-gold/40 shadow-[inset_0_0_10px_rgba(0,0,0,0.8)]" />
+      {/* Corner Ornaments */}
+      <div className="pointer-events-none absolute top-0 left-0 size-4 border-t-2 border-l-2 border-gold/80 rounded-tl-[10px]" />
+      <div className="pointer-events-none absolute top-0 right-0 size-4 border-t-2 border-r-2 border-gold/80 rounded-tr-[10px]" />
+      <div className="pointer-events-none absolute bottom-0 left-0 size-4 border-b-2 border-l-2 border-gold/80 rounded-bl-[10px]" />
+      <div className="pointer-events-none absolute bottom-0 right-0 size-4 border-b-2 border-r-2 border-gold/80 rounded-br-[10px]" />
 
-      {/* Cost Gem (Top Left - Purple Gem with Metallic Rim) */}
+      {/* 3. DYNAMIC UI (Identical Hierarchy) */}
+      {/* Top Left: Cost Gem */}
       <div className={cn(
-        "absolute left-1.5 top-1.5 flex items-center justify-center rounded-full bg-gradient-to-br from-[#A855F7] to-[#6D28D9] shadow-[0_0_10px_rgba(168,85,247,0.8)] border-[1.5px] border-white/30",
-        isSmall ? "size-4 text-[7px]" : "size-8 text-[14px]"
+        "absolute left-1 top-1 z-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#4C1D95] border-[1.5px] border-gold/50 shadow-[0_0_15px_rgba(139,92,246,0.6)]",
+        isSmall ? "size-5 text-[8px]" : "size-10 text-[18px]"
       )}>
-        <span className="font-display font-bold text-white drop-shadow-md">{card.cost}</span>
-        {/* Shine highlight */}
+        <span className="font-display font-black text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">{card.cost}</span>
         <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/20 to-white/40 pointer-events-none" />
       </div>
 
-      {/* Faction Icon (Top Right) */}
+      {/* Top Right: Faction Symbol Overlay */}
       <div className={cn(
-        "absolute right-1.5 top-1.5 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-sm border-[1px] border-gold/30",
-        isSmall ? "size-4" : "size-7"
+        "absolute right-2 top-2 z-10 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border-[1px] border-gold/30",
+        isSmall ? "size-4" : "size-8"
       )}>
-        <div className={cn("rounded-full bg-gold/80", isSmall ? "size-1.5" : "size-3")} />
+        <div className={cn("rounded-full bg-gold animate-pulse", isSmall ? "size-1" : "size-2")} />
       </div>
 
-      {/* Bottom Translucent Panel */}
+      {/* Bottom: Translucent Name Panel */}
       <div className={cn(
-        "absolute bottom-0 inset-x-0 bg-gradient-to-t from-black via-black/90 to-transparent flex flex-col items-center justify-end pb-3 pt-6 px-2 text-center",
-        isSmall ? "h-[30%]" : "h-[40%]"
+        "absolute bottom-0 inset-x-0 z-10 flex flex-col items-center justify-end pb-4 pt-10 px-3 text-center",
+        "bg-gradient-to-t from-black via-black/80 to-transparent"
       )}>
         <h3 className={cn(
-          "font-display uppercase tracking-[0.05em] text-white drop-shadow-lg leading-tight",
-          isSmall ? "text-[6px]" : "text-[10px]"
+          "font-display uppercase tracking-[0.1em] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]",
+          isSmall ? "text-[8px]" : "text-[12px] font-bold"
         )}>
           {card.name}
         </h3>
         {!isSmall && (
-          <p className="mt-1 text-[6px] text-white/60 font-light leading-tight max-w-[80%]">
-            {card.flavor?.substring(0, 40)}...
+          <p className="mt-1 text-[7px] text-gold/60 font-medium uppercase tracking-widest leading-tight">
+            {card.type} • REVERIE
           </p>
         )}
       </div>
 
-      {/* Power Badge (Bottom Center - Hexagonal Metallic Badge) */}
+      {/* Bottom Center: Power Hexagon */}
       <div className={cn(
-        "absolute left-1/2 -translate-x-1/2 bg-[#D4AF37] flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.6)] border-[1px] border-white/40",
-        isSmall ? "bottom-0.5 w-6 h-4 rounded-sm" : "bottom-1 w-10 h-7 rounded-md"
+        "absolute left-1/2 -translate-x-1/2 z-20 bg-gradient-to-b from-gold via-[#B8860B] to-[#8B4513] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.8)] border-[1px] border-white/40",
+        isSmall ? "bottom-0 w-8 h-5" : "bottom-1 w-14 h-8"
       )} style={{ clipPath: 'polygon(15% 0%, 85% 0%, 100% 50%, 85% 100%, 15% 100%, 0% 50%)' }}>
         <span className={cn(
-          "font-display text-black font-extrabold",
-          isSmall ? "text-[8px]" : "text-[14px]"
+          "font-display text-black font-black drop-shadow-sm",
+          isSmall ? "text-[10px]" : "text-[18px]"
         )}>
           {card.power}
         </span>
-        {/* Metallic Bevel Effect */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-black/20 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-transparent pointer-events-none" />
       </div>
     </motion.button>
   );
