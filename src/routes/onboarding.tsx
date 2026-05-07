@@ -19,10 +19,11 @@ function Onboarding() {
   const navigate = useNavigate();
   const setDone = useGame((s) => s.setOnboardingDone);
   const Icon = slides[i].icon;
+  const { play } = useSound();
 
   const next = () => {
-    if (i < slides.length - 1) setI(i + 1);
-    else { setDone(); navigate({ to: "/home" }); }
+    if (i < slides.length - 1) { play("chime"); setI(i + 1); }
+    else { play("dream_enter"); setDone(); navigate({ to: "/home" }); }
   };
 
   return (
