@@ -7,6 +7,8 @@ import { MobileFrame } from "@/components/Common";
 import { CanvasBackground } from "@/components/CanvasBackground";
 import { Search, Filter, ChevronDown, Sparkles, LayoutGrid, Zap, Eye, User, Map, Activity, Shield, Shapes, Brain } from "lucide-react";
 
+import { GameCard } from "@/components/GameCard";
+
 type CollectionTab = "CARTE" | "BOARD" | "EFFETTI";
 
 function Collection() {
@@ -21,25 +23,6 @@ function Collection() {
     const matchesType = selectedType === "all" || c.type === selectedType;
     return matchesSearch && matchesType;
   });
-
-  const getTypeIcon = (type: CardType) => {
-    switch (type) {
-      case "archetipo": return <Brain className="size-3" />;
-      case "ricordo": return <Shapes className="size-3" />;
-      case "maschera": return <Shield className="size-3" />;
-      default: return <Sparkles className="size-3" />;
-    }
-  };
-
-  const getRarityColor = (rarity: string) => {
-    switch (rarity) {
-      case "comune": return "text-white/40";
-      case "rara": return "text-azure";
-      case "epica": return "text-mystic-glow";
-      case "leggendaria": return "text-gold";
-      default: return "text-white/20";
-    }
-  };
 
   return (
     <div className="relative h-[100dvh] w-screen overflow-hidden bg-abyss flex items-center justify-center font-serif select-none">
@@ -101,8 +84,8 @@ function Collection() {
         </div>
 
         {/* Card Grid */}
-        <main className="flex-1 overflow-y-auto pr-1 custom-scrollbar pb-20">
-          <div className="grid grid-cols-3 gap-3">
+        <main className="flex-1 overflow-y-auto pr-1 custom-scrollbar pb-24">
+          <div className="grid grid-cols-3 gap-y-6 gap-x-4">
             <AnimatePresence mode="popLayout">
               {filteredCards.map((card, i) => {
                 const isOwned = player.collection.includes(card.id);
@@ -113,33 +96,15 @@ function Collection() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ delay: i * 0.03 }}
-                    className={`aspect-[2/2.8] rounded-xl bg-gradient-to-b from-card/30 to-abyss ring-1 ring-gold/20 p-1.5 flex flex-col relative overflow-hidden group shadow-lg ${!isOwned ? 'grayscale opacity-40' : ''}`}
+                    className="flex flex-col items-center gap-2"
                   >
-                    {/* Card Header Info */}
-                    <div className="flex justify-between items-start z-10">
-                      <div className="size-5 rounded-full bg-abyss/80 ring-1 ring-gold/30 flex items-center justify-center text-[8px] font-bold text-gold">
-                        {card.cost}
-                      </div>
-                      <div className={`size-5 rounded-full bg-abyss/80 ring-1 ring-gold/30 flex items-center justify-center ${getRarityColor(card.rarity)}`}>
-                        {getTypeIcon(card.type)}
-                      </div>
-                    </div>
-
-                    {/* Card Image Area (Mock) */}
-                    <div className="flex-1 flex items-center justify-center relative my-1 overflow-hidden rounded-lg">
-                      <div className="absolute inset-0 bg-gold/5 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="size-full bg-card/20 flex items-center justify-center">
-                         <span className="text-3xl filter drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">{card.type === 'archetipo' ? '👤' : card.type === 'ricordo' ? '💭' : '🎭'}</span>
-                      </div>
-                    </div>
-
-                    {/* Card Footer */}
-                    <div className="text-center py-1">
-                      <p className="text-[8px] font-medium text-foreground truncate px-1 uppercase tracking-tighter">{card.name}</p>
-                    </div>
-
-                    {/* Rarity Border Polish */}
-                    <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full ${getRarityColor(card.rarity).replace('text-', 'bg-')}`} />
+                    <GameCard 
+                      card={card} 
+                      size="lg" 
+                      faded={!isOwned} 
+                      glow={isOwned && card.rarity === 'leggendaria'}
+                    />
+                    <p className="text-[7px] font-medium text-gold/60 uppercase tracking-widest truncate w-full text-center">{card.name}</p>
                   </motion.div>
                 );
               })}
