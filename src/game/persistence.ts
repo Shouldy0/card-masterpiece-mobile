@@ -1,4 +1,3 @@
-import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { PlayerProgress } from "./store";
 
@@ -6,9 +5,14 @@ import { PlayerProgress } from "./store";
  * Salva i progressi del giocatore su Firebase
  */
 export async function savePlayerToCloud(userId: string, data: PlayerProgress) {
-  if (!db) return;
+  if (typeof window === "undefined" || !userId) return;
+  
   try {
-    const userRef = doc(db, "players", userId);
+    const { doc, setDoc } = await import("firebase/firestore");
+    const { db: firestore } = await import("@/lib/firebase").then(m => m.getFirebase());
+    
+    if (!firestore) return;
+    const userRef = doc(firestore, "players", userId);
     await setDoc(userRef, data, { merge: true });
     console.log("Progressi salvati sul cloud!");
   } catch (error) {
@@ -20,9 +24,14 @@ export async function savePlayerToCloud(userId: string, data: PlayerProgress) {
  * Carica i progressi del giocatore da Firebase
  */
 export async function loadPlayerFromCloud(userId: string): Promise<PlayerProgress | null> {
-  if (!db) return null;
+  if (typeof window === "undefined" || !userId) return null;
+
   try {
-    const userRef = doc(db, "players", userId);
+    const { doc, getDoc } = await import("firebase/firestore");
+    const { db: firestore } = await import("@/lib/firebase").then(m => m.getFirebase());
+
+    if (!firestore) return null;
+    const userRef = doc(firestore, "players", userId);
     const snap = await getDoc(userRef);
     if (snap.exists()) {
       return snap.data() as PlayerProgress;

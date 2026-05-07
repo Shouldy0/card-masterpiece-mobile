@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useGame } from "@/game/store";
-import { auth } from "@/lib/firebase";
 import { MobileFrame } from "@/components/Common";
 import { useSound } from "@/hooks/useSound";
 import { Eye } from "lucide-react";
@@ -29,11 +28,17 @@ function Loading() {
   }, [play]);
 
   useEffect(() => {
-    if (progress >= 100) {
-      const user = auth?.currentUser;
-      const t = setTimeout(() => navigate({ to: user ? "/home" : "/auth" }), 400);
-      return () => clearTimeout(t);
+    async function checkAuth() {
+      if (progress >= 100 && typeof window !== "undefined") {
+        const { getFirebase } = await import("@/lib/firebase");
+        const { auth } = await getFirebase();
+        const user = auth?.currentUser;
+        
+        const t = setTimeout(() => navigate({ to: user ? "/home" : "/auth" }), 400);
+        return () => clearTimeout(t);
+      }
     }
+    checkAuth();
   }, [progress, navigate]);
 
   return (

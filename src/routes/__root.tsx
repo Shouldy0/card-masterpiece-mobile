@@ -72,8 +72,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { getFirebase } from "@/lib/firebase";
 import { useGame } from "@/game/store";
 import { useEffect } from "react";
 
@@ -81,11 +80,22 @@ function RootComponent() {
   const setUser = useGame((s) => s.setUser);
 
   useEffect(() => {
-    if (!auth) return;
-    const unsub = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-    return () => unsub();
+    let unsub: any = null;
+    
+    async function setupAuth() {
+      if (typeof window === "undefined") return;
+      const { auth } = await getFirebase();
+      const { onAuthStateChanged } = await import("firebase/auth");
+      
+      if (auth) {
+        unsub = onAuthStateChanged(auth, (user) => {
+          setUser(user);
+        });
+      }
+    }
+
+    setupAuth();
+    return () => unsub?.();
   }, [setUser]);
 
   return (
