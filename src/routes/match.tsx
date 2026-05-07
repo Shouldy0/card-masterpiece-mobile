@@ -7,6 +7,7 @@ import { GameCard, CardBack, CardFromId } from "@/components/GameCard";
 import { FocusGems, Hexagon, MobileFrame } from "@/components/Common";
 import { Hourglass, Settings, Eye, Ghost, Zap, Trophy, Play, CheckCircle2, RefreshCw, Calendar, Users, Loader2, PlayCircle, Skull, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSound } from "@/hooks/useSound";
 
 export const Route = createFileRoute("/match")({ component: Match });
 
