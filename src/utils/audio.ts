@@ -26,7 +26,7 @@ class SoundEngine {
       this.ambientGain = this.ctx.createGain();
       this.ambientGain.gain.setValueAtTime(0, now);
       this.ambientGain.gain.linearRampToValueAtTime(0.05, now + 1.5); // 1.5s fade-in
-      this.ambientGain.connect(this.ctx.destination);
+      this.ambientGain.connect(this.getSfxBus());
 
       // Create a drone using multiple oscillators for depth
       const frequencies = [110, 164.81, 220]; // A2, E3, A3
@@ -73,7 +73,7 @@ class SoundEngine {
       const gain = this.ctx.createGain();
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.getSfxBus());
 
       const now = this.ctx.currentTime;
 
@@ -92,7 +92,7 @@ class SoundEngine {
           sub.type = "sine";
           sub.frequency.setValueAtTime(220, now);
           sub.connect(subGain);
-          subGain.connect(this.ctx.destination);
+          subGain.connect(this.getSfxBus());
           subGain.gain.setValueAtTime(0, now);
           subGain.gain.linearRampToValueAtTime(0.05, now + 0.4);
           subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
@@ -125,7 +125,7 @@ class SoundEngine {
           flipNG.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
           flipNoise.connect(flipFilter);
           flipFilter.connect(flipNG);
-          flipNG.connect(this.ctx.destination);
+          flipNG.connect(this.getSfxBus());
           flipNoise.start(now);
           
           osc.start(now);
@@ -167,7 +167,7 @@ class SoundEngine {
           noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
           noise.connect(noiseFilter);
           noiseFilter.connect(noiseGain);
-          noiseGain.connect(this.ctx.destination);
+          noiseGain.connect(this.getSfxBus());
           noise.start(now);
           break;
 
