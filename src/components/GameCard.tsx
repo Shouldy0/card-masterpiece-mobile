@@ -36,6 +36,7 @@ const sizes = {
 
 export function GameCard({ card, size = "md", glow, faded, selected, onClick }: Props) {
   const [imgError, setImgError] = React.useState(false);
+  if (!card) return null;
   const isXs = size === "xs";
   const isSm = size === "sm";
 

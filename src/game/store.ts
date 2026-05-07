@@ -202,16 +202,36 @@ export const useGame = create<AppStore>()(
         deck: buildStarterDeck(),
         title: "Sognatore",
       },
-      // Function to ensure collection is always synced with master list
+      // Function to ensure collection is always synced with master list and remove obsolete IDs
       syncCollection: () => {
-        const current = get().player.collection;
-        const master = CARDS.map(c => c.id);
-        if (current.length !== master.length) {
+        const { player, match } = get();
+        const masterIds = CARDS.map(c => c.id);
+        
+        // Filter out IDs that no longer exist in master list
+        const validCollection = player.collection.filter(id => masterIds.includes(id));
+        const validDeck = player.deck.filter(id => masterIds.includes(id));
+        
+        // Check if current match is still valid
+        let matchInvalid = false;
+        if (match) {
+          const allHandIds = [...match.hand.player, ...match.hand.ai];
+          const allBoardIds = Object.values(match.board).flat().map(o => o.cardId);
+          if (allHandIds.some(id => !masterIds.includes(id)) || allBoardIds.some(id => !masterIds.includes(id))) {
+            matchInvalid = true;
+          }
+        }
+        
+        // If collection size changed, deck has invalid IDs, or match is invalid, update state
+        const needsSync = validCollection.length !== masterIds.length || validDeck.length !== player.deck.length || matchInvalid;
+        
+        if (needsSync) {
           set(state => ({
             player: {
               ...state.player,
-              collection: master
-            }
+              collection: masterIds, // For now, let's give them all 50
+              deck: validDeck.length === 15 ? validDeck : buildStarterDeck()
+            },
+            match: matchInvalid ? null : state.match
           }));
         }
       },
