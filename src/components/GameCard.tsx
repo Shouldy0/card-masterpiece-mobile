@@ -1,3 +1,4 @@
+import React from "react";
 import { CardDef, cardsById, CardType } from "@/game/cards";
 import { motion } from "framer-motion";
 import { Eye, Brain, BookOpen, Sparkles } from "lucide-react";

@@ -56,7 +56,7 @@ export const CARDS: CardDef[] = [
   { id: "c6_giudice", name: "Il Giudice", type: "maschera", cost: 4, power: 6, rarity: "epica", text: "Sentenza finale.", flavor: "Non c'è appello contro la propria coscienza.", effect: { kind: "none" }, art: "/cards/maschera_06.png" },
   { id: "c7_bambino", name: "Bambino Eterno", type: "maschera", cost: 2, power: 2, rarity: "rara", text: "Cura 2 HP.", flavor: "Non voglio crescere in questo mondo di sogni infranti.", effect: { kind: "heal", amount: 2 }, art: "/cards/maschera_07.png" },
   { id: "c8_eremita", name: "L'Eremita", type: "maschera", cost: 3, power: 5, rarity: "comune", text: "Silenzio assoluto.", flavor: "La verità si trova lontano dal rumore degli altri.", effect: { kind: "none" }, art: "/cards/maschera_08.png" },
-  { id: "c9_mostro", name: "Il Mostro", type: "maschera", cost: 5, power: 8, rarity: "epica", text: "Paura pura.", flavor: "Siamo tutti il mostro nel sogno di qualcun altro.", effect: { kind: "paura_primordiale_art_naked_1778156961591.png" }, art: "/paura_primordiale_art_naked_1778156961591.png" },
+  { id: "c9_mostro", name: "Il Mostro", type: "maschera", cost: 5, power: 8, rarity: "epica", text: "Paura pura.", flavor: "Siamo tutti il mostro nel sogno di qualcun altro.", effect: { kind: "none" }, art: "/paura_primordiale_art_naked_1778156961591.png" },
   { id: "c10_boia", name: "Il Boia", type: "maschera", cost: 6, power: 9, rarity: "leggendaria", text: "Taglia il potere -3.", flavor: "La fine del viaggio è solo un altro colpo di scure.", effect: { kind: "weaken_enemy", amount: 3 }, art: "/specchio_distorto_art_naked_1778157085995.png" },
 
   // --- FAZIONE: OBLIO (BLU FREDDO - VUOTO E PERDITA) ---
