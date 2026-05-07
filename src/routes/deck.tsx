@@ -98,8 +98,3 @@ function Deck() {
     </MobileFrame>
   );
 }
-
-      <BottomNav />
-    </MobileFrame>
-  );
-}
