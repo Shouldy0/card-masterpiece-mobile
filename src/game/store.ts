@@ -80,6 +80,8 @@ interface PlayerProgress {
 
 interface SettingsState {
   soundOn: boolean;
+  musicVolume: number;
+  sfxVolume: number;
   vibration: boolean;
   hints: boolean;
   animSpeed: number;
