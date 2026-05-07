@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CARDS, CardDef, cardsById, TerritoryId, TERRITORIES } from "./cards";
+import { savePlayerToCloud, loadPlayerFromCloud } from "./persistence";
 
 export type Side = "player" | "ai";
 
@@ -105,12 +106,16 @@ interface AppStore {
   syncCollection: () => void;
   buyPack: (cost: number, currency: "gold" | "gems") => string[] | null;
   addGold: (n: number) => void;
+  syncWithCloud: (userId: string) => Promise<void>;
 }
 
 function powerWithRules(state: MatchState, card: CardDef, side: Side, territory: TerritoryId): number {
   let p = card.power;
   const enemySide: Side = side === "player" ? "ai" : "player";
   
+  // UNIQUE: Apatia (v4_apatia) ignores all buffs/weakens (Immobilis)
+  if (card.id === "v4_apatia") return p;
+
   // 1. BASE BUFFS / WEAKENS
   p += state.buffs[side];
   p -= state.weakens[enemySide];
@@ -120,6 +125,12 @@ function powerWithRules(state: MatchState, card: CardDef, side: Side, territory:
   if (card.type === "archetipo") {
     const others = state.board[territory].filter(o => o.side === side && cardsById[o.cardId]?.type === "archetipo").length;
     p += others;
+    
+    // UNIQUE: Ossessione (v2_ossessione) gains +2 if enemy hand > 3
+    if (card.id === "v2_ossessione") {
+      const enemyHand = side === "player" ? state.hand.ai.length : state.hand.player.length;
+      if (enemyHand > 3) p += 2;
+    }
   }
 
   // Ricordo: +2 power if played in "memoria" territory
@@ -146,7 +157,10 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
       break;
     }
     case "buff_self":
-      state.buffs[side] += card.effect.amount;
+      let amount = card.effect.amount;
+      // UNIQUE: Cenere e Stelle (o5_cenere) doubles buff if focus is 0 after play
+      if (card.id === "o5_cenere" && state.focus[side] === 0) amount *= 2;
+      state.buffs[side] += amount;
       break;
     case "weaken_enemy":
       state.weakens[side] += card.effect.amount;
@@ -161,13 +175,44 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
   if (card.type === "maschera") {
     state.focus[enemySide] = Math.max(0, state.focus[enemySide] - 1);
     state.log.push(`${side === "player" ? "Hai" : "L'avversario ha"} drenato 1 Focus!`);
+
+    // UNIQUE: Il Boia (c10_boia) executes weakest enemy if total power > 15
+    if (card.id === "c10_boia") {
+      const enemyPower = state.board[territory].filter(o => o.side === enemySide).reduce((s, o) => s + o.power, 0);
+      if (enemyPower > 15) {
+        const board = state.board[territory].filter(o => o.side === enemySide).sort((a, b) => a.power - b.power);
+        if (board.length > 0) {
+          const target = board[0];
+          state.board[territory] = state.board[territory].filter(o => o.uid !== target.uid);
+          state.log.push(`Il Boia ha eseguito una memoria nemica!`);
+        }
+      }
+    }
   }
 
   // Oblio: Next enemy card in this territory will have -2 Power
   if (card.type === "oblio") {
     state.log.push(`L'Oblio avvolge ${territory}.`);
-    // (Logic for this could be added to state if needed, keeping it simple for now)
+    
+    // UNIQUE: Il Vuoto (b1_vuoto) resets all buffs/weakens in the match for this play
+    if (card.id === "b1_vuoto") {
+      state.buffs = { player: 0, ai: 0 };
+      state.weakens = { player: 0, ai: 0 };
+      state.log.push(`Il Vuoto ha azzerato gli effetti globali.`);
+    }
   }
+}
+
+// Logic for end-of-turn growth (Eternità)
+function processEndTurnTriggers(state: MatchState) {
+  (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach(t => {
+    state.board[t].forEach(o => {
+      // UNIQUE: Eternità (e10_eternita) grows +1 each turn
+      if (o.cardId === "e10_eternita") {
+        o.power += 1;
+      }
+    });
+  });
 }
 
 function aiTurn(state: MatchState) {
@@ -296,6 +341,8 @@ export const useGame = create<AppStore>()(
         const m = structuredClone(s.match);
         // AI turn
         aiTurn(m);
+        // Process end-of-turn triggers (like growth)
+        processEndTurnTriggers(m);
         // reset turn buffs/weakens
         m.buffs = { player: 0, ai: 0 };
         m.weakens = { player: 0, ai: 0 };
@@ -350,6 +397,11 @@ export const useGame = create<AppStore>()(
       },
 
       addGold: (n) => set((s) => ({ player: { ...s.player, gold: s.player.gold + n } })),
+
+      syncWithCloud: async (userId: string) => {
+        const { player } = get();
+        await savePlayerToCloud(userId, player);
+      },
     }),
     { name: "reverie-store-v1" }
   )

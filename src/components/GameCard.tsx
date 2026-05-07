@@ -84,10 +84,31 @@ export function GameCard({ card, size = "md", glow, faded, selected, onClick }: 
             loading="lazy"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-black">
+          <div className="absolute inset-0 flex items-center justify-center bg-black overflow-hidden">
             <div className="absolute inset-0 opacity-40" 
                  style={{ background: `radial-gradient(circle at 50% 40%, ${accent.primary}44, transparent 70%)` }} />
-            <Sparkles className="size-6 text-gold/20 animate-pulse" />
+            
+            {/* PROCEDURAL ART FALLBACK (Unique per card) */}
+            <motion.div
+              initial={{ scale: 0.8, rotate: 0 }}
+              animate={{ 
+                scale: [0.8, 1.1, 0.8],
+                rotate: [0, 180, 360],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{ duration: 10 + (card.id.length % 5), repeat: Infinity, ease: "linear" }}
+              className="relative size-32 opacity-30"
+              style={{ color: accent.primary }}
+            >
+              <typeIcon.archetipo className="absolute inset-0 size-full blur-xl opacity-50" />
+              <div className="absolute inset-0 border-2 border-current rounded-full mix-blend-screen animate-pulse" 
+                   style={{ borderRadius: `${30 + (card.id.length * 2)}%` }} />
+            </motion.div>
+            
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+               <Sparkles className="size-6 text-gold/20 animate-pulse" />
+               <span className="text-[6px] uppercase tracking-[0.4em] text-gold/30">Inizializzazione Memoria...</span>
+            </div>
           </div>
         )}
         
@@ -98,6 +119,34 @@ export function GameCard({ card, size = "md", glow, faded, selected, onClick }: 
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/95 pointer-events-none" />
         {/* Particle Texture Layer */}
         <div className="absolute inset-0 opacity-20 mix-blend-screen bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] pointer-events-none" />
+        
+        {/* Dynamic Stardust Particles (Framer Motion) */}
+        {!isXs && (
+          <div className="absolute inset-0 pointer-events-none">
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute size-1 rounded-full bg-white/40 blur-[1px]"
+                animate={{
+                  y: [0, -40, 0],
+                  x: [0, Math.random() * 20 - 10, 0],
+                  opacity: [0, 0.5, 0],
+                  scale: [0, 1, 0]
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 4,
+                  repeat: Infinity,
+                  delay: Math.random() * 5,
+                  ease: "easeInOut"
+                }}
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 2. MASTER FRAME (Fixed Layout) */}
