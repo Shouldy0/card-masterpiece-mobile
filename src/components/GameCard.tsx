@@ -44,79 +44,63 @@ export function GameCard({ card, size = "md", glow, faded, selected, onClick, sh
     <motion.button
       type="button"
       onClick={onClick}
-      whileHover={onClick ? { y: -8, scale: 1.05 } : undefined}
-      whileTap={onClick ? { scale: 0.95 } : undefined}
+      whileHover={onClick ? { y: -5, scale: 1.02 } : undefined}
+      whileTap={onClick ? { scale: 0.98 } : undefined}
       className={cn(
-        "relative shrink-0 rounded-xl ring-1 overflow-hidden text-left shadow-2xl transition-shadow",
+        "relative shrink-0 rounded-[20px] overflow-hidden text-left transition-all duration-300",
         sizes[size],
-        rarityRing[card.rarity],
-        faded && "grayscale opacity-40",
-        selected && "ring-2 ring-gold shadow-[0_0_40px_-4px_rgba(255,215,0,0.5)]",
-        glow && "shadow-[0_0_30px_-4px_var(--mystic-glow)]",
-        "bg-abyss/80",
+        faded && "grayscale opacity-50",
+        selected && "ring-2 ring-gold shadow-[0_0_30px_rgba(255,215,0,0.4)]",
+        glow && "shadow-[0_0_20px_rgba(168,85,247,0.4)]",
+        "bg-abyss"
       )}
     >
-      {/* Background Art */}
+      {/* Background Art - The images already contain the name and frame details */}
       <div className="absolute inset-0">
         <img
           src={card.art}
           alt={card.name}
           className="absolute inset-0 h-full w-full object-cover"
           loading="lazy"
-          onError={(e) => {
-            e.currentTarget.style.display = "none";
-          }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-abyss via-transparent to-transparent opacity-60" />
       </div>
 
-      {/* Glassy Overlay for Name */}
-      {!isXs && (
-        <div className={cn(
-          "absolute inset-x-1.5 bg-abyss/60 backdrop-blur-md rounded-lg ring-1 ring-gold/20 flex items-center justify-center px-1",
-          isSm ? "bottom-[12%] h-5" : "bottom-[15%] h-7"
-        )}>
-          <span className={cn(
-            "font-display uppercase tracking-[0.1em] text-gold text-center leading-tight",
-            isSm ? "text-[5px]" : "text-[7px]"
-          )}>
-            {card.name}
-          </span>
-        </div>
-      )}
+      {/* Frame Polish Overlay */}
+      <div className="pointer-events-none absolute inset-0 rounded-[20px] ring-1 ring-white/10" />
 
-      {/* Gold Frame Detail */}
-      <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-gold/20" />
-
-      {/* Cost Badge */}
+      {/* Cost Badge (Purple Circle) */}
       <div className={cn(
-        "absolute left-1.5 top-1.5 flex items-center justify-center rounded-full bg-mystic/80 ring-1 ring-gold/50 font-display text-white shadow-lg",
-        isSmall ? "size-3.5 text-[6px]" : "size-5 text-[9px]"
+        "absolute left-2 top-2 flex items-center justify-center rounded-full bg-[#7C3AED] shadow-lg border border-white/20 font-display text-white",
+        isSmall ? "size-4 text-[7px]" : "size-7 text-[12px]"
       )}>
         {card.cost}
       </div>
 
-      {/* Type Badge */}
+      {/* Type Badge (Golden Icon) */}
       <div className={cn(
-        "absolute right-1.5 top-1.5 flex items-center justify-center rounded-full bg-abyss/60 ring-1 ring-gold/30",
-        isSmall ? "size-3.5" : "size-5"
+        "absolute right-2 top-2 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-sm border border-gold/30",
+        isSmall ? "size-4" : "size-7"
       )}>
-        <Icon className={cn("text-gold/80", isSmall ? "h-2 w-2" : "h-2.5 w-2.5")} />
+        <Icon className={cn("text-gold", isSmall ? "h-2 w-2" : "h-4 w-4")} />
       </div>
 
-      {/* Power Badge (Golden Shield) */}
+      {/* Power Badge (Golden Rounded Rectangle) */}
       <div className={cn(
-        "absolute left-1/2 -translate-x-1/2 flex flex-col items-center",
-        isSmall ? "-bottom-1 w-5 h-6" : "-bottom-1.5 w-7 h-8"
+        "absolute left-1/2 -translate-x-1/2 bg-[#EAB308] flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.5)] border border-white/20",
+        isSmall ? "bottom-1 w-6 h-4 rounded-md" : "bottom-2 w-10 h-7 rounded-lg"
       )}>
-        <div className="absolute inset-0 bg-gold rounded-b-lg rounded-t-sm shadow-[0_2px_10px_rgba(0,0,0,0.5)]" />
         <span className={cn(
-          "relative z-10 font-display text-abyss font-bold",
-          isSmall ? "mt-1 text-[7px]" : "mt-1.5 text-[10px]"
+          "font-display text-black font-bold",
+          isSmall ? "text-[8px]" : "text-[14px]"
         )}>
           {card.power}
         </span>
       </div>
+
+      {/* Selection Glow */}
+      {selected && (
+        <div className="absolute inset-0 bg-gold/10 pointer-events-none animate-pulse" />
+      )}
     </motion.button>
   );
 }
