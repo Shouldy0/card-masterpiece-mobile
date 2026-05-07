@@ -16,11 +16,16 @@ export const Route = createFileRoute("/deck")({ component: Deck });
 const DECK_SIZE = 15;
 
 function Deck() {
-  const { player, saveDeck } = useGame();
+  const { player, saveDeck, syncCollection } = useGame();
   const navigate = useNavigate();
   const [deck, setDeck] = useState<string[]>(player.deck);
   const [filter, setFilter] = useState<CardType | "all">("all");
   const { play } = useSound();
+
+  // Sync collection on mount to ensure new cards are visible
+  React.useEffect(() => {
+    syncCollection();
+  }, [syncCollection]);
 
   const myCards = CARDS.filter((c) => filter === "all" || c.type === filter);
 

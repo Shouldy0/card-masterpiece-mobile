@@ -16,12 +16,17 @@ import { BottomNav } from "@/components/BottomNav";
 type CollectionTab = "CARTE" | "BOARD" | "EFFETTI";
 
 function Collection() {
-  const { player } = useGame();
+  const { player, syncCollection } = useGame();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<CollectionTab>("CARTE");
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState<CardType | "all">("all");
   const [selectedCard, setSelectedCard] = useState<CardDef | null>(null);
+
+  // Sync collection on mount to ensure new cards are visible
+  React.useEffect(() => {
+    syncCollection();
+  }, [syncCollection]);
 
   const filteredCards = CARDS.filter(c => {
     const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase());

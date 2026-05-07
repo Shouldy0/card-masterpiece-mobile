@@ -196,10 +196,22 @@ export const useGame = create<AppStore>()(
         wins: 368,
         matches: 742,
         rank: "Sognatore I",
-        rankPoints: 1250,
-        collection: CARDS.map((c) => c.id), // This will be used if no persisted state exists
+        collection: CARDS.map((c) => c.id),
         deck: buildStarterDeck(),
         title: "Sognatore",
+      },
+      // Function to ensure collection is always synced with master list
+      syncCollection: () => {
+        const current = get().player.collection;
+        const master = CARDS.map(c => c.id);
+        if (current.length !== master.length) {
+          set(state => ({
+            player: {
+              ...state.player,
+              collection: master
+            }
+          }));
+        }
       },
       settings: { soundOn: true, musicVolume: 0.5, sfxVolume: 0.8, vibration: true, hints: true, animSpeed: 1, language: "Italiano" },
       match: null,
