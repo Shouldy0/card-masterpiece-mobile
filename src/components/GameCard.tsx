@@ -35,6 +35,7 @@ const sizes = {
 };
 
 export function GameCard({ card, size = "md", glow, faded, selected, onClick }: Props) {
+  const [imgError, setImgError] = React.useState(false);
   const isXs = size === "xs";
   const isSm = size === "sm";
 
@@ -67,13 +68,22 @@ export function GameCard({ card, size = "md", glow, faded, selected, onClick }: 
       )}
     >
       {/* 1. CENTRAL ILLUSTRATION (Separated Layer) */}
-      <div className="absolute inset-0 overflow-hidden">
-        <img
-          src={card.art}
-          alt={card.name}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 scale-[1.08]"
-          loading="lazy"
-        />
+      <div className="absolute inset-0 overflow-hidden bg-[#0a0a0c]">
+        {!imgError ? (
+          <img
+            src={card.art}
+            alt={card.name}
+            onError={() => setImgError(true)}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 scale-[1.08]"
+            loading="lazy"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-black">
+            <div className="absolute inset-0 opacity-40" 
+                 style={{ background: `radial-gradient(circle at 50% 40%, ${accent.primary}44, transparent 70%)` }} />
+            <Sparkles className="size-6 text-gold/20 animate-pulse" />
+          </div>
+        )}
         
         {/* STESSO MODELLO DI LUCE (Global Rule) */}
         {/* Cinematic Purple Nebula Overlay */}
