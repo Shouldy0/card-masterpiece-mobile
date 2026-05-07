@@ -6,6 +6,8 @@ import { useGame } from "@/game/store";
 import { CARDS, CardType } from "@/game/cards";
 import { GameCard } from "@/components/GameCard";
 import { Filter, Save, ArrowLeft } from "lucide-react";
+import { useSound } from "@/hooks/useSound";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/deck")({ component: Deck });
 
@@ -13,14 +15,17 @@ function Deck() {
   const { player, saveDeck } = useGame();
   const [deck, setDeck] = useState<string[]>(player.deck);
   const [filter, setFilter] = useState<CardType | "all">("all");
+  const { play } = useSound();
 
   const myCards = CARDS.filter((c) => player.collection.includes(c.id) && (filter === "all" || c.type === filter));
 
   const add = (id: string) => {
     if (deck.length >= 15 || deck.includes(id)) return;
+    play("card_deal");
     setDeck([...deck, id]);
   };
-  const remove = (id: string) => setDeck(deck.filter((c) => c !== id));
+  const remove = (id: string) => { play("lock"); setDeck(deck.filter((c) => c !== id)); };
+  const save = () => { play("success"); saveDeck(deck); toast.success("Deck salvato"); };
 
   return (
     <MobileFrame>
@@ -28,7 +33,7 @@ function Deck() {
         <Link to="/home" className="flex size-9 items-center justify-center rounded-full bg-card/60 ring-1 ring-gold/30"><ArrowLeft className="h-4 w-4 text-gold" /></Link>
         <h1 className="font-display text-lg gold-text tracking-widest">DECK BUILDER</h1>
         <button
-          onClick={() => saveDeck(deck)}
+          onClick={save}
           disabled={deck.length !== 15}
           className="rounded-full gold-frame bg-mystic/40 px-3 py-1.5 text-[10px] uppercase tracking-widest text-foreground disabled:opacity-40"
         ><Save className="inline h-3 w-3 mr-1" /> Salva</button>

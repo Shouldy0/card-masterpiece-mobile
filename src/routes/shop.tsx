@@ -5,6 +5,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { useGame } from "@/game/store";
 import { ArrowLeft, Coins, Diamond, Sparkles, Package, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import { useSound } from "@/hooks/useSound";
 
 export const Route = createFileRoute("/shop")({ component: Shop });
 
@@ -13,11 +14,12 @@ const tabs = ["Consigliati", "Carte", "Board", "Effetti"] as const;
 function Shop() {
   const { player, buyPack } = useGame();
   const [tab, setTab] = useState<typeof tabs[number]>("Consigliati");
+  const { play } = useSound();
 
   const buy = (cost: number, cur: "gold" | "gems", label: string) => {
     const r = buyPack(cost, cur);
-    if (!r) toast.error("Risorse insufficienti");
-    else toast.success(`${label} acquistato! Ricevuti 5 frammenti.`);
+    if (!r) { play("reroll"); toast.error("Risorse insufficienti"); }
+    else { play("record"); toast.success(`${label} acquistato! Ricevuti 5 frammenti.`); }
   };
 
   return (

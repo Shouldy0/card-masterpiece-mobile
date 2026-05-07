@@ -2,16 +2,20 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { MobileFrame, Hexagon } from "@/components/Common";
+import { useSound } from "@/hooks/useSound";
 import { Eye } from "lucide-react";
 
 export const Route = createFileRoute("/vs")({ component: VS });
 
 function VS() {
   const navigate = useNavigate();
+  const { play } = useSound();
   useEffect(() => {
+    play("dream_enter");
+    setTimeout(() => play("whoosh"), 300);
     const t = setTimeout(() => navigate({ to: "/match" }), 2400);
     return () => clearTimeout(t);
-  }, [navigate]);
+  }, [navigate, play]);
 
   return (
     <MobileFrame className="items-center justify-center px-6">

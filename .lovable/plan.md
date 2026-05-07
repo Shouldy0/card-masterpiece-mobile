@@ -1,58 +1,57 @@
-## Reverie — Mobile Card Game
+# Piano: completamento sezioni mancanti + audio
 
-Costruiamo "Reverie", un gioco di carte mobile in stile mockup: tema oniric/psicologico, palette viola-oro su fondo notturno (#0B0D17 → #2D1E66), tipografia Cinzel per titoli + Montserrat per UI. Tutto verticale mobile-first (390×844 baseline), con cornici dorate, glow viola e animazioni di reveal.
+Tutte le 26 route esistono già, ma alcune sono ancora stub piatte e l'audio engine (`src/utils/audio.ts`) **non è mai chiamato** in nessuna schermata. Ecco cosa farò.
 
-### Esperienza di gioco
+## 1. Audio: cablaggio globale
 
-Match 1v1 vs AI su 3 territori (Memoria d'Infanzia, Trauma Rimosso, Sogno Lucido). Ogni turno il giocatore spende **Focus** (max 6) per giocare carte sui territori. Ogni territorio applica la sua regola passiva al calcolo del Potere. Si gioca a 6 turni; vince chi controlla più territori. HP iniziali 20, una sconfitta di territorio = -danno al perdente.
+`src/utils/audio.ts` è già pronto (drone ambient + 16 SFX sintetizzati via Web Audio). Aggiungerò:
 
-Tipi carta: **Archetipo**, **Ricordo**, **Maschera**. Ogni carta ha Costo (Focus) e Potere. AI semplice: sceglie la carta col miglior rapporto potere/costo sul territorio dove è più indietro.
+- **Hook `useSound()`** che rispetta `settings.soundOn` e i volumi salvati in store (musica/SFX separati).
+- **Estensione store** (`store.ts`): aggiungo `musicVolume`, `sfxVolume` e fix dello slider Audio in `/settings` (oggi non collegato).
+- **Music controller globale** in `__root.tsx`: avvia il drone onirico al primo gesto utente (per via dell'autoplay policy) e lo gestisce via store.
+- **Variazioni di musica per scena**: ambient base ovunque, layer più "tense" durante `/match` e `/vs`, fanfare in `/end` (riuso `victory`/`fail`).
 
-### Schermate (26 totali)
+## 2. SFX nelle schermate chiave
 
-1. **Loading** — logo Reverie + barra "sincronizzazione ricordi"
-2. **Onboarding** — 3 slide swipe
-3. **Home** — logo, GIOCA grande, missioni/pass, scorciatoie Mazzi/Collezione/Negozio, bottom nav
-4. **Match (in-game)** — 3 territori verticali, mano in basso, Focus, FINE TURNO, HP, timer
-5. **Animazione Reveal carta** — coperta → flip → reveal → attivazione (sequenza Framer Motion)
-6. **End Game** — VITTORIA/SCONFITTA, risultato territori, +XP, ricompense
-7. **Rewards** — XP, Oro, Frammenti, pacchetti
-8. **Deck Builder** — Le mie carte / Il mio mazzo 15 carte, filtri
-9. **Collezione** — griglia carte con ricerca + filtri
-10. **Card Detail / Upgrade** — card grande, livello, costo upgrade
-11. **Negozio** — tabs Consigliati/Carte/Board/Effetti, pacchetti
-12. **Profilo** — avatar, livello, statistiche, mazzi preferiti, titoli
-13. **Ranked** — rango Sognatore, ricompense stagionali
-14. **Eventi** — evento attivo + prossimi
-15. **Season Pass** — 15 livelli pass gratuito/premium
-16. **Multiplayer Search** — ricerca avversario animata
-17. **VS Screen** — scontro avatar prima della partita
-18. **Tutorial Match** — overlay guidati con frecce
-19. **Settings** — Gioco/Audio/Grafica/Account
-20. **Connection Status** — ping, server
-21. **Maintenance/News** — annuncio carosello
-22-26. Stat dettagliate, Cronologia partite, Titoli, Modalità (VS AI/Ranked/Evento), Ricompensa giornaliera
+| Schermata | Suoni |
+|---|---|
+| `/` (loading) | `signature` all'avvio, `tick` ad ogni step della progress bar |
+| `/onboarding` | `chime` su next, `dream_enter` sull'ultima slide |
+| `/home` | `whoosh` su tap "GIOCA BATTAGLIA" |
+| `/search` | `tick` per countdown, `pulse` ogni 2s |
+| `/vs` | `dream_enter` all'entrata, `whoosh` sull'animazione VS |
+| `/match` | `card_deal` quando peschi, `card_flip` su reveal, `lock` su selezione carta, `ripple` su fine turno, `success`/`fail` quando l'AI conquista un territorio |
+| `/end` | `victory` su win, `fail` su lose, `chime` su draw |
+| `/shop` | `record` su acquisto pacco, `reroll` quando insufficienti |
+| `/deck` | `card_deal` su add, `lock` su remove, `success` su salva |
+| `/pass`, `/ranked` | `chime` sui claim/CTA |
 
-### Carte generate con AI
+## 3. Schermate da rifinire (oggi minimali)
 
-20 carte uniche generate via Lovable AI (Nano Banana) con prompt coerente: "ritratto onirico, viola/oro, frammenti di vetro, occhio mistico, stile dark fantasy magic-the-gathering". Generate via script `code--exec` una sola volta, salvate in `public/cards/`. Il retro carta è un asset unico (occhio geometrico dorato).
+- **`/connection`** – aggiungo grafico ping live (sparkline finta), refresh button con `reroll` SFX, regione server, status badge animato.
+- **`/news`** – 4 articoli invece di 2, layout magazine, tag categoria, "Leggi tutto" che apre dialog.
+- **`/titles`** – aggiungo descrizione/lore per ogni titolo, requisiti di sblocco, tap per equipaggiare con SFX `lock`.
+- **`/history`** – 12 partite generate, filtro Vittorie/Sconfitte/Tutte, dettaglio espandibile (territori vinti).
+- **`/stats`** – aggiungo grafico XP ultimi 7 giorni, distribuzione carte per tipo, miglior carta giocata.
+- **`/events`** – sezione "Sfide Settimanali" con 3 missioni tracciate (progress bar live dallo store).
+- **`/pass`** – griglia 30 livelli scrollabile (oggi 15), separazione free/premium, claim button funzionante che aggiunge gold/gems.
+- **`/ranked`** – aggiungo leaderboard top-5 fittizia, distanza al rank successivo, ricompense season.
+- **`/settings`** – collego davvero gli slider Musica/Effetti allo store nuovo, aggiungo "Reset progressi" con conferma.
+- **`/profile`** – aggiungo pannello "Carte Preferite" (top 3), badge stagione, link a `/titles` e `/history` con icone più chiare.
 
-### Stato e dati
+## 4. Gameplay: micro-fix mancanti
 
-Tutto client-side con Zustand: stato match, mazzo, collezione, valuta (Oro/Frammenti). Persistenza in localStorage. Niente backend per il primo build.
+- AI riceve `success` SFX quando vince un territorio; mostro toast "L'avversario ha conquistato {territorio}".
+- Animazione "draw card" all'inizio di ogni turno con `card_deal` scaglionato.
+- Indicatore visibile del Focus regenerato a inizio turno (pulse oro).
+- Bug fix in `store.ts > aiTurn`: la rimozione carta dalla mano AI è duplicata/buggy → semplifico in un singolo `splice`.
 
-### Sezione tecnica
+## 5. Tecnico
 
-- TanStack Start con route separate per ogni schermata principale (`/`, `/match`, `/deck`, `/collection`, `/shop`, `/profile`, `/ranked`, `/events`, `/pass`, `/settings`, `/onboarding`, `/end/$result`, ecc.)
-- Stato globale Zustand + slices per match/inventory/player
-- Logica match in `src/game/engine.ts` (fase turno, calcolo potere territorio, AI)
-- Carte definite in `src/game/cards.ts` con id, nome, tipo, costo, potere, effetto, immagine
-- Framer Motion per reveal/flip/glow
-- Tailwind v4 con tokens custom: `--gold: oklch(0.82 0.13 80)`, `--mystic: oklch(0.55 0.22 295)`, `--abyss: oklch(0.15 0.05 270)`
-- Font Cinzel + Montserrat via Google Fonts in `__root.tsx`
-- Componenti riusabili: `<GameCard>`, `<TerritoryPanel>`, `<FocusGems>`, `<GoldFrame>`, `<BottomNav>`
-- Generazione immagini carte: script Python via skill ai-gateway, modello `google/gemini-3.1-flash-image-preview`, output in `public/cards/*.png`
+- Nuovo file `src/hooks/useSound.ts` (wrapper reattivo all'engine).
+- Nuovo file `src/components/MusicProvider.tsx` montato in `__root.tsx` `RootComponent`.
+- Estensione `SettingsState` in `store.ts` con `musicVolume`, `sfxVolume`; migrazione persist gestita con default sicuri.
+- `audio.ts`: aggiungo metodo `setMasterVolumes(music, sfx)` e applico il gain agli SFX.
+- Nessuna nuova dipendenza npm. Audio 100% Web Audio (zero asset, zero rete, funziona offline).
 
-### Note
-
-Build grosso: ~30 file route + componenti. Le 26 schermate saranno tutte navigabili e visivamente fedeli ai mockup; il "match" sarà completamente giocabile vs AI. Le altre schermate sono interattive (tabs, filtri, acquisti simulati con Oro) ma senza backend.
+Output: app più viva, ogni interazione ha feedback sonoro, drone onirico in sottofondo, e tutte le 26 schermate hanno contenuto sostanziale invece di placeholder.

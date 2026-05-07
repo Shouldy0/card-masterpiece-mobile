@@ -7,11 +7,35 @@ class SoundEngine {
   private ctx: AudioContext | null = null;
   private ambientSource: OscillatorNode | null = null;
   private ambientGain: GainNode | null = null;
+  private musicBus: GainNode | null = null;
+  private sfxBus: GainNode | null = null;
+  private musicVol = 0.5;
+  private sfxVol = 0.8;
+  private muted = false;
 
   private init() {
     if (!this.ctx) {
       this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      this.musicBus = this.ctx.createGain();
+      this.musicBus.gain.value = this.muted ? 0 : this.musicVol;
+      this.musicBus.connect(this.ctx.destination);
+      this.sfxBus = this.ctx.createGain();
+      this.sfxBus.gain.value = this.muted ? 0 : this.sfxVol;
+      this.sfxBus.connect(this.ctx.destination);
     }
+  }
+
+  private getSfxBus(): AudioNode {
+    this.init();
+    return this.sfxBus!;
+  }
+
+  setVolumes(music: number, sfx: number, muted: boolean) {
+    this.musicVol = music;
+    this.sfxVol = sfx;
+    this.muted = muted;
+    if (this.musicBus) this.musicBus.gain.value = muted ? 0 : music;
+    if (this.sfxBus) this.sfxBus.gain.value = muted ? 0 : sfx;
   }
 
   /**
@@ -25,8 +49,8 @@ class SoundEngine {
       const now = this.ctx.currentTime;
       this.ambientGain = this.ctx.createGain();
       this.ambientGain.gain.setValueAtTime(0, now);
-      this.ambientGain.gain.linearRampToValueAtTime(0.05, now + 1.5); // 1.5s fade-in
-      this.ambientGain.connect(this.ctx.destination);
+      this.ambientGain.gain.linearRampToValueAtTime(0.4, now + 1.5);
+      this.ambientGain.connect(this.musicBus!);
 
       // Create a drone using multiple oscillators for depth
       const frequencies = [110, 164.81, 220]; // A2, E3, A3
@@ -56,11 +80,6 @@ class SoundEngine {
     if (this.ambientGain && this.ctx) {
       const now = this.ctx.currentTime;
       this.ambientGain.gain.linearRampToValueAtTime(0, now + 1);
-      setTimeout(() => {
-        this.ctx?.close();
-        this.ctx = null;
-        this.ambientSource = null;
-      }, 1000);
     }
   }
 
@@ -73,7 +92,7 @@ class SoundEngine {
       const gain = this.ctx.createGain();
 
       osc.connect(gain);
-      gain.connect(this.ctx.destination);
+      gain.connect(this.getSfxBus());
 
       const now = this.ctx.currentTime;
 
@@ -92,7 +111,7 @@ class SoundEngine {
           sub.type = "sine";
           sub.frequency.setValueAtTime(220, now);
           sub.connect(subGain);
-          subGain.connect(this.ctx.destination);
+          subGain.connect(this.getSfxBus());
           subGain.gain.setValueAtTime(0, now);
           subGain.gain.linearRampToValueAtTime(0.05, now + 0.4);
           subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
@@ -125,7 +144,7 @@ class SoundEngine {
           flipNG.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
           flipNoise.connect(flipFilter);
           flipFilter.connect(flipNG);
-          flipNG.connect(this.ctx.destination);
+          flipNG.connect(this.getSfxBus());
           flipNoise.start(now);
           
           osc.start(now);
@@ -167,7 +186,7 @@ class SoundEngine {
           noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
           noise.connect(noiseFilter);
           noiseFilter.connect(noiseGain);
-          noiseGain.connect(this.ctx.destination);
+          noiseGain.connect(this.getSfxBus());
           noise.start(now);
           break;
 

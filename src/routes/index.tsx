@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useGame } from "@/game/store";
 import { MobileFrame } from "@/components/Common";
+import { useSound } from "@/hooks/useSound";
 import { Eye } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -13,11 +14,18 @@ function Loading() {
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
   const onboardingDone = useGame((s) => s.onboardingDone);
+  const { play } = useSound();
+
+  useEffect(() => { play("signature"); }, [play]);
 
   useEffect(() => {
-    const id = setInterval(() => setProgress((p) => Math.min(100, p + 4)), 60);
+    const id = setInterval(() => setProgress((p) => {
+      const n = Math.min(100, p + 4);
+      if (n !== p && n % 20 === 0) play("tick");
+      return n;
+    }), 60);
     return () => clearInterval(id);
-  }, []);
+  }, [play]);
 
   useEffect(() => {
     if (progress >= 100) {

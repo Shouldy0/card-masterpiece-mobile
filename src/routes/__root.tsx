@@ -1,5 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
+import { MusicProvider } from "@/components/MusicProvider";
 
 import appCss from "../styles.css?url";
 
@@ -71,6 +72,6 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return (<><Outlet /><Toaster /></>);
+  return (<><Outlet /><Toaster /><MusicProvider /></>);
 }
 
