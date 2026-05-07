@@ -33,7 +33,7 @@ function Deck() {
         <Link to="/home" className="flex size-9 items-center justify-center rounded-full bg-card/60 ring-1 ring-gold/30"><ArrowLeft className="h-4 w-4 text-gold" /></Link>
         <h1 className="font-display text-lg gold-text tracking-widest">DECK BUILDER</h1>
         <button
-          onClick={() => saveDeck(deck)}
+          onClick={save}
           disabled={deck.length !== 15}
           className="rounded-full gold-frame bg-mystic/40 px-3 py-1.5 text-[10px] uppercase tracking-widest text-foreground disabled:opacity-40"
         ><Save className="inline h-3 w-3 mr-1" /> Salva</button>
