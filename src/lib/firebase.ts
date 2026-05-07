@@ -12,7 +12,15 @@ const firebaseConfig = {
   appId: "YOUR_APP_ID"
 };
 
-// Inizializza Firebase
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+// Inizializza Firebase solo sul client
+let app;
+let db: any;
+let auth: any;
+
+if (typeof window !== "undefined") {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  auth = getAuth(app);
+}
+
+export { db, auth };

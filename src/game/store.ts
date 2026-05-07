@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { CARDS, CardDef, cardsById, TerritoryId, TERRITORIES } from "./cards";
 import { savePlayerToCloud, loadPlayerFromCloud } from "./persistence";
 
@@ -410,6 +410,11 @@ export const useGame = create<AppStore>()(
     }),
     { 
       name: "reverie-store-v1",
+      storage: createJSONStorage(() => (typeof window !== "undefined" ? localStorage : {
+        getItem: () => null,
+        setItem: () => {},
+        removeItem: () => {},
+      } as any)),
       partialize: (state) => {
         const { user, ...rest } = state;
         return rest;
