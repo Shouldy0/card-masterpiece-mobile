@@ -40,8 +40,8 @@ function Settings() {
         {tab === "Audio" && (
           <>
             <Toggle label="Audio" value={settings.soundOn} onChange={(v: boolean) => toggleSetting("soundOn", v)} />
-            <Slider label="Musica" value={0.7} onChange={() => {}} />
-            <Slider label="Effetti Sonori" value={0.9} onChange={() => {}} />
+            <Slider label="Musica" value={settings.musicVolume} onChange={(v: number) => toggleSetting("musicVolume", v)} />
+            <Slider label="Effetti Sonori" value={settings.sfxVolume} onChange={(v: number) => toggleSetting("sfxVolume", v)} />
           </>
         )}
         {tab === "Grafica" && (
