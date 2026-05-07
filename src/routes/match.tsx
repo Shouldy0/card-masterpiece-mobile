@@ -153,7 +153,7 @@ function Match() {
                 </div>
 
                 <button 
-                  onClick={() => endTurn()}
+                  onClick={handleEndTurn}
                   className="relative group overflow-hidden rounded-full p-px bg-gradient-to-r from-mystic via-gold to-mystic shadow-[0_0_30px_-5px_rgba(255,215,0,0.4)] transition-transform active:scale-95"
                 >
                   <div className="px-8 py-6 rounded-full bg-abyss flex flex-col items-center justify-center ring-1 ring-gold/20 group-hover:bg-card/40 transition-colors">
@@ -178,7 +178,7 @@ function Match() {
                 initial={{ y: 50, opacity: 0, rotate: (i - 2) * 5 }}
                 animate={{ y: 0, opacity: 1, rotate: (i - 2) * 5 }}
                 whileHover={{ y: -40, rotate: 0, zIndex: 50, scale: 1.1 }}
-                onClick={() => setSelected(selected === id ? null : id)}
+                onClick={() => handleSelect(id)}
                 className={cn(
                   "relative cursor-pointer transition-all",
                   selected === id ? "-translate-y-12 z-50 scale-110" : ""
