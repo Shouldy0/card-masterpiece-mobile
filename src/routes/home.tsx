@@ -1,8 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
 import { MobileFrame } from "@/components/Common";
 import { BottomNav } from "@/components/BottomNav";
 import { useGame } from "@/game/store";
+import { sounds } from "@/utils/audio";
 import { Coins, Diamond, Plus, Library, BookOpen, ShoppingBag, Sparkles, Crown, Eye, Zap, Trophy } from "lucide-react";
 
 export const Route = createFileRoute("/home")({ component: Home });
@@ -11,6 +13,11 @@ function Home() {
   const player = useGame((s) => s.player);
   const startMatch = useGame((s) => s.startMatch);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    sounds.startSceneMusic("home");
+    return () => {};
+  }, []);
 
   const play = () => { startMatch(); navigate({ to: "/vs" }); };
 

@@ -5,6 +5,7 @@ import { useGame, TERRITORIES } from "@/game/store";
 import { cardsById, TerritoryId } from "@/game/cards";
 import { GameCard, CardBack, CardFromId } from "@/components/GameCard";
 import { FocusGems, Hexagon, MobileFrame } from "@/components/Common";
+import { sounds } from "@/utils/audio";
 import { Hourglass, Settings, Eye, Ghost, Zap, Trophy, Play, CheckCircle2, RefreshCw, Calendar, Users, Loader2, PlayCircle, Skull, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +40,10 @@ function Match() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState<string | null>(null);
   const [revealing, setRevealing] = useState<{ uid: string; territory: TerritoryId } | null>(null);
+
+  useEffect(() => {
+    sounds.startSceneMusic("match");
+  }, []);
 
   useEffect(() => {
     if (!match) startMatch();

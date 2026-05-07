@@ -2,12 +2,18 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { MobileFrame, Hexagon } from "@/components/Common";
+import { sounds } from "@/utils/audio";
 import { Eye } from "lucide-react";
 
 export const Route = createFileRoute("/vs")({ component: VS });
 
 function VS() {
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    sounds.startSceneMusic("vs");
+  }, []);
+  
   useEffect(() => {
     const t = setTimeout(() => navigate({ to: "/match" }), 2400);
     return () => clearTimeout(t);

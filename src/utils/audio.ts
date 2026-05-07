@@ -3,10 +3,79 @@
  * Generates synthesized sounds using Web Audio API to avoid external dependencies.
  */
 
+type SceneMusic = "home" | "vs" | "match" | "end" | null;
+
+interface SceneMusicConfig {
+  frequencies: number[];
+  types: OscillatorType[];
+  filterFreq: number;
+  filterType: BiquadFilterType;
+  gain: number;
+  detune?: number[];
+}
+
 class SoundEngine {
   private ctx: AudioContext | null = null;
-  private ambientSource: OscillatorNode | null = null;
+  private currentScene: SceneMusic = null;
+  private oscillators: OscillatorNode[] = [];
+  private filters: BiquadFilterNode[] = [];
   private ambientGain: GainNode | null = null;
+  private masterGain: GainNode | null = null;
+  private musicVolume: number = 0.7;
+  private soundEnabled: boolean = true;
+
+  setMusicVolume(vol: number) {
+    this.musicVolume = vol;
+    if (this.ambientGain && this.ctx) {
+      const config = this.currentScene ? this.sceneConfigs[this.currentScene] : null;
+      if (config) {
+        const now = this.ctx.currentTime;
+        this.ambientGain.gain.linearRampToValueAtTime(config.gain * vol, now + 0.3);
+      }
+    }
+  }
+
+  setSoundEnabled(enabled: boolean) {
+    this.soundEnabled = enabled;
+    if (!enabled) {
+      this.stopSceneMusic();
+    }
+  }
+
+  private sceneConfigs: Record<Exclude<SceneMusic, null>, SceneMusicConfig> = {
+    home: {
+      frequencies: [110, 164.81, 220, 329.63], // A2, E3, A3, E4 - mystical open chord
+      types: ["sine", "sine", "triangle", "sine"],
+      filterFreq: 600,
+      filterType: "lowpass",
+      gain: 0.04,
+      detune: [0, 5, -3, 8]
+    },
+    vs: {
+      frequencies: [73.42, 146.83, 220], // D2, D3, A3 - tense interval
+      types: ["sawtooth", "sine", "triangle"],
+      filterFreq: 800,
+      filterType: "bandpass",
+      gain: 0.03,
+      detune: [0, 10, -5]
+    },
+    match: {
+      frequencies: [130.81, 196, 261.63, 392], // C3, G3, C4, G4 - powerful fifth
+      types: ["sine", "triangle", "sine", "triangle"],
+      filterFreq: 1000,
+      filterType: "lowpass",
+      gain: 0.035,
+      detune: [0, 3, -2, 5]
+    },
+    end: {
+      frequencies: [220, 277.18, 329.63, 440], // A3, C#4, E4, A4 - resolution chord
+      types: ["sine", "sine", "sine", "triangle"],
+      filterFreq: 1200,
+      filterType: "lowpass",
+      gain: 0.05,
+      detune: [0, 0, 0, 0]
+    }
+  };
 
   private init() {
     if (!this.ctx) {
@@ -15,53 +84,102 @@ class SoundEngine {
   }
 
   /**
-   * Starts a dreamy, ethereal ambient loop
+   * Start background music for a specific scene
    */
-  startAmbient() {
+  startSceneMusic(scene: Exclude<SceneMusic, null>) {
     try {
+      if (!this.soundEnabled) return;
+      if (this.currentScene === scene) return;
       this.init();
-      if (!this.ctx || this.ambientSource) return;
+      if (!this.ctx) return;
 
+      // Stop current music with fade out
+      if (this.ambientGain) {
+        const now = this.ctx.currentTime;
+        this.ambientGain.gain.linearRampToValueAtTime(0, now + 0.5);
+        // Schedule cleanup after fade
+        setTimeout(() => this.cleanupOscillators(), 500);
+      }
+
+      const config = this.sceneConfigs[scene];
       const now = this.ctx.currentTime;
+
+      // Create master gain for this scene
       this.ambientGain = this.ctx.createGain();
       this.ambientGain.gain.setValueAtTime(0, now);
-      this.ambientGain.gain.linearRampToValueAtTime(0.05, now + 1.5); // 1.5s fade-in
+      this.ambientGain.gain.linearRampToValueAtTime(config.gain * this.musicVolume, now + 1.5);
       this.ambientGain.connect(this.ctx.destination);
 
-      // Create a drone using multiple oscillators for depth
-      const frequencies = [110, 164.81, 220]; // A2, E3, A3
-      frequencies.forEach((freq, i) => {
+      // Create oscillators for this scene
+      this.oscillators = [];
+      this.filters = [];
+
+      config.frequencies.forEach((freq, i) => {
         const osc = this.ctx!.createOscillator();
-        osc.type = "sine";
+        osc.type = config.types[i] || "sine";
         osc.frequency.setValueAtTime(freq, now);
-        // Subtle detune for shimmer
-        osc.detune.setValueAtTime(i * 5, now);
         
+        if (config.detune && config.detune[i]) {
+          osc.detune.setValueAtTime(config.detune[i], now);
+        }
+
         const filter = this.ctx!.createBiquadFilter();
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(400, now);
+        filter.type = config.filterType;
+        filter.frequency.setValueAtTime(config.filterFreq, now);
 
         osc.connect(filter);
         filter.connect(this.ambientGain!);
         osc.start(now);
+
+        this.oscillators.push(osc);
+        this.filters.push(filter);
       });
 
-      this.ambientSource = {} as any; // Mark as started
+      this.currentScene = scene;
     } catch (e) {
-      console.warn("Ambient audio blocked");
+      console.warn("Scene music blocked:", e);
     }
   }
 
-  stopAmbient() {
+  /**
+   * Stop all scene music
+   */
+  stopSceneMusic() {
     if (this.ambientGain && this.ctx) {
       const now = this.ctx.currentTime;
       this.ambientGain.gain.linearRampToValueAtTime(0, now + 1);
-      setTimeout(() => {
-        this.ctx?.close();
-        this.ctx = null;
-        this.ambientSource = null;
-      }, 1000);
+      this.currentScene = null;
+      setTimeout(() => this.cleanupOscillators(), 1000);
     }
+  }
+
+  private cleanupOscillators() {
+    this.oscillators.forEach(osc => {
+      try { osc.stop(); osc.disconnect(); } catch (e) {}
+    });
+    this.filters.forEach(f => {
+      try { f.disconnect(); } catch (e) {}
+    });
+    this.oscillators = [];
+    this.filters = [];
+    if (this.ambientGain) {
+      try { this.ambientGain.disconnect(); } catch (e) {}
+      this.ambientGain = null;
+    }
+  }
+
+  /**
+   * Legacy method - starts home ambient
+   */
+  startAmbient() {
+    this.startSceneMusic("home");
+  }
+
+  /**
+   * Legacy method - stops ambient
+   */
+  stopAmbient() {
+    this.stopSceneMusic();
   }
 
   play(type: "draw" | "success" | "fail" | "tick" | "record" | "lock" | "reroll" | "shuffle" | "victory" | "pulse" | "whoosh" | "chime" | "ripple" | "dream_enter" | "signature" | "card_flip" | "card_deal") {

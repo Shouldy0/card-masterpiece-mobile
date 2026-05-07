@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { MobileFrame } from "@/components/Common";
 import { useGame } from "@/game/store";
+import { sounds } from "@/utils/audio";
 import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/settings")({ component: Settings });
@@ -11,6 +12,18 @@ const tabs = ["Gioco", "Audio", "Grafica", "Account"] as const;
 function Settings() {
   const { settings, toggleSetting } = useGame();
   const [tab, setTab] = useState<typeof tabs[number]>("Gioco");
+  const [musicVol, setMusicVol] = useState(0.7);
+  const [sfxVol, setSfxVol] = useState(0.9);
+
+  const handleSoundToggle = (v: boolean) => {
+    toggleSetting("soundOn", v);
+    sounds.setSoundEnabled(v);
+  };
+
+  const handleMusicVol = (v: number) => {
+    setMusicVol(v);
+    sounds.setMusicVolume(v);
+  };
 
   return (
     <MobileFrame>
@@ -39,9 +52,9 @@ function Settings() {
         )}
         {tab === "Audio" && (
           <>
-            <Toggle label="Audio" value={settings.soundOn} onChange={(v: boolean) => toggleSetting("soundOn", v)} />
-            <Slider label="Musica" value={0.7} onChange={() => {}} />
-            <Slider label="Effetti Sonori" value={0.9} onChange={() => {}} />
+            <Toggle label="Audio" value={settings.soundOn} onChange={handleSoundToggle} />
+            <Slider label="Musica" value={musicVol} onChange={handleMusicVol} />
+            <Slider label="Effetti Sonori" value={sfxVol} onChange={setSfxVol} />
           </>
         )}
         {tab === "Grafica" && (
