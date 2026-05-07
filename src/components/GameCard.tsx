@@ -1,13 +1,16 @@
 import React from "react";
 import { CardDef, cardsById, CardType } from "@/game/cards";
 import { motion } from "framer-motion";
-import { Eye, Brain, BookOpen, Sparkles } from "lucide-react";
+import { Eye, Brain, BookOpen, Sparkles, Leaf } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const typeIcon = {
   archetipo: Sparkles,
   ricordo: BookOpen,
   maschera: Brain,
+  oblio: Eye,
+  sogno: Sparkles,
+  eco: Leaf,
 };
 
 const rarityRing = {
@@ -49,6 +52,7 @@ export function GameCard({ card, size = "md", glow, faded, selected, onClick }: 
       case "maschera": return { primary: "#EF4444", glow: "rgba(239, 68, 68, 0.4)", label: "CRIMSON" };    // Sangue
       case "oblio": return { primary: "#3B82F6", glow: "rgba(59, 130, 246, 0.4)", label: "COLD BLUE" };   // Oblio
       case "sogno": return { primary: "#06B6D4", glow: "rgba(6, 182, 212, 0.4)", label: "CYAN" };        // Sogno
+      case "eco": return { primary: "#10B981", glow: "rgba(16, 185, 129, 0.4)", label: "EMERALD" };     // Eco
       default: return { primary: "#8B5CF6", glow: "rgba(139, 92, 246, 0.4)", label: "COSMIC" };
     }
   };

@@ -1,4 +1,4 @@
-export type CardType = "archetipo" | "ricordo" | "maschera" | "oblio" | "sogno";
+export type CardType = "archetipo" | "ricordo" | "maschera" | "oblio" | "sogno" | "eco";
 export type Rarity = "comune" | "rara" | "epica" | "leggendaria";
 export type TerritoryId = "memoria" | "trauma" | "sogno";
 
@@ -82,6 +82,18 @@ export const CARDS: CardDef[] = [
   { id: "s8_castello", name: "Castello d'Aria", type: "sogno", cost: 6, power: 9, rarity: "leggendaria", text: "+2 Potere.", flavor: "Un regno costruito su fondamenta di speranza pura.", effect: { kind: "buff_self", amount: 2 }, art: "/sogno_lucido_art_naked_1778156537397.png" },
   { id: "s9_rugiada", name: "Rugiada", type: "sogno", cost: 2, power: 2, rarity: "comune", text: "Cura 1 HP.", flavor: "La purezza di un attimo prima del mattino.", effect: { kind: "heal", amount: 1 }, art: "/catarsi_art_naked_1778156397123.png" },
   { id: "s10_infinito", name: "L'Infinito", type: "sogno", cost: 8, power: 15, rarity: "leggendaria", text: "Trascendenza.", flavor: "Oltre il tempo, oltre il sogno, oltre te.", effect: { kind: "none" }, art: "/sogno_lucido_premium_art_1778155405841.png" },
+  
+  // --- FAZIONE: ECO (SMERALDO - NATURA E TEMPO) ---
+  { id: "e1_radice", name: "Radice Profonda", type: "eco", cost: 2, power: 3, rarity: "comune", text: "Stabilità.", flavor: "Le fondamenta della mente sono vive.", effect: { kind: "none" }, art: "/cards/eco_01.png" },
+  { id: "e2_germoglio", name: "Germoglio", type: "eco", cost: 1, power: 1, rarity: "comune", text: "Crescita.", flavor: "Ogni grande idea inizia con un piccolo respiro.", effect: { kind: "none" }, art: "/cards/eco_02.png" },
+  { id: "e3_foresta", name: "Foresta di Echi", type: "eco", cost: 5, power: 7, rarity: "epica", text: "+1 Potere.", flavor: "Le voci del passato risuonano tra le foglie d'argento.", effect: { kind: "buff_self", amount: 1 }, art: "/cards/eco_03.png" },
+  { id: "e4_pioggia_smeraldo", name: "Pioggia Smeraldo", type: "eco", cost: 3, power: 4, rarity: "rara", text: "Cura 2 HP.", flavor: "Un lavaggio purificatore per la coscienza stanca.", effect: { kind: "heal", amount: 2 }, art: "/cards/eco_04.png" },
+  { id: "e5_ciclo", name: "Il Ciclo", type: "eco", cost: 4, power: 6, rarity: "epica", text: "Pesca 1 carta.", flavor: "Ciò che è stato, sarà ancora.", effect: { kind: "draw", amount: 1 }, art: "/cards/eco_05.png" },
+  { id: "e6_quercia", name: "Quercia Antica", type: "eco", cost: 6, power: 10, rarity: "leggendaria", text: "Immortale.", flavor: "Ho visto imperi mentali sorgere e cadere.", effect: { kind: "none" }, art: "/cards/eco_06.png" },
+  { id: "e7_muschio", name: "Muschio Morbido", type: "eco", cost: 2, power: 2, rarity: "comune", text: "Protezione.", flavor: "Il silenzio della natura è una maschera perfetta.", effect: { kind: "none" }, art: "/cards/eco_07.png" },
+  { id: "e8_vento", name: "Vento del Nord", type: "eco", cost: 3, power: 5, rarity: "rara", text: "Spostamento.", flavor: "Porta via i pensieri pesanti.", effect: { kind: "none" }, art: "/cards/eco_08.png" },
+  { id: "e9_pietra", name: "Pietra Filosofale", type: "eco", cost: 7, power: 12, rarity: "leggendaria", text: "Alchimia.", flavor: "Trasformare il dolore in saggezza pura.", effect: { kind: "none" }, art: "/cards/eco_09.png" },
+  { id: "e10_eternita", name: "Eternità", type: "eco", cost: 8, power: 18, rarity: "leggendaria", text: "Fine del tempo.", flavor: "Il momento in cui tutto si ferma e tutto ha senso.", effect: { kind: "none" }, art: "/cards/eco_10.png" },
 ];
 
 export const cardsById = Object.fromEntries(CARDS.map((c) => [c.id, c]));
