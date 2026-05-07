@@ -34,7 +34,7 @@ export const CARDS: CardDef[] = [
     text: "Attira a sé le risorse vicine, potenziando la propria energia per ogni frammento stellare raccolto.", 
     flavor: "Voglio tutto, anche se il prezzo è la mia anima.", 
     effect: { kind: "buff_self", amount: 2 }, 
-    art: "/cards/ambizione.png" 
+    art: "/cards/abisso_interiore.png" 
   },
   { 
     id: "v2_ossessione", 
@@ -46,7 +46,7 @@ export const CARDS: CardDef[] = [
     text: "Rivela le intenzioni nascoste dell'avversario, distorcendo la sua percezione della realtà.", 
     flavor: "Un pensiero che si nutre di te finché non resta altro.", 
     effect: { kind: "weaken_enemy", amount: 1 }, 
-    art: "/cards/ossessione.png" 
+    art: "/cards/ombra_celata.png" 
   },
   { 
     id: "v3_nostalgia", 
@@ -58,7 +58,7 @@ export const CARDS: CardDef[] = [
     text: "Evoca un ricordo dal passato, permettendo di recuperare una risorsa perduta nel vuoto.", 
     flavor: "Un passato che brilla più del presente.", 
     effect: { kind: "draw", amount: 1 }, 
-    art: "/cards/nostalgia.png" 
+    art: "/cards/eco_dimenticato.png" 
   },
   { 
     id: "v4_apatia", 
@@ -70,7 +70,7 @@ export const CARDS: CardDef[] = [
     text: "Immobilizza una minaccia nemica, rendendola inerte come cenere sotto un sole morente.", 
     flavor: "Nulla fa più male, nulla fa più bene.", 
     effect: { kind: "none" }, 
-    art: "/cards/apatia.png" 
+    art: "/cards/abisso_interiore.png" 
   },
   { 
     id: "v5_follia", 
@@ -82,7 +82,7 @@ export const CARDS: CardDef[] = [
     text: "Scatena un vortice di caos che spezza le difese nemiche attraverso geometrie impossibili.", 
     flavor: "La verità è un cerchio che non si chiude mai.", 
     effect: { kind: "buff_self", amount: 3 }, 
-    art: "/cards/follia.png" 
+    art: "/cards/risveglio_se.png" 
   },
   { 
     id: "v6_empatia", 
@@ -94,7 +94,7 @@ export const CARDS: CardDef[] = [
     text: "Crea un riverbero emotivo che guarisce la tua coscienza per ogni carta Archetipo in gioco.", 
     flavor: "Sento il tuo peso come se fosse il mio.", 
     effect: { kind: "heal", amount: 2 }, 
-    art: "/cards/empatia.png" 
+    art: "/cards/catarsi.png" 
   },
   { 
     id: "v7_rancore", 
@@ -106,7 +106,7 @@ export const CARDS: CardDef[] = [
     text: "Infligge un'eco di dolore che riduce il Potere di tutte le carte nemiche in questo territorio.", 
     flavor: "Un fuoco che brucia senza mai spegnersi.", 
     effect: { kind: "weaken_enemy", amount: 1 }, 
-    art: "/cards/rancore.png" 
+    art: "/cards/dolore_represso.png" 
   },
   { 
     id: "v8_solitudine", 
@@ -118,7 +118,7 @@ export const CARDS: CardDef[] = [
     text: "Guadagna +3 Potere se è l'unica tua carta in questo territorio.", 
     flavor: "Un'isola in un mare di stelle morte.", 
     effect: { kind: "none" }, 
-    art: "/cards/solitudine.png" 
+    art: "/cards/abisso_interiore.png" 
   },
   { 
     id: "v9_coraggio", 
@@ -130,7 +130,7 @@ export const CARDS: CardDef[] = [
     text: "Protegge le tue carte adiacenti dalla riduzione di Potere.", 
     flavor: "L'ultimo baluardo prima del buio assoluto.", 
     effect: { kind: "none" }, 
-    art: "/cards/coraggio.png" 
+    art: "/cards/luce_interiore.png" 
   },
   { 
     id: "v10_armonia", 
@@ -142,7 +142,7 @@ export const CARDS: CardDef[] = [
     text: "Sincronizza le tue risorse: pesca 1 carta e cura 2 HP.", 
     flavor: "Il silenzio perfetto tra due battiti del cuore.", 
     effect: { kind: "draw", amount: 1 }, 
-    art: "/cards/armonia.png" 
+    art: "/cards/catarsi.png" 
   },
 
   // --- FAZIONE: RICORDO (ORO - FRAMMENTI SACRI) ---
