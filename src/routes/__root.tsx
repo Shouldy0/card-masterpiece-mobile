@@ -72,6 +72,6 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return (<><Outlet /><Toaster /></>);
+  return (<><Outlet /><Toaster /><MusicProvider /></>);
 }
 
