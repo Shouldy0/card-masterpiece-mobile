@@ -40,6 +40,7 @@ function Match() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState<string | null>(null);
   const [revealing, setRevealing] = useState<{ uid: string; territory: TerritoryId } | null>(null);
+  const { play } = useSound();
 
   useEffect(() => {
     if (!match) startMatch();
@@ -47,18 +48,31 @@ function Match() {
 
   useEffect(() => {
     if (match?.status === "ended") {
+      play(match.result === "win" ? "victory" : "fail");
       const t = setTimeout(() => navigate({ to: "/end" }), 1200);
       return () => clearTimeout(t);
     }
-  }, [match?.status, navigate]);
+  }, [match?.status, match?.result, navigate, play]);
 
   if (!match) return null;
+
+  const handleSelect = (id: string) => {
+    setSelected(selected === id ? null : id);
+    play("lock");
+  };
+
+  const handleEndTurn = () => {
+    play("ripple");
+    endTurn();
+    setTimeout(() => play("card_deal"), 250);
+  };
 
   const handlePlay = (territory: TerritoryId) => {
     if (!selected) return;
     const card = cardsById[selected];
     if (!card || card.cost > match.focus.player) { setSelected(null); return; }
     setRevealing({ uid: selected, territory });
+    play("card_flip");
     setTimeout(() => {
       playCard(selected, territory);
       setRevealing(null);
