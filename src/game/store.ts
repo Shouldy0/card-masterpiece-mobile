@@ -38,13 +38,13 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export function buildStarterDeck(): string[] {
-  // 15 cards
-  const ids = ["eco_dimenticato","ricordo_sfuggente","sussurro_interiore","frammento_verita","maschera_dolore","catarsi","io_falso","luce_interiore","frammento_di_me","paura_primordiale","specchio_distorto","veglia_eterna","dolore_represso","risveglio_se","sogno_lucido"];
+  // 15 cards from the new set
+  const ids = ["v1_ambizione", "v3_nostalgia", "v10_armonia", "o1_chiave_antica", "o3_giocattolo", "o6_giardino", "c1_giullare", "c3_vittima", "c7_bambino", "b2_silenzio", "b4_neve", "b7_pioggia", "s1_miraggio", "s3_nuvola", "s9_rugiada"];
   return ids;
 }
 
 export function createInitialMatch(playerDeck: string[]): MatchState {
-  const aiDeck = shuffle(["eco_dimenticato","sussurro_interiore","maschera_dolore","io_falso","ricordo_sfuggente","catarsi","paura_primordiale","specchio_distorto","ombra_celata","abisso_interiore","veglia_eterna","luce_interiore","frammento_di_me","dolore_represso","guardiano_silenzio"]);
+  const aiDeck = shuffle(["v5_follia", "v7_rancore", "o5_cenere", "o8_tempesta", "c5_martire", "c10_boia", "b3_oblio", "b6_abisso", "s8_castello", "s10_infinito", "v2_ossessione", "o2_bosco_sacro", "c2_re_caduto", "b5_cenere_blu", "s4_visione"]);
   const pDeck = shuffle(playerDeck);
   return {
     turn: 1,
@@ -102,6 +102,7 @@ interface AppStore {
   exitMatch: () => void;
   saveDeck: (deck: string[]) => void;
   toggleSetting: (k: keyof SettingsState, v: any) => void;
+  syncCollection: () => void;
   buyPack: (cost: number, currency: "gold" | "gems") => string[] | null;
   addGold: (n: number) => void;
 }
@@ -185,7 +186,7 @@ function endMatchIfNeeded(state: MatchState) {
 
 export const useGame = create<AppStore>()(
   persist(
-    (set, get) => ({
+    (set, get): AppStore => ({
       player: {
         level: 23,
         xp: 450,
@@ -196,6 +197,7 @@ export const useGame = create<AppStore>()(
         wins: 368,
         matches: 742,
         rank: "Sognatore I",
+        rankPoints: 1250,
         collection: CARDS.map((c) => c.id),
         deck: buildStarterDeck(),
         title: "Sognatore",

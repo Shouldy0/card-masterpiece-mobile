@@ -2,15 +2,11 @@ import React, { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "@/game/store";
-import { CARDS, CardType } from "@/game/cards";
+import { CardDef, CardType, CARDS, TERRITORIES } from "@/game/cards";
 import { MobileFrame } from "@/components/Common";
 import { CanvasBackground } from "@/components/CanvasBackground";
-import { Search, Filter, ChevronDown, Sparkles, LayoutGrid, Zap, Eye, User, Map, Activity, Shield, Shapes, Brain } from "lucide-react";
-
+import { Search, Filter, ChevronDown, Sparkles, LayoutGrid, Zap, Eye, User, Map, Activity, Shield, Shapes, Brain, X, Info, Layers, Sword, Heart } from "lucide-react";
 import { GameCard } from "@/components/GameCard";
-import { TERRITORIES, CardDef } from "@/game/cards";
-import { X, Info, Layers, Sword, Heart } from "lucide-react";
-
 import { BottomNav } from "@/components/BottomNav";
 
 type CollectionTab = "CARTE" | "BOARD" | "EFFETTI";
@@ -174,22 +170,22 @@ function Collection() {
                 desc="Il valore numerico di una memoria. Il giocatore con il potere totale più alto in un territorio lo controlla." 
               />
               <EffectItem 
-                icon={<Layers className="size-5 text-azure" />} 
+                icon={<Layers className="size-5 text-blue-400" />} 
                 label="SINERGIA" 
                 desc="Bonus ottenuti combinando memorie con tag simili o complementari." 
               />
               <EffectItem 
-                icon={<Zap className="size-5 text-mystic-glow" />} 
+                icon={<Zap className="size-5 text-purple-400" />} 
                 label="RIVELAZIONE" 
                 desc="Effetto che si attiva immediatamente quando la memoria viene giocata sul campo." 
               />
               <EffectItem 
-                icon={<Shield className="size-5 text-emerald" />} 
+                icon={<Shield className="size-5 text-emerald-400" />} 
                 label="MASCHERA" 
                 desc="Memorie difensive che spesso indeboliscono il potere delle memorie avversarie." 
               />
               <EffectItem 
-                icon={<Heart className="size-5 text-rose" />} 
+                icon={<Heart className="size-5 text-rose-400" />} 
                 label="CHIAREZZA" 
                 desc="I tuoi punti vita. Se la tua Chiarezza scende a zero, il sogno diventa un incubo." 
               />
@@ -209,8 +205,8 @@ function Collection() {
                 
                 <div className="flex items-center gap-2 pr-2">
                   <TypeToggle active={selectedType === "all"} onClick={() => setSelectedType("all")} icon={<LayoutGrid className="size-3" />} color="gold" />
-                  <TypeToggle active={selectedType === "archetipo"} onClick={() => setSelectedType("archetipo")} icon={<Brain className="size-3" />} color="azure" />
-                  <TypeToggle active={selectedType === "ricordo"} onClick={() => setSelectedType("ricordo")} icon={<Shapes className="size-3" />} color="mystic" />
+                  <TypeToggle active={selectedType === "archetipo"} onClick={() => setSelectedType("archetipo")} icon={<Brain className="size-3" />} color="blue" />
+                  <TypeToggle active={selectedType === "ricordo"} onClick={() => setSelectedType("ricordo")} icon={<Shapes className="size-3" />} color="purple" />
                   <TypeToggle active={selectedType === "maschera"} onClick={() => setSelectedType("maschera")} icon={<Shield className="size-3" />} color="emerald" />
                 </div>
               </div>
@@ -231,14 +227,6 @@ function Collection() {
                 className="absolute inset-0 bg-black/95 backdrop-blur-xl"
               />
               
-              {/* Radial Light behind the card */}
-              <motion.div 
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 0.3, scale: 1 }}
-                exit={{ opacity: 0, scale: 0 }}
-                className="absolute size-[500px] bg-gold/20 rounded-full blur-[100px] pointer-events-none"
-              />
-
               <motion.div 
                 initial={{ opacity: 0, scale: 0.8, y: 50, rotateY: 90 }}
                 animate={{ opacity: 1, scale: 1, y: 0, rotateY: 0 }}
@@ -248,7 +236,6 @@ function Collection() {
               >
                 <div className="relative group">
                   <GameCard card={selectedCard} size="xl" />
-                  {/* Decorative corner accents in modal */}
                   <div className="absolute -top-4 -left-4 size-12 border-t-2 border-l-2 border-gold/40 rounded-tl-3xl pointer-events-none" />
                   <div className="absolute -bottom-4 -right-4 size-12 border-b-2 border-r-2 border-gold/40 rounded-br-3xl pointer-events-none" />
                 </div>
@@ -319,12 +306,13 @@ function EffectItem({ icon, label, desc }: { icon: React.ReactNode; label: strin
     </div>
   );
 }
+
 function TypeToggle({ active, onClick, icon, color }: { active: boolean; onClick: () => void; icon: React.ReactNode; color: string }) {
   const colors: Record<string, string> = {
     gold: "text-gold ring-gold/40 bg-gold/10",
-    azure: "text-azure ring-azure/40 bg-azure/10",
-    mystic: "text-mystic-glow ring-mystic-glow/40 bg-mystic-glow/10",
-    emerald: "text-emerald ring-emerald/40 bg-emerald/10"
+    blue: "text-blue-400 ring-blue-400/40 bg-blue-400/10",
+    purple: "text-purple-400 ring-purple-400/40 bg-purple-400/10",
+    emerald: "text-emerald-400 ring-emerald-400/40 bg-emerald-400/10"
   };
 
   return (

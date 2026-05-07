@@ -1,4 +1,4 @@
-import { CardDef, cardsById } from "@/game/cards";
+import { CardDef, cardsById, CardType } from "@/game/cards";
 import { motion } from "framer-motion";
 import { Eye, Brain, BookOpen, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -43,7 +43,9 @@ export function GameCard({ card, size = "md", glow, faded, selected, onClick }: 
     switch (type) {
       case "archetipo": return { primary: "#A855F7", glow: "rgba(168, 85, 247, 0.4)", label: "VIOLET" }; // Mente
       case "ricordo": return { primary: "#EAB308", glow: "rgba(234, 179, 8, 0.4)", label: "PALE GOLD" };   // Memorie
-      case "maschera": return { primary: "#EF4444", glow: "rgba(239, 68, 68, 0.4)", label: "CRIMSON" };    // Sangue/Difesa
+      case "maschera": return { primary: "#EF4444", glow: "rgba(239, 68, 68, 0.4)", label: "CRIMSON" };    // Sangue
+      case "oblio": return { primary: "#3B82F6", glow: "rgba(59, 130, 246, 0.4)", label: "COLD BLUE" };   // Oblio
+      case "sogno": return { primary: "#06B6D4", glow: "rgba(6, 182, 212, 0.4)", label: "CYAN" };        // Sogno
       default: return { primary: "#8B5CF6", glow: "rgba(139, 92, 246, 0.4)", label: "COSMIC" };
     }
   };
