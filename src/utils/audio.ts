@@ -80,11 +80,6 @@ class SoundEngine {
     if (this.ambientGain && this.ctx) {
       const now = this.ctx.currentTime;
       this.ambientGain.gain.linearRampToValueAtTime(0, now + 1);
-      setTimeout(() => {
-        this.ctx?.close();
-        this.ctx = null;
-        this.ambientSource = null;
-      }, 1000);
     }
   }
 
