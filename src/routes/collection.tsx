@@ -1,42 +1,42 @@
 import React, { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useComboGame } from "@/game/combo-store";
-import { CARD_POOL } from "@/game/engine/card-pool";
+import { useGame } from "@/game/store";
+import { CARDS, CardType } from "@/game/cards";
 import { MobileFrame } from "@/components/Common";
 import { CanvasBackground } from "@/components/CanvasBackground";
-import { Search, Filter, ChevronDown, Sparkles, LayoutGrid, Zap, Eye, Ghost, User, Map, Activity } from "lucide-react";
+import { Search, Filter, ChevronDown, Sparkles, LayoutGrid, Zap, Eye, User, Map, Activity, Shield, Shapes, Brain } from "lucide-react";
 
 type CollectionTab = "CARTE" | "BOARD" | "EFFETTI";
 
 function Collection() {
-  const store = useComboGame();
+  const { player } = useGame();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<CollectionTab>("CARTE");
   const [search, setSearch] = useState("");
-  const [selectedType, setSelectedType] = useState<string>("all");
+  const [selectedType, setSelectedType] = useState<CardType | "all">("all");
 
-  const filteredCards = CARD_POOL.filter(c => {
+  const filteredCards = CARDS.filter(c => {
     const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase());
     const matchesType = selectedType === "all" || c.type === selectedType;
     return matchesSearch && matchesType;
   });
 
-  const getTypeIcon = (type: string) => {
+  const getTypeIcon = (type: CardType) => {
     switch (type) {
-      case "character": return <User className="size-3" />;
-      case "setting": return <Map className="size-3" />;
-      case "action": return <Activity className="size-3" />;
+      case "archetipo": return <Brain className="size-3" />;
+      case "ricordo": return <Shapes className="size-3" />;
+      case "maschera": return <Shield className="size-3" />;
       default: return <Sparkles className="size-3" />;
     }
   };
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
-      case "common": return "text-white/40";
-      case "rare": return "text-azure";
-      case "epic": return "text-mystic-glow";
-      case "legendary": return "text-gold";
+      case "comune": return "text-white/40";
+      case "rara": return "text-azure";
+      case "epica": return "text-mystic-glow";
+      case "leggendaria": return "text-gold";
       default: return "text-white/20";
     }
   };
@@ -51,9 +51,13 @@ function Collection() {
           <div className="flex items-center gap-2">
             <span className="font-display text-[10px] text-gold/40 tracking-[0.3em]">12. COLLECTION</span>
           </div>
-          <div className="size-8 rounded-full bg-card/20 flex items-center justify-center ring-1 ring-gold/20">
+          <motion.button 
+            whileTap={{ scale: 0.9 }}
+            onClick={() => navigate({ to: "/home" })}
+            className="size-8 rounded-full bg-card/20 flex items-center justify-center ring-1 ring-gold/20"
+          >
             <Eye className="size-4 text-gold/60" />
-          </div>
+          </motion.button>
         </header>
 
         {/* Tabs */}
@@ -76,8 +80,8 @@ function Collection() {
         {/* Stats & Search */}
         <div className="flex items-center justify-between gap-4 mb-4">
           <div className="flex flex-col">
-            <span className="text-[8px] uppercase tracking-widest text-gold/40 font-bold">Trovate</span>
-            <span className="font-display text-sm text-gold">{filteredCards.length}/{CARD_POOL.length}</span>
+            <span className="text-[8px] uppercase tracking-widest text-gold/40 font-bold">Memorie</span>
+            <span className="font-display text-sm text-gold">{player.collection.length}/{CARDS.length}</span>
           </div>
           
           <div className="flex-1 relative">
@@ -100,40 +104,45 @@ function Collection() {
         <main className="flex-1 overflow-y-auto pr-1 custom-scrollbar pb-20">
           <div className="grid grid-cols-3 gap-3">
             <AnimatePresence mode="popLayout">
-              {filteredCards.map((card, i) => (
-                <motion.div
-                  key={card.id}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ delay: i * 0.03 }}
-                  className="aspect-[2/2.8] rounded-xl bg-gradient-to-b from-card/30 to-abyss ring-1 ring-gold/20 p-1.5 flex flex-col relative overflow-hidden group shadow-lg"
-                >
-                  {/* Card Header Info */}
-                  <div className="flex justify-between items-start z-10">
-                    <div className="size-5 rounded-full bg-abyss/80 ring-1 ring-gold/30 flex items-center justify-center text-[8px] font-bold text-gold">
-                      {Math.floor(Math.random() * 5) + 1}
+              {filteredCards.map((card, i) => {
+                const isOwned = player.collection.includes(card.id);
+                return (
+                  <motion.div
+                    key={card.id}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ delay: i * 0.03 }}
+                    className={`aspect-[2/2.8] rounded-xl bg-gradient-to-b from-card/30 to-abyss ring-1 ring-gold/20 p-1.5 flex flex-col relative overflow-hidden group shadow-lg ${!isOwned ? 'grayscale opacity-40' : ''}`}
+                  >
+                    {/* Card Header Info */}
+                    <div className="flex justify-between items-start z-10">
+                      <div className="size-5 rounded-full bg-abyss/80 ring-1 ring-gold/30 flex items-center justify-center text-[8px] font-bold text-gold">
+                        {card.cost}
+                      </div>
+                      <div className={`size-5 rounded-full bg-abyss/80 ring-1 ring-gold/30 flex items-center justify-center ${getRarityColor(card.rarity)}`}>
+                        {getTypeIcon(card.type)}
+                      </div>
                     </div>
-                    <div className={`size-5 rounded-full bg-abyss/80 ring-1 ring-gold/30 flex items-center justify-center ${getRarityColor(card.rarity)}`}>
-                      {getTypeIcon(card.type)}
+
+                    {/* Card Image Area (Mock) */}
+                    <div className="flex-1 flex items-center justify-center relative my-1 overflow-hidden rounded-lg">
+                      <div className="absolute inset-0 bg-gold/5 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="size-full bg-card/20 flex items-center justify-center">
+                         <span className="text-3xl filter drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">{card.type === 'archetipo' ? '👤' : card.type === 'ricordo' ? '💭' : '🎭'}</span>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Card Image Area */}
-                  <div className="flex-1 flex items-center justify-center relative my-1">
-                    <div className="absolute inset-0 bg-gold/5 rounded-lg blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <span className="text-4xl filter drop-shadow-[0_0_10px_rgba(255,215,0,0.3)]">{card.icon}</span>
-                  </div>
+                    {/* Card Footer */}
+                    <div className="text-center py-1">
+                      <p className="text-[8px] font-medium text-foreground truncate px-1 uppercase tracking-tighter">{card.name}</p>
+                    </div>
 
-                  {/* Card Footer */}
-                  <div className="text-center py-1">
-                    <p className="text-[8px] font-medium text-foreground truncate px-1 uppercase tracking-tighter">{card.name}</p>
-                  </div>
-
-                  {/* Rarity Border Polish */}
-                  <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full ${getRarityColor(card.rarity).replace('text-', 'bg-')}`} />
-                </motion.div>
-              ))}
+                    {/* Rarity Border Polish */}
+                    <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full ${getRarityColor(card.rarity).replace('text-', 'bg-')}`} />
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           </div>
         </main>
@@ -148,9 +157,9 @@ function Collection() {
             
             <div className="flex items-center gap-1.5 pr-2">
               <TypeToggle active={selectedType === "all"} onClick={() => setSelectedType("all")} icon={<LayoutGrid className="size-3" />} color="gold" />
-              <TypeToggle active={selectedType === "character"} onClick={() => setSelectedType("character")} icon={<User className="size-3" />} color="azure" />
-              <TypeToggle active={selectedType === "setting"} onClick={() => setSelectedType("setting")} icon={<Map className="size-3" />} color="mystic" />
-              <TypeToggle active={selectedType === "action"} onClick={() => setSelectedType("action")} icon={<Activity className="size-3" />} color="emerald" />
+              <TypeToggle active={selectedType === "archetipo"} onClick={() => setSelectedType("archetipo")} icon={<Brain className="size-3" />} color="azure" />
+              <TypeToggle active={selectedType === "ricordo"} onClick={() => setSelectedType("ricordo")} icon={<Shapes className="size-3" />} color="mystic" />
+              <TypeToggle active={selectedType === "maschera"} onClick={() => setSelectedType("maschera")} icon={<Shield className="size-3" />} color="emerald" />
             </div>
           </div>
         </div>
@@ -159,6 +168,28 @@ function Collection() {
     </div>
   );
 }
+
+function TypeToggle({ active, onClick, icon, color }: { active: boolean; onClick: () => void; icon: React.ReactNode; color: string }) {
+  const colors: Record<string, string> = {
+    gold: "text-gold ring-gold/40 bg-gold/10",
+    azure: "text-azure ring-azure/40 bg-azure/10",
+    mystic: "text-mystic-glow ring-mystic-glow/40 bg-mystic-glow/10",
+    emerald: "text-emerald ring-emerald/40 bg-emerald/10"
+  };
+
+  return (
+    <button 
+      onClick={onClick}
+      className={`size-7 rounded-full flex items-center justify-center ring-1 transition-all ${
+        active ? colors[color] : "text-white/20 ring-white/10 hover:ring-white/20"
+      }`}
+    >
+      {icon}
+    </button>
+  );
+}
+
+export const Route = createFileRoute("/collection")({ component: Collection });
 
 function TypeToggle({ active, onClick, icon, color }: { active: boolean; onClick: () => void; icon: React.ReactNode; color: string }) {
   const colors: Record<string, string> = {
