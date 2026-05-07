@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useGame } from "@/game/store";
 import { MobileFrame } from "@/components/Common";
+import { useSound } from "@/hooks/useSound";
 import { Eye } from "lucide-react";
 
 export const Route = createFileRoute("/search")({ component: Search });
@@ -11,12 +12,14 @@ function Search() {
   const [t, setT] = useState(12);
   const navigate = useNavigate();
   const startMatch = useGame((s) => s.startMatch);
+  const { play } = useSound();
   useEffect(() => { startMatch(); }, [startMatch]);
   useEffect(() => {
     if (t <= 0) { navigate({ to: "/vs" }); return; }
+    play("tick");
     const id = setTimeout(() => setT(t - 1), 1000);
     return () => clearTimeout(id);
-  }, [t, navigate]);
+  }, [t, navigate, play]);
 
   return (
     <MobileFrame className="items-center justify-center px-6 text-center">
