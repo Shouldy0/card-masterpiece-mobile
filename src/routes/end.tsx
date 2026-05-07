@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import { MobileFrame } from "@/components/Common";
 import { useGame, TERRITORIES } from "@/game/store";
+import { useSound } from "@/hooks/useSound";
 import { Coins, Diamond, Package } from "lucide-react";
 
 export const Route = createFileRoute("/end")({ component: End });
@@ -11,6 +13,12 @@ function End() {
   const exit = useGame((s) => s.exitMatch);
   const startMatch = useGame((s) => s.startMatch);
   const navigate = useNavigate();
+  const { play } = useSound();
+  useEffect(() => {
+    if (match?.result === "win") play("victory");
+    else if (match?.result === "lose") play("fail");
+    else if (match?.result === "draw") play("chime");
+  }, [match?.result, play]);
   if (!match || !match.territoryResults) {
     navigate({ to: "/home" });
     return null;
