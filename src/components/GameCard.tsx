@@ -55,58 +55,54 @@ export function GameCard({ card, size = "md", glow, faded, selected, onClick }: 
       )}
     >
       {/* 1. CENTRAL ILLUSTRATION (Naked Art) */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 overflow-hidden">
         <img
           src={card.art}
           alt={card.name}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 scale-[1.05]"
           loading="lazy"
         />
         {/* Cinematic Vignette */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/90" />
       </div>
 
       {/* 2. SHARED ORNATE FRAME (Absolute Consistency) */}
       {/* Outer Glow */}
-      <div className="pointer-events-none absolute inset-0 rounded-[12px] border-[1px] border-gold/20" />
+      <div className="pointer-events-none absolute inset-0 rounded-[12px] border-[1px] border-gold/10" />
       {/* The "Master" Metallic Frame */}
-      <div className="pointer-events-none absolute inset-[2px] rounded-[10px] border-[2px] border-double border-gold/40 shadow-[inset_0_0_10px_rgba(0,0,0,0.8)]" />
-      {/* Corner Ornaments */}
-      <div className="pointer-events-none absolute top-0 left-0 size-4 border-t-2 border-l-2 border-gold/80 rounded-tl-[10px]" />
-      <div className="pointer-events-none absolute top-0 right-0 size-4 border-t-2 border-r-2 border-gold/80 rounded-tr-[10px]" />
-      <div className="pointer-events-none absolute bottom-0 left-0 size-4 border-b-2 border-l-2 border-gold/80 rounded-bl-[10px]" />
-      <div className="pointer-events-none absolute bottom-0 right-0 size-4 border-b-2 border-r-2 border-gold/80 rounded-br-[10px]" />
-
+      <div className="pointer-events-none absolute inset-[1.5px] rounded-[10.5px] border-[1.5px] border-double border-gold/30 shadow-[inset_0_0_8px_rgba(0,0,0,0.8)]" />
+      
       {/* 3. DYNAMIC UI (Identical Hierarchy) */}
       {/* Top Left: Cost Gem */}
       <div className={cn(
-        "absolute left-1 top-1 z-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#4C1D95] border-[1.5px] border-gold/50 shadow-[0_0_15px_rgba(139,92,246,0.6)]",
-        isSmall ? "size-5 text-[8px]" : "size-10 text-[18px]"
+        "absolute left-1 top-1 z-10 flex items-center justify-center rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#4C1D95] border-[1px] border-gold/40 shadow-[0_0_10px_rgba(139,92,246,0.4)]",
+        isXs ? "size-3.5 text-[6px]" : isSm ? "size-5 text-[8px]" : "size-9 text-[16px]"
       )}>
-        <span className="font-display font-black text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">{card.cost}</span>
-        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/20 to-white/40 pointer-events-none" />
+        <span className="font-display font-black text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]">{card.cost}</span>
+        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/20 to-white/30 pointer-events-none" />
       </div>
 
       {/* Top Right: Faction Symbol Overlay */}
       <div className={cn(
-        "absolute right-2 top-2 z-10 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border-[1px] border-gold/30",
-        isSmall ? "size-4" : "size-8"
+        "absolute right-1 top-1 z-10 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border-[1px] border-gold/20",
+        isXs ? "size-3.5" : isSm ? "size-5" : "size-8"
       )}>
-        <div className={cn("rounded-full bg-gold animate-pulse", isSmall ? "size-1" : "size-2")} />
+        <div className={cn("rounded-full bg-gold/60 animate-pulse", isXs ? "size-0.5" : isSm ? "size-1" : "size-2")} />
       </div>
 
       {/* Bottom: Translucent Name Panel */}
       <div className={cn(
-        "absolute bottom-0 inset-x-0 z-10 flex flex-col items-center justify-end pb-4 pt-10 px-3 text-center",
+        "absolute bottom-0 inset-x-0 z-10 flex flex-col items-center justify-end px-2 text-center",
+        isXs ? "pb-1 pt-4" : isSm ? "pb-2 pt-6" : "pb-4 pt-10 px-3",
         "bg-gradient-to-t from-black via-black/80 to-transparent"
       )}>
         <h3 className={cn(
-          "font-display uppercase tracking-[0.1em] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]",
-          isSmall ? "text-[8px]" : "text-[12px] font-bold"
+          "font-display uppercase tracking-[0.1em] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] leading-tight",
+          isXs ? "text-[5px]" : isSm ? "text-[7px]" : "text-[11px] font-bold"
         )}>
           {card.name}
         </h3>
-        {!isSmall && (
+        {size === "xl" && (
           <p className="mt-1 text-[7px] text-gold/60 font-medium uppercase tracking-widest leading-tight">
             {card.type} • REVERIE
           </p>
@@ -115,16 +111,16 @@ export function GameCard({ card, size = "md", glow, faded, selected, onClick }: 
 
       {/* Bottom Center: Power Hexagon */}
       <div className={cn(
-        "absolute left-1/2 -translate-x-1/2 z-20 bg-gradient-to-b from-gold via-[#B8860B] to-[#8B4513] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.8)] border-[1px] border-white/40",
-        isSmall ? "bottom-0 w-8 h-5" : "bottom-1 w-14 h-8"
+        "absolute left-1/2 -translate-x-1/2 z-20 bg-gradient-to-b from-gold via-[#B8860B] to-[#8B4513] flex items-center justify-center shadow-[0_4px_10px_rgba(0,0,0,0.8)] border-[1px] border-white/20",
+        isXs ? "bottom-0 w-6 h-3.5" : isSm ? "bottom-0 w-8 h-4.5" : "bottom-1 w-12 h-7"
       )} style={{ clipPath: 'polygon(15% 0%, 85% 0%, 100% 50%, 85% 100%, 15% 100%, 0% 50%)' }}>
         <span className={cn(
           "font-display text-black font-black drop-shadow-sm",
-          isSmall ? "text-[10px]" : "text-[18px]"
+          isXs ? "text-[7px]" : isSm ? "text-[9px]" : "text-[16px]"
         )}>
           {card.power}
         </span>
-        <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" />
       </div>
     </motion.button>
   );
