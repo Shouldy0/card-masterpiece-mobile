@@ -197,7 +197,7 @@ export const useGame = create<AppStore>()(
         matches: 742,
         rank: "Sognatore I",
         rankPoints: 1250,
-        collection: CARDS.map((c) => c.id),
+        collection: CARDS.map((c) => c.id), // This will be used if no persisted state exists
         deck: buildStarterDeck(),
         title: "Sognatore",
       },
