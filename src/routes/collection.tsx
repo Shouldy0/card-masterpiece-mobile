@@ -30,81 +30,83 @@ function Collection() {
   });
 
   return (
-    <div className="relative h-[100dvh] w-screen overflow-hidden bg-black flex items-center justify-center font-serif select-none">
+    <div className="fixed inset-0 overflow-hidden bg-black flex items-center justify-center font-serif select-none">
       <CanvasBackground />
       
       {/* Decorative Orbs */}
       <div className="absolute top-[-10%] left-[-10%] size-64 bg-mystic/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] size-64 bg-gold/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <MobileFrame className="w-full max-w-md h-full flex flex-col relative z-10 overflow-hidden bg-transparent pt-[env(safe-area-inset-top,24px)]">
+      <MobileFrame className="w-full h-full flex flex-col bg-transparent">
         
-        {/* Header Title */}
-        <header className="flex items-center justify-between mb-6 px-4">
-          <div className="flex flex-col">
-            <span className="font-display text-[8px] text-gold/40 tracking-[0.5em] uppercase font-black">Archivio Onirico</span>
-            <h1 className="font-display text-xl text-gold tracking-widest uppercase mt-1">Collezione</h1>
-          </div>
-          <motion.button 
-            whileHover={{ scale: 1.1, rotate: 90 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => navigate({ to: "/home" })}
-            className="size-10 rounded-2xl bg-gold/10 flex items-center justify-center ring-1 ring-gold/30 shadow-[0_0_20px_rgba(255,215,0,0.1)]"
-          >
-            <X className="size-5 text-gold" />
-          </motion.button>
-        </header>
+        {/* TOP SAFE AREA + HEADER */}
+        <div className="shrink-0 pt-[env(safe-area-inset-top,20px)] bg-gradient-to-b from-black/60 to-transparent">
+          <header className="flex items-center justify-between mb-4 px-6 pt-4">
+            <div className="flex flex-col">
+              <span className="font-display text-[8px] text-gold/40 tracking-[0.5em] uppercase font-black">Archivio Onirico</span>
+              <h1 className="font-display text-xl text-gold tracking-widest uppercase mt-1">Collezione</h1>
+            </div>
+            <motion.button 
+              whileHover={{ scale: 1.1, rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => navigate({ to: "/home" })}
+              className="size-10 rounded-2xl bg-gold/10 flex items-center justify-center ring-1 ring-gold/30 shadow-[0_0_20px_rgba(255,215,0,0.1)]"
+            >
+              <X className="size-5 text-gold" />
+            </motion.button>
+          </header>
 
-        {/* Tabs */}
-        <div className="px-4 mb-6">
-          <div className="flex p-1.5 bg-black/40 backdrop-blur-md rounded-2xl ring-1 ring-gold/20 shadow-2xl">
-            {(["CARTE", "BOARD", "EFFETTI"] as CollectionTab[]).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-2.5 rounded-xl text-[9px] font-black tracking-[0.3em] uppercase transition-all duration-300 ${
-                  activeTab === tab 
-                    ? "bg-gold/20 text-gold ring-1 ring-gold/40 shadow-[0_0_20px_rgba(255,215,0,0.2)]" 
-                    : "text-white/20 hover:text-white/50"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
+          <div className="px-6 mb-4">
+            <div className="flex p-1 bg-black/40 backdrop-blur-md rounded-2xl ring-1 ring-gold/20 shadow-2xl">
+              {(["CARTE", "BOARD", "EFFETTI"] as CollectionTab[]).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`flex-1 py-2 rounded-xl text-[9px] font-black tracking-[0.2em] uppercase transition-all duration-300 ${
+                    activeTab === tab 
+                      ? "bg-gold/20 text-gold ring-1 ring-gold/40 shadow-[0_0_20px_rgba(255,215,0,0.2)]" 
+                      : "text-white/20 hover:text-white/50"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
-        {activeTab === "CARTE" && (
-          <>
-            {/* Stats & Search */}
-            <div className="flex items-center justify-between gap-4 mb-6 px-4">
-              <div className="flex flex-col px-1">
-                <span className="text-[7px] uppercase tracking-[0.3em] text-gold/40 font-black">Sincronia</span>
-                <span className="font-display text-base text-white">{player.collection.length}<span className="text-gold/40 text-[10px] ml-1">/ {CARDS.length}</span></span>
-              </div>
-              
-              <div className="flex-1 relative group">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3 text-gold/30 group-focus-within:text-gold transition-colors" />
-                <input 
-                  type="text" 
-                  placeholder="Cerca memorie..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full bg-black/40 backdrop-blur-sm ring-1 ring-gold/20 rounded-xl py-2.5 pl-9 pr-4 text-[10px] text-foreground placeholder:text-gold/20 focus:outline-none focus:ring-gold/50 transition-all font-medium tracking-wider"
-                />
+        {/* SCROLLABLE CONTENT */}
+        <div className="flex-1 overflow-y-auto px-6 custom-scrollbar pb-32">
+          {activeTab === "CARTE" && (
+            <>
+              {/* Stats & Search */}
+              <div className="flex items-center justify-between gap-4 mb-6 pt-2">
+                <div className="flex flex-col px-1">
+                  <span className="text-[7px] uppercase tracking-[0.3em] text-gold/40 font-black">Sincronia</span>
+                  <span className="font-display text-base text-white">{player.collection.length}<span className="text-gold/40 text-[10px] ml-1">/ {CARDS.length}</span></span>
+                </div>
+                
+                <div className="flex-1 relative group">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3 text-gold/30 group-focus-within:text-gold transition-colors" />
+                  <input 
+                    type="text" 
+                    placeholder="Cerca memorie..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full bg-black/40 backdrop-blur-sm ring-1 ring-gold/20 rounded-xl py-2.5 pl-9 pr-4 text-[10px] text-foreground placeholder:text-gold/20 focus:outline-none focus:ring-gold/50 transition-all font-medium tracking-wider"
+                  />
+                </div>
+
+                <motion.button 
+                  whileTap={{ scale: 0.95 }}
+                  className="size-10 rounded-xl bg-gold/5 ring-1 ring-gold/20 flex items-center justify-center hover:bg-gold/10 transition-colors"
+                >
+                  <Filter className="size-4 text-gold/60" />
+                </motion.button>
               </div>
 
-              <motion.button 
-                whileTap={{ scale: 0.95 }}
-                className="size-10 rounded-xl bg-gold/5 ring-1 ring-gold/20 flex items-center justify-center hover:bg-gold/10 transition-colors"
-              >
-                <Filter className="size-4 text-gold/60" />
-              </motion.button>
-            </div>
-
-            {/* Card Grid */}
-            <main className="flex-1 overflow-y-auto pr-1 custom-scrollbar pb-40 px-4">
-              <div className="grid grid-cols-3 gap-y-8 gap-x-4">
+              {/* Card Grid */}
+              <div className="grid grid-cols-3 gap-y-10 gap-x-4 mb-10">
                 <AnimatePresence mode="popLayout">
                   {filteredCards.map((card, i) => {
                     const isOwned = player.collection.includes(card.id);
@@ -134,10 +136,66 @@ function Collection() {
                   })}
                 </AnimatePresence>
               </div>
-            </main>
+            </>
+          )}
 
-            {/* Bottom Filter Bar */}
-            <div className="absolute bottom-[100px] left-4 right-4 z-20 pb-[env(safe-area-inset-bottom,0px)]">
+          {activeTab === "BOARD" && (
+            <div className="space-y-4 py-4">
+              {TERRITORIES.map((t, i) => (
+                <motion.div 
+                  key={t.id}
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  className="bg-gold/5 backdrop-blur-sm rounded-[2rem] p-5 ring-1 ring-gold/20 flex gap-5 items-center group hover:bg-gold/10 transition-all border-l-2 border-gold/40"
+                >
+                  <div className="size-20 rounded-2xl bg-black flex items-center justify-center text-4xl ring-1 ring-gold/30 shadow-2xl group-hover:scale-110 transition-transform duration-500" style={{ color: t.accent }}>
+                    {t.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-display text-xs text-gold tracking-[0.2em] uppercase font-black">{t.name}</h3>
+                    <p className="text-[10px] text-white/60 mt-1.5 leading-relaxed font-medium">{t.rule}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === "EFFETTI" && (
+            <div className="space-y-4 py-4">
+              <EffectItem 
+                icon={<Sword className="size-5 text-gold" />} 
+                label="POTERE" 
+                desc="Il valore numerico di una memoria. Il giocatore con il potere totale più alto in un territorio lo controlla." 
+              />
+              <EffectItem 
+                icon={<Layers className="size-5 text-azure" />} 
+                label="SINERGIA" 
+                desc="Bonus ottenuti combinando memorie con tag simili o complementari." 
+              />
+              <EffectItem 
+                icon={<Zap className="size-5 text-mystic-glow" />} 
+                label="RIVELAZIONE" 
+                desc="Effetto che si attiva immediatamente quando la memoria viene giocata sul campo." 
+              />
+              <EffectItem 
+                icon={<Shield className="size-5 text-emerald" />} 
+                label="MASCHERA" 
+                desc="Memorie difensive che spesso indeboliscono il potere delle memorie avversarie." 
+              />
+              <EffectItem 
+                icon={<Heart className="size-5 text-rose" />} 
+                label="CHIAREZZA" 
+                desc="I tuoi punti vita. Se la tua Chiarezza scende a zero, il sogno diventa un incubo." 
+              />
+            </div>
+          )}
+        </div>
+
+        {/* BOTTOM FIXED AREA */}
+        <div className="shrink-0 relative z-30">
+          {activeTab === "CARTE" && (
+            <div className="absolute bottom-[80px] left-6 right-6 pb-[env(safe-area-inset-bottom,0px)]">
               <div className="bg-black/60 backdrop-blur-2xl ring-1 ring-gold/30 rounded-2xl p-2.5 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-t border-white/5">
                 <button className="flex items-center gap-3 px-4 py-2 rounded-xl bg-gold/10 ring-1 ring-gold/20 group">
                   <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gold/80">Filtri Avanzati</span>
@@ -152,64 +210,10 @@ function Collection() {
                 </div>
               </div>
             </div>
-          </>
-        )}
-
-        {activeTab === "BOARD" && (
-          <main className="flex-1 overflow-y-auto space-y-4 pb-40 px-4 custom-scrollbar">
-            {TERRITORIES.map((t, i) => (
-              <motion.div 
-                key={t.id}
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="bg-gold/5 backdrop-blur-sm rounded-[2rem] p-5 ring-1 ring-gold/20 flex gap-5 items-center group hover:bg-gold/10 transition-all border-l-2 border-gold/40"
-              >
-                <div className="size-20 rounded-2xl bg-black flex items-center justify-center text-4xl ring-1 ring-gold/30 shadow-2xl group-hover:scale-110 transition-transform duration-500" style={{ color: t.accent }}>
-                  {t.icon}
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-display text-xs text-gold tracking-[0.2em] uppercase font-black">{t.name}</h3>
-                  <p className="text-[10px] text-white/60 mt-1.5 leading-relaxed font-medium">{t.rule}</p>
-                </div>
-              </motion.div>
-            ))}
-          </main>
-        )}
-
-        {activeTab === "EFFETTI" && (
-          <main className="flex-1 overflow-y-auto space-y-4 pb-40 px-4 custom-scrollbar">
-            <EffectItem 
-              icon={<Sword className="size-5 text-gold" />} 
-              label="POTERE" 
-              desc="Il valore numerico di una memoria. Il giocatore con il potere totale più alto in un territorio lo controlla." 
-            />
-            <EffectItem 
-              icon={<Layers className="size-5 text-azure" />} 
-              label="SINERGIA" 
-              desc="Bonus ottenuti combinando memorie con tag simili o complementari." 
-            />
-            <EffectItem 
-              icon={<Zap className="size-5 text-mystic-glow" />} 
-              label="RIVELAZIONE" 
-              desc="Effetto che si attiva immediatamente quando la memoria viene giocata sul campo." 
-            />
-            <EffectItem 
-              icon={<Shield className="size-5 text-emerald" />} 
-              label="MASCHERA" 
-              desc="Memorie difensive che spesso indeboliscono il potere delle memorie avversarie." 
-            />
-            <EffectItem 
-              icon={<Heart className="size-5 text-rose" />} 
-              label="CHIAREZZA" 
-              desc="I tuoi punti vita. Se la tua Chiarezza scende a zero, il sogno diventa un incubo." 
-            />
-          </main>
-        )}
-
-        {/* Persistent Bottom Nav */}
-        <div className="mt-auto pb-[env(safe-area-inset-bottom,0px)]">
-          <BottomNav />
+          )}
+          <div className="bg-gradient-to-t from-black via-black/80 to-transparent pb-[env(safe-area-inset-bottom,0px)]">
+            <BottomNav />
+          </div>
         </div>
 
         {/* Card Detail Modal (Discovery Mode) */}

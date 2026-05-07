@@ -1,18 +1,23 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { MobileFrame } from "@/components/Common";
+import { MobileFrame, FocusGems } from "@/components/Common";
 import { BottomNav } from "@/components/BottomNav";
 import { useGame } from "@/game/store";
 import { CARDS, CardType } from "@/game/cards";
 import { GameCard } from "@/components/GameCard";
-import { Filter, Save, ArrowLeft } from "lucide-react";
+import { X } from "lucide-react";
 import { useSound } from "@/hooks/useSound";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
+import { CanvasBackground } from "@/components/CanvasBackground";
 
 export const Route = createFileRoute("/deck")({ component: Deck });
 
+const DECK_SIZE = 15;
+
 function Deck() {
   const { player, saveDeck } = useGame();
+  const navigate = useNavigate();
   const [deck, setDeck] = useState<string[]>(player.deck);
   const [filter, setFilter] = useState<CardType | "all">("all");
   const { play } = useSound();
@@ -20,9 +25,12 @@ function Deck() {
   const myCards = CARDS.filter((c) => filter === "all" || c.type === filter);
 
   const add = (id: string) => {
-    if (deck.length >= 15 || deck.includes(id)) return;
+    if (deck.length >= DECK_SIZE || deck.includes(id)) return;
     const isOwned = player.collection.includes(id);
-    if (!isOwned) return;
+    if (!isOwned) {
+      toast.error("Non possiedi questa memoria");
+      return;
+    }
     play("card_deal");
     setDeck([...deck, id]);
   };
@@ -30,71 +38,103 @@ function Deck() {
   const save = () => { play("success"); saveDeck(deck); toast.success("Deck salvato"); };
 
   return (
-    <MobileFrame>
-      <header className="flex items-center justify-between gap-2 px-4 pt-6">
-        <Link to="/home" className="flex size-9 items-center justify-center rounded-full bg-card/60 ring-1 ring-gold/30"><ArrowLeft className="h-4 w-4 text-gold" /></Link>
-        <h1 className="font-display text-lg gold-text tracking-widest uppercase">Mente</h1>
-        <button
-          onClick={save}
-          disabled={deck.length !== 15}
-          className="rounded-full gold-frame bg-mystic/40 px-3 py-1.5 text-[10px] uppercase tracking-widest text-foreground disabled:opacity-40"
-        ><Save className="inline h-3 w-3 mr-1" /> Salva</button>
-      </header>
+    <div className="fixed inset-0 overflow-hidden bg-black flex items-center justify-center font-serif select-none">
+      <CanvasBackground />
+      
+      {/* Decorative Orbs */}
+      <div className="absolute top-[-10%] left-[-10%] size-64 bg-mystic/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] size-64 bg-gold/10 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* deck slots */}
-      <section className="mt-4 px-4">
-        <div className="flex items-center justify-between">
-          <p className="font-display text-[10px] uppercase tracking-[0.2em] text-gold/60 font-bold">Mazzo Corrente</p>
-          <p className="text-[10px] text-muted-foreground font-bold tracking-widest">{deck.length}/15</p>
-        </div>
-        <div className="mt-2 grid grid-cols-5 gap-1.5 rounded-xl gold-frame bg-card/10 p-2 ring-1 ring-gold/20">
-          {Array.from({ length: 15 }).map((_, i) => {
-            const id = deck[i];
-            const c = id ? CARDS.find((x) => x.id === id) : null;
-            return c ? (
-              <GameCard key={i} card={c} size="xs" onClick={() => remove(c.id)} />
-            ) : (
-              <div key={i} className="aspect-[3/4] w-full rounded-md ring-1 ring-dashed ring-gold/20 bg-black/40 flex items-center justify-center">
-                <div className="size-1 rounded-full bg-gold/20" />
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      <MobileFrame className="w-full h-full flex flex-col bg-transparent">
+        
+        {/* TOP SAFE AREA + HEADER */}
+        <div className="shrink-0 pt-[env(safe-area-inset-top,20px)] bg-gradient-to-b from-black/60 to-transparent">
+          <header className="flex items-center justify-between mb-4 px-6 pt-4">
+            <div className="flex flex-col">
+              <span className="font-display text-[8px] text-gold/40 tracking-[0.5em] uppercase font-black">Laboratorio Arcano</span>
+              <h1 className="font-display text-xl text-gold tracking-widest uppercase mt-1">Mente</h1>
+            </div>
+            <div className="flex items-center gap-3">
+              <FocusGems value={deck.length} max={DECK_SIZE} />
+              <motion.button 
+                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => navigate({ to: "/home" })}
+                className="size-10 rounded-2xl bg-gold/10 flex items-center justify-center ring-1 ring-gold/30 shadow-[0_0_20px_rgba(255,215,0,0.1)]"
+              >
+                <X className="size-5 text-gold" />
+              </motion.button>
+            </div>
+          </header>
 
-      {/* filters */}
-      <section className="mt-6 flex-1 overflow-hidden px-4 flex flex-col">
-        <div className="flex items-center justify-between mb-2">
-          <p className="font-display text-[10px] uppercase tracking-[0.2em] text-gold font-bold">Le Mie Memorie</p>
-          <Filter className="h-3 w-3 text-gold/40" />
+          {/* Filters */}
+          <div className="px-6 mb-4">
+            <div className="flex p-1 bg-black/40 backdrop-blur-md rounded-2xl ring-1 ring-gold/20 shadow-2xl">
+              {(["all", "archetipo", "ricordo", "maschera"] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setFilter(t)}
+                  className={`flex-1 py-2 rounded-xl text-[9px] font-black tracking-[0.1em] uppercase transition-all duration-300 ${
+                    filter === t 
+                      ? "bg-gold/20 text-gold ring-1 ring-gold/40 shadow-[0_0_20px_rgba(255,215,0,0.2)]" 
+                      : "text-white/20 hover:text-white/50"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
-          {(["all","archetipo","ricordo","maschera"] as const).map((f) => (
-            <button key={f} onClick={() => setFilter(f as any)} className={`shrink-0 rounded-xl px-4 py-1.5 text-[9px] uppercase tracking-[0.2em] font-bold transition-all ring-1 ${filter === f ? "bg-gold/20 text-gold ring-gold/40 shadow-lg" : "bg-card/10 text-gold/40 ring-gold/10"}`}>
-              {f === "all" ? "Tutte" : f}
-            </button>
-          ))}
-        </div>
-        <div className="mt-4 grid grid-cols-3 gap-y-6 gap-x-4 overflow-y-auto custom-scrollbar pb-24 flex-1">
-          {myCards.map((c) => {
-            const isOwned = player.collection.includes(c.id);
-            const inDeck = deck.includes(c.id);
-            return (
-              <div key={c.id} className="flex flex-col items-center">
-                <GameCard 
-                  card={c} 
-                  size="lg" 
-                  faded={!isOwned || inDeck} 
-                  glow={inDeck}
-                  onClick={() => add(c.id)} 
-                />
-              </div>
-            );
-          })}
-        </div>
-      </section>
 
-      <BottomNav />
-    </MobileFrame>
+        {/* SCROLLABLE CONTENT */}
+        <div className="flex-1 overflow-y-auto px-6 custom-scrollbar pb-32">
+          {/* Deck Preview Row */}
+          <div className="mb-6 px-1">
+             <div className="flex items-center justify-between mb-2">
+                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gold/60">Mazzo Selezionato</span>
+                <button onClick={save} className="text-[8px] font-black uppercase tracking-[0.2em] text-gold underline">Salva Modifiche</button>
+             </div>
+             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {deck.map((id) => {
+                  const card = CARDS.find(c => c.id === id);
+                  if (!card) return null;
+                  return (
+                    <div key={id} className="shrink-0" onClick={() => remove(id)}>
+                      <GameCard card={card} size="xs" />
+                    </div>
+                  );
+                })}
+                {deck.length === 0 && <div className="text-[10px] text-white/20 italic">Seleziona memorie sotto...</div>}
+             </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-y-10 gap-x-4 pt-4 mb-10 border-t border-white/5">
+            {myCards.map((c) => {
+              const isOwned = player.collection.includes(c.id);
+              const inDeck = deck.includes(c.id);
+              return (
+                <div key={c.id} className="flex flex-col items-center">
+                  <GameCard 
+                    card={c} 
+                    size="lg" 
+                    faded={!isOwned || inDeck} 
+                    glow={inDeck}
+                    onClick={() => add(c.id)} 
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* BOTTOM FIXED AREA */}
+        <div className="shrink-0 relative z-30">
+          <div className="bg-gradient-to-t from-black via-black/80 to-transparent pb-[env(safe-area-inset-bottom,0px)]">
+            <BottomNav />
+          </div>
+        </div>
+      </MobileFrame>
+    </div>
   );
 }
