@@ -34,7 +34,7 @@ export const CARDS: CardDef[] = [
     text: "Attira a sé le risorse vicine, potenziando la propria energia per ogni frammento stellare raccolto.", 
     flavor: "Voglio tutto, anche se il prezzo è la mia anima.", 
     effect: { kind: "buff_self", amount: 2 }, 
-    art: "/cards/abisso_interiore.png" 
+    art: "/cards/ambizione.jpg" 
   },
   { 
     id: "v2_ossessione", 
@@ -46,7 +46,7 @@ export const CARDS: CardDef[] = [
     text: "Rivela le intenzioni nascoste dell'avversario, distorcendo la sua percezione della realtà.", 
     flavor: "Un pensiero che si nutre di te finché non resta altro.", 
     effect: { kind: "weaken_enemy", amount: 1 }, 
-    art: "/cards/ombra_celata.png" 
+    art: "/cards/ossessione.jpg" 
   },
   { 
     id: "v3_nostalgia", 
@@ -58,7 +58,7 @@ export const CARDS: CardDef[] = [
     text: "Evoca un ricordo dal passato, permettendo di recuperare una risorsa perduta nel vuoto.", 
     flavor: "Un passato che brilla più del presente.", 
     effect: { kind: "draw", amount: 1 }, 
-    art: "/cards/eco_dimenticato.png" 
+    art: "/cards/nostalgia.png" 
   },
   { 
     id: "v4_apatia", 
@@ -70,7 +70,7 @@ export const CARDS: CardDef[] = [
     text: "Immobilizza una minaccia nemica, rendendola inerte come cenere sotto un sole morente.", 
     flavor: "Nulla fa più male, nulla fa più bene.", 
     effect: { kind: "none" }, 
-    art: "/cards/abisso_interiore.png" 
+    art: "/cards/apatia.jpg" 
   },
   { 
     id: "v5_follia", 
@@ -82,7 +82,7 @@ export const CARDS: CardDef[] = [
     text: "Scatena un vortice di caos che spezza le difese nemiche attraverso geometrie impossibili.", 
     flavor: "La verità è un cerchio che non si chiude mai.", 
     effect: { kind: "buff_self", amount: 3 }, 
-    art: "/cards/risveglio_se.png" 
+    art: "/cards/follia.jpg" 
   },
   { 
     id: "v6_empatia", 
