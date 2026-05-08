@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import React, { useEffect } from "react";
 import { MobileFrame } from "@/components/Common";
 import { BottomNav } from "@/components/BottomNav";
@@ -143,6 +143,30 @@ function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
   const [revealed, setRevealed] = React.useState<string[]>([]);
   const { play } = useSound();
 
+  // 3D Tilt Logic
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  
+  const mouseX = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseY = useSpring(y, { stiffness: 150, damping: 20 });
+
+  const rotateX = useTransform(mouseY, [-100, 100], [15, -15]);
+  const rotateY = useTransform(mouseX, [-100, 100], [-15, 15]);
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (stage !== "idle") return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    x.set(e.clientX - centerX);
+    y.set(e.clientY - centerY);
+  };
+
+  const handlePointerLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
   const handleOpen = () => {
     setStage("opening");
     play("ripple");
@@ -187,42 +211,69 @@ function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
       </div>
 
       {stage === "idle" || stage === "opening" ? (
-        <div className="flex flex-col items-center z-10">
+        <div className="flex flex-col items-center z-10" style={{ perspective: "1200px" }}>
           <motion.div
             layoutId="starter-pack"
+            onPointerMove={handlePointerMove}
+            onPointerLeave={handlePointerLeave}
+            style={{ 
+              rotateX: stage === "idle" ? rotateX : 0, 
+              rotateY: stage === "idle" ? rotateY : 0,
+              transformStyle: "preserve-3d" 
+            }}
             animate={stage === "opening" ? { 
               scale: [1, 1.4, 0],
               rotate: [0, 10, -10, 720],
-              y: [0, -50, 0]
+              y: [0, -100, 0],
+              z: [0, 100, 0]
             } : { 
               y: [0, -15, 0],
-              rotateZ: [0, 2, -2, 0]
+              rotateZ: stage === "idle" ? [0, 1, -1, 0] : 0
             }}
-            transition={{ duration: stage === "opening" ? 2 : 4, repeat: stage === "opening" ? 0 : Infinity }}
+            transition={{ duration: stage === "opening" ? 2 : 5, repeat: stage === "opening" ? 0 : Infinity }}
             className="relative size-64 mb-12 cursor-pointer group"
             onClick={stage === "idle" ? handleOpen : undefined}
           >
+             {/* 3D Depth Layer (The "Sides") */}
+             <div className="absolute inset-2 bg-gold/20 rounded-[2rem] translate-z-[-10px] blur-sm pointer-events-none" />
+
              {/* Glowing Aura */}
-             <div className="absolute -inset-10 bg-gold/10 blur-3xl rounded-full animate-pulse" />
-             <div className="absolute -inset-20 bg-mystic/5 blur-[80px] rounded-full" />             {/* The Pack Asset */}
-             <div className="absolute inset-0 rounded-[2rem] shadow-[0_0_60px_rgba(150,100,255,0.2)] overflow-hidden">
+             <div className="absolute -inset-10 bg-gold/15 blur-3xl rounded-full animate-pulse" />
+             <div className="absolute -inset-20 bg-mystic/10 blur-[100px] rounded-full" />
+
+             {/* The Pack Asset */}
+             <motion.div 
+               style={{ transformStyle: "preserve-3d" }}
+               className="absolute inset-0 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_60px_rgba(150,100,255,0.2)] overflow-hidden border border-white/10"
+             >
                 <img 
                   src="/assets/starter-pack.png" 
                   alt="Starter Pack" 
                   className="size-full object-cover"
                 />
-                {/* Dynamic Inner Glow Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-white/10 mix-blend-overlay" />
-             </div>
+                
+                {/* Dynamic 3D Light Reflection */}
+                <motion.div 
+                  style={{
+                    background: "linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%)",
+                    x: useTransform(mouseX, [-100, 100], [-150, 150]),
+                    y: useTransform(mouseY, [-100, 100], [-150, 150]),
+                  }}
+                  className="absolute inset-[-100%] pointer-events-none mix-blend-overlay"
+                />
+
+                {/* Ambient Occlusion / Shadow Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-white/5 pointer-events-none" />
+             </motion.div>
 
              {/* Interact Hint */}
              {stage === "idle" && (
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="absolute -bottom-12 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] text-gold/60 uppercase tracking-[0.4em] animate-pulse"
+                  className="absolute -bottom-16 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] text-gold/60 uppercase tracking-[0.5em] animate-pulse"
                 >
-                  Tocca per sintonizzare
+                  Sintonizza la Memoria
                 </motion.div>
              )}
           </motion.div>
