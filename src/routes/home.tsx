@@ -319,25 +319,37 @@ function PackModel({ textureUrl, isOpening }: { textureUrl: string, isOpening: b
     if (isOpening) {
       meshRef.current.rotation.y += delta * 15;
       meshRef.current.rotation.x += delta * 5;
+      meshRef.current.position.z += delta * 5;
     } else {
-      meshRef.current.rotation.y += delta * 0.5;
+      // Gentle floating animation
+      meshRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.2;
+      meshRef.current.rotation.x = Math.cos(state.clock.elapsedTime * 0.5) * 0.1;
+      meshRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.1;
     }
   });
 
   return (
-    <mesh ref={meshRef} castShadow receiveShadow>
-      <boxGeometry args={[2.2, 3.2, 0.4]} />
+    <group>
+      {/* RIM LIGHT: Makes the 3D edges pop */}
+      <pointLight position={[0, 0, -2]} intensity={5} color="#ffd700" />
       
-      {/* Front */}
-      <meshStandardMaterial attach="material-4" map={texture} transparent={true} roughness={0.1} metalness={0.8} />
-      {/* Back */}
-      <meshStandardMaterial attach="material-5" map={texture} transparent={true} opacity={0.5} roughness={0.5} metalness={0.2} />
-      {/* Sides */}
-      <meshStandardMaterial attach="material-0" color="#1a1a1e" roughness={0.2} metalness={0.9} />
-      <meshStandardMaterial attach="material-1" color="#1a1a1e" roughness={0.2} metalness={0.9} />
-      <meshStandardMaterial attach="material-2" color="#1a1a1e" roughness={0.2} metalness={0.9} />
-      <meshStandardMaterial attach="material-3" color="#1a1a1e" roughness={0.2} metalness={0.9} />
-    </mesh>
+      <mesh ref={meshRef} castShadow receiveShadow>
+        {/* Increased thickness to args 0.5 for more 'Volume' */}
+        <boxGeometry args={[2.4, 3.4, 0.5]} />
+        
+        {/* Front Face: High Quality Texture */}
+        <meshStandardMaterial attach="material-4" map={texture} roughness={0.1} metalness={0.9} />
+        
+        {/* Back Face: Mysterious Dark Version */}
+        <meshStandardMaterial attach="material-5" map={texture} color="#222" roughness={0.6} metalness={0.1} />
+        
+        {/* SIDES: Textured Gold/Metallic foil look */}
+        <meshStandardMaterial attach="material-0" color="#8b6508" roughness={0.05} metalness={1} />
+        <meshStandardMaterial attach="material-1" color="#8b6508" roughness={0.05} metalness={1} />
+        <meshStandardMaterial attach="material-2" color="#b8860b" roughness={0.05} metalness={1} />
+        <meshStandardMaterial attach="material-3" color="#b8860b" roughness={0.05} metalness={1} />
+      </mesh>
+    </group>
   );
 }
 
