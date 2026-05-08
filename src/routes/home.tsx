@@ -194,22 +194,8 @@ function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-black/98 backdrop-blur-3xl flex flex-col items-center justify-center p-6 overflow-hidden"
+      className="fixed inset-0 z-[100] bg-black backdrop-blur-3xl flex flex-col items-center justify-center p-6 overflow-hidden"
     >
-      {/* Background Magic Particles */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <motion.div 
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] border border-gold/10 rounded-full border-dashed"
-        />
-        <motion.div 
-          animate={{ rotate: -360 }}
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-[400px] border border-mystic/10 rounded-full border-dashed"
-        />
-      </div>
-
       {stage === "idle" || stage === "opening" ? (
         <div className="flex flex-col items-center z-10" style={{ perspective: "1200px" }}>
           <motion.div
@@ -234,14 +220,6 @@ function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
             className="relative size-64 mb-12 cursor-pointer group"
             onClick={stage === "idle" ? handleOpen : undefined}
           >
-             {/* 3D Depth Layer (The "Sides") */}
-             <div className="absolute inset-2 bg-gold/20 rounded-[2rem] translate-z-[-10px] blur-sm pointer-events-none" />
-
-             {/* Glowing Aura */}
-             <div className="absolute -inset-10 bg-gold/15 blur-3xl rounded-full animate-pulse" />
-             <div className="absolute -inset-20 bg-mystic/10 blur-[100px] rounded-full" />
-
-             {/* The Pack Asset */}
              <motion.div 
                style={{ transformStyle: "preserve-3d" }}
                className="absolute inset-0 overflow-hidden"
