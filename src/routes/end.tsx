@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { MobileFrame } from "@/components/Common";
 import { sounds } from "@/utils/audio";
-import { useGame, TERRITORIES } from "@/game/store";
+import { useGame, TERRITORIES, getMatchRewards } from "@/game/store";
 import { useSound } from "@/hooks/useSound";
 import { Coins, Diamond, Package } from "lucide-react";
 
@@ -28,6 +28,7 @@ function End() {
     return null;
   }
   const result = match.result!;
+  const rewards = getMatchRewards(result);
   const titles = { win: "VITTORIA", lose: "SCONFITTA", draw: "PAREGGIO" };
   const colors = { win: "text-gold", lose: "text-rose", draw: "text-azure" };
 
@@ -58,12 +59,15 @@ function End() {
 
       <div className="mt-6 rounded-xl gold-frame bg-card/60 p-4">
         <p className="text-center text-[10px] uppercase tracking-widest text-muted-foreground">Ricompense</p>
-        <p className="mt-2 text-center font-display text-3xl gold-text">+{result === "win" ? 120 : 40} XP</p>
+        <p className="mt-2 text-center font-display text-3xl gold-text">+{rewards.xp} XP</p>
         <div className="mt-3 flex items-center justify-around">
-          <div className="flex items-center gap-1 text-sm"><Coins className="h-4 w-4 text-gold" /> <span className="font-display">+{result === "win" ? 50 : 20}</span></div>
-          <div className="flex items-center gap-1 text-sm"><Diamond className="h-4 w-4 text-mystic-glow" /> <span className="font-display">+{result === "win" ? 25 : 10}</span></div>
-          <div className="flex items-center gap-1 text-sm"><Package className="h-4 w-4 text-azure" /> <span className="font-display">+1</span></div>
+          <div className="flex items-center gap-1 text-sm"><Coins className="h-4 w-4 text-gold" /> <span className="font-display">+{rewards.gold}</span></div>
+          <div className="flex items-center gap-1 text-sm"><Diamond className="h-4 w-4 text-mystic-glow" /> <span className="font-display">+{rewards.gems}</span></div>
+          <div className="flex items-center gap-1 text-sm"><Package className="h-4 w-4 text-azure" /> <span className="font-display">+{rewards.packs}</span></div>
         </div>
+        <p className="mt-2 text-center text-[10px] text-muted-foreground">
+          Punti Ranked: {rewards.rankPointsDelta >= 0 ? "+" : ""}{rewards.rankPointsDelta}
+        </p>
       </div>
 
       <div className="mt-auto flex flex-col gap-2 pb-8 pt-6">

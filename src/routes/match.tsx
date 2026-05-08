@@ -42,6 +42,7 @@ function Match() {
   const [selected, setSelected] = useState<string | null>(null);
   const [revealing, setRevealing] = useState<{ uid: string; territory: TerritoryId } | null>(null);
   const { play } = useSound();
+  const recentLog = useMemo(() => (match?.log ?? []).slice(-3).reverse(), [match?.log]);
 
   useEffect(() => {
     sounds.startSceneMusic("match");
@@ -109,8 +110,9 @@ function Match() {
                  <span className="font-display text-sm text-gold">15</span>
                </div>
              </div>
-             <button onClick={() => navigate({ to: "/settings" })} className="size-10 rounded-lg bg-card/40 ring-1 ring-gold/20 flex items-center justify-center backdrop-blur-md hover:bg-card/60 transition-colors">
+             <button onClick={() => navigate({ to: "/settings" })} className="size-10 rounded-lg bg-card/40 ring-1 ring-gold/20 flex items-center justify-center backdrop-blur-md hover:bg-card/60 transition-colors relative">
                <Settings className="h-5 w-5 text-gold/60" />
+               <SyncIndicator />
              </button>
            </div>
         </div>
@@ -138,6 +140,16 @@ function Match() {
 
         {/* Footer Area */}
         <div className="relative pb-6 pt-2">
+          <div className="mx-6 mb-3 rounded-xl bg-card/30 ring-1 ring-gold/15 backdrop-blur-sm px-3 py-2">
+            <p className="text-[8px] uppercase tracking-[0.25em] text-gold/60 mb-1">Cronaca</p>
+            <div className="space-y-1">
+              {recentLog.map((entry, idx) => (
+                <p key={`${entry}-${idx}`} className="text-[9px] text-foreground/80 leading-tight">
+                  {entry}
+                </p>
+              ))}
+            </div>
+          </div>
           <div className="px-6 flex justify-between items-end mb-4">
              <PlayerAvatar side="player" name="DREAMER" sub="Risvegliata" hp={match.hp.player} focus={match.focus.player} maxFocus={match.maxFocus} />
              
@@ -194,14 +206,20 @@ function Match() {
                     x: selected === id ? 0 : translateX,
                     opacity: 1, 
                     rotate: selected === id ? 0 : rotation,
-                    zIndex: selected === id ? 100 : i 
+                    zIndex: selected === id ? 100 : i,
+                    scale: selected === id ? 1.2 : 1
+                  }}
+                  transition={{ 
+                    type: "spring", 
+                    stiffness: 260, 
+                    damping: 20 
                   }}
                   whileHover={{ 
-                    y: -100, 
+                    y: -110, 
                     rotate: 0, 
-                    scale: 1.3,
-                    zIndex: 100,
-                    transition: { duration: 0.2 }
+                    scale: 1.4,
+                    zIndex: 150,
+                    transition: { duration: 0.25, ease: "easeOut" }
                   }}
                   onClick={() => handleSelect(id)}
                   className={cn(
@@ -417,5 +435,18 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
         </div>
       )}
     </motion.div>
+  );
+}
+
+function SyncIndicator() {
+  const status = useGame(s => s.syncStatus);
+  if (status === "idle") return null;
+
+  return (
+    <div className="absolute -top-1 -right-1 flex items-center justify-center">
+      {status === "syncing" && <RefreshCw className="h-3 w-3 text-gold animate-spin" />}
+      {status === "saved" && <CheckCircle2 className="h-3 w-3 text-emerald-400" />}
+      {status === "error" && <Skull className="h-3 w-3 text-rose" />}
+    </div>
   );
 }

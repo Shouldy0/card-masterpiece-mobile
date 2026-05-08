@@ -20,7 +20,7 @@ const rarityBorder = {
   leggendaria: "border-gold/60 shadow-[0_0_30px_rgba(255,215,0,0.5)]",
 };
 
-export function GameCard({ card, size = "md", glow, faded, selected, onClick }: Props) {
+export const GameCard = React.memo(function GameCard({ card, size = "md", glow, faded, selected, onClick }: Props) {
   const [imgError, setImgError] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
   const [showInspection, setShowInspection] = React.useState(false);
@@ -45,7 +45,7 @@ export function GameCard({ card, size = "md", glow, faded, selected, onClick }: 
   const accent = getFactionAccent(card.type);
 
   const handleClick = () => {
-    if (size === "lg") setShowInspection(true);
+    if (size === "xl") setShowInspection(true);
     onClick?.();
   };
 
@@ -227,11 +227,9 @@ export function GameCard({ card, size = "md", glow, faded, selected, onClick }: 
     </AnimatePresence>
     </>
   );
-}
-  );
-}
+});
 
-export function CardBack({ size = "md" }: { size?: keyof typeof sizes }) {
+export const CardBack = React.memo(function CardBack({ size = "md" }: { size?: keyof typeof sizes }) {
   return (
     <div className={cn(
       "relative shrink-0 rounded-[12px] overflow-hidden bg-black shadow-2xl group", 
@@ -269,7 +267,7 @@ export function CardBack({ size = "md" }: { size?: keyof typeof sizes }) {
       <div className="absolute bottom-1 right-1 size-3 border-b-[1.5px] border-r-[1.5px] border-gold/50 rounded-br-sm pointer-events-none" />
     </div>
   );
-}
+});
 
 export function CardFromId({ id, ...rest }: { id: string } & Omit<Props, "card">) {
   const c = cardsById[id];

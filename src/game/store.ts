@@ -27,6 +27,7 @@ export interface MatchState {
   status: "playing" | "ended";
   result?: "win" | "lose" | "draw";
   territoryResults?: Record<TerritoryId, { p: number; a: number }>;
+  aiStyle: "aggressive" | "control" | "balanced";
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -38,19 +39,46 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+function pickAiStyle(): MatchState["aiStyle"] {
+  const styles: MatchState["aiStyle"][] = ["aggressive", "control", "balanced"];
+  return styles[Math.floor(Math.random() * styles.length)];
+}
+
+export function getRankFromPoints(rankPoints: number): string {
+  if (rankPoints >= 2400) return "Oracolo della Reverie";
+  if (rankPoints >= 1600) return "Custode Lucido";
+  if (rankPoints >= 900) return "Sognatore Esperto";
+  if (rankPoints >= 300) return "Sognatore Adepto";
+  return "Sognatore Iniziale";
+}
+
+export function getNextRankMilestone(rankPoints: number): number {
+  if (rankPoints < 300) return 300;
+  if (rankPoints < 900) return 900;
+  if (rankPoints < 1600) return 1600;
+  if (rankPoints < 2400) return 2400;
+  return 3000;
+}
+
+export function getMatchRewards(result: MatchState["result"]): MatchRewards {
+  if (result === "win") return { xp: 110, gold: 45, fragments: 20, gems: 8, packs: 1, rankPointsDelta: 25 };
+  if (result === "lose") return { xp: 25, gold: 10, fragments: 5, gems: 0, packs: 0, rankPointsDelta: -15 };
+  return { xp: 45, gold: 18, fragments: 8, gems: 0, packs: 0, rankPointsDelta: 5 };
+}
+
 export function buildStarterDeck(): string[] {
   // 15 cards from the new set
-  const ids = ["v1_ambizione", "v3_nostalgia", "v10_armonia", "o1_chiave_antica", "o3_giocattolo", "o6_giardino", "c1_giullare", "c3_vittima", "c7_bambino", "b2_silenzio", "b4_neve", "b7_pioggia", "s1_miraggio", "s3_nuvola", "s9_rugiada"];
+  const ids = ["v1_ambizione", "v3_nostalgia", "v10_armonia", "o1_chiave_antica", "o3_giocattolo", "o6_giardino", "c1_giullare", "c3_vittima", "c7_bambino", "b2_silenzio", "b4_neve", "b7_pioggia", "s1_miraggio", "s3_nuvola", "s9_citta"];
   return ids;
 }
 
 export function createInitialMatch(playerDeck: string[]): MatchState {
-  const aiDeck = shuffle(["v5_follia", "v7_rancore", "o5_cenere", "o8_tempesta", "c5_martire", "c10_boia", "b3_oblio", "b6_abisso", "s8_castello", "s10_infinito", "v2_ossessione", "o2_bosco_sacro", "c2_re_caduto", "b5_cenere_blu", "s4_visione"]);
+  const aiDeck = shuffle(["v5_follia", "v7_rancore", "o5_cenere", "o8_tempesta", "c5_martire", "c10_boia", "b3_oblio", "b6_abisso", "s8_arcobaleno", "s10_risveglio", "v2_ossessione", "o2_bosco_sacro", "c2_re_caduto", "b5_cenere_blu", "s4_visione"]);
   const pDeck = shuffle(playerDeck);
   return {
     turn: 1,
     maxTurns: 6,
-    focus: { player: 3, ai: 3 },
+    focus: { player: 3, ai: 4 },
     maxFocus: 6,
     hp: { player: 20, ai: 20 },
     hand: { player: pDeck.slice(0, 5), ai: aiDeck.slice(0, 5) },
@@ -60,6 +88,7 @@ export function createInitialMatch(playerDeck: string[]): MatchState {
     weakens: { player: 0, ai: 0 },
     log: ["La Reverie ha inizio…"],
     status: "playing",
+    aiStyle: pickAiStyle(),
   };
 }
 
@@ -77,6 +106,15 @@ export interface PlayerProgress {
   collection: string[]; // owned card ids
   deck: string[];
   title: string;
+}
+
+export interface MatchRewards {
+  xp: number;
+  gold: number;
+  fragments: number;
+  gems: number;
+  packs: number;
+  rankPointsDelta: number;
 }
 
 interface SettingsState {
@@ -107,21 +145,35 @@ interface AppStore {
   buyPack: (cost: number, currency: "gold" | "gems") => string[] | null;
   addGold: (n: number) => void;
   syncWithCloud: (userId: string) => Promise<void>;
+  syncStatus: "idle" | "syncing" | "error" | "saved";
+  lastSyncedAt: string | null;
   user: any | null;
   setUser: (user: any | null) => void;
   resetPlayer: () => void;
 }
 
-function powerWithRules(state: MatchState, card: CardDef, side: Side, territory: TerritoryId): number {
+function powerWithRules(state: MatchState, card: CardDef, side: Side, territory: TerritoryId, cardUid?: string): number {
   let p = card.power;
   const enemySide: Side = side === "player" ? "ai" : "player";
   
-  // UNIQUE: Apatia (v4_apatia) ignores all buffs/weakens (Immobilis)
-  if (card.id === "v4_apatia") return p;
+  // UNIQUE: "immobile" trait ignores all buffs/weakens
+  if (card.traits?.includes("immobile")) return p;
 
   // 1. BASE BUFFS / WEAKENS
-  p += state.buffs[side];
-  p -= state.weakens[enemySide];
+  let totalBuff = state.buffs[side];
+  let totalWeaken = state.weakens[enemySide];
+
+  // UNIQUE: "protector" trait nearby prevents power reduction
+  const board = state.board[territory];
+  const myIndex = cardUid ? board.findIndex(o => o.uid === cardUid) : -1;
+  // If card is already on board, we can check neighbors.
+  const neighbors = myIndex >= 0 ? board.filter((o, idx) => o.side === side && Math.abs(idx - myIndex) === 1) : [];
+  const isProtected = neighbors.some(n => cardsById[n.cardId]?.traits?.includes("protector"));
+  
+  if (isProtected) totalWeaken = 0;
+
+  p += totalBuff;
+  p -= totalWeaken;
 
   // 2. FACTION PASSIVES (Master Synergy)
   // Archetipo: +1 power for each other Archetipo card already in this territory
@@ -129,8 +181,8 @@ function powerWithRules(state: MatchState, card: CardDef, side: Side, territory:
     const others = state.board[territory].filter(o => o.side === side && cardsById[o.cardId]?.type === "archetipo").length;
     p += others;
     
-    // UNIQUE: Ossessione (v2_ossessione) gains +2 if enemy hand > 3
-    if (card.id === "v2_ossessione") {
+    // UNIQUE: "synergy_buff" logic for specific cards (formerly Ossessione)
+    if (card.traits?.includes("synergy_buff")) {
       const enemyHand = side === "player" ? state.hand.ai.length : state.hand.player.length;
       if (enemyHand > 3) p += 2;
     }
@@ -142,8 +194,16 @@ function powerWithRules(state: MatchState, card: CardDef, side: Side, territory:
   }
 
   // 3. TERRITORY GLOBAL RULES
-  if (territory === "trauma") p -= 1;
-  if (territory === "sogno" && side === "player") p += 1;
+  if (territory === "trauma") {
+    if (!isProtected) p -= 1;
+  }
+  if (territory === "sogno") p += 1;
+
+  // 4. TRAIT: Loner (+3 if alone)
+  if (card.traits?.includes("loner")) {
+    const myCards = state.board[territory].filter(o => o.side === side).length;
+    if (myCards <= 1) p += 3; // <= 1 because if it's on board, it counts itself
+  }
 
   return Math.max(0, p);
 }
@@ -161,16 +221,29 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
     }
     case "buff_self":
       let amount = card.effect.amount;
-      // UNIQUE: Cenere e Stelle (o5_cenere) doubles buff if focus is 0 after play
-      if (card.id === "o5_cenere" && state.focus[side] === 0) amount *= 2;
+      // UNIQUE: "synergy_buff" logic for specific cards (formerly Cenere e Stelle)
+      if (card.traits?.includes("synergy_buff") && state.focus[side] === 0) amount *= 2;
       state.buffs[side] += amount;
       break;
     case "weaken_enemy":
       state.weakens[side] += card.effect.amount;
       break;
     case "heal":
-      state.hp[side] = Math.min(20, state.hp[side] + card.effect.amount);
+      let healAmount = card.effect.amount;
+      if (card.traits?.includes("dynamic_heal")) {
+        // Heal +2 for each Archetipo on board
+        const count = (["memoria", "trauma", "sogno"] as TerritoryId[]).reduce((s, t) => 
+          s + state.board[t].filter(o => o.side === side && cardsById[o.cardId]?.type === "archetipo").length, 0);
+        healAmount = count * 2;
+      }
+      state.hp[side] = Math.min(20, state.hp[side] + healAmount);
       break;
+  }
+
+  // TRAIT: Oppressive (weaken enemy in this territory)
+  if (card.traits?.includes("oppressive")) {
+    state.log.push(`${card.name} emana un'aura opprimente!`);
+    state.weakens[side] += 1;
   }
 
   // FACTION-SPECIFIC ON-PLAY TRIGGERS
@@ -179,15 +252,15 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
     state.focus[enemySide] = Math.max(0, state.focus[enemySide] - 1);
     state.log.push(`${side === "player" ? "Hai" : "L'avversario ha"} drenato 1 Focus!`);
 
-    // UNIQUE: Il Boia (c10_boia) executes weakest enemy if total power > 15
-    if (card.id === "c10_boia") {
+    // UNIQUE: "executioner" trait executes weakest enemy if total power > 15
+    if (card.traits?.includes("executioner")) {
       const enemyPower = state.board[territory].filter(o => o.side === enemySide).reduce((s, o) => s + o.power, 0);
       if (enemyPower > 15) {
         const board = state.board[territory].filter(o => o.side === enemySide).sort((a, b) => a.power - b.power);
         if (board.length > 0) {
           const target = board[0];
           state.board[territory] = state.board[territory].filter(o => o.uid !== target.uid);
-          state.log.push(`Il Boia ha eseguito una memoria nemica!`);
+          state.log.push(`${card.name} ha eseguito una memoria nemica!`);
         }
       }
     }
@@ -197,11 +270,11 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
   if (card.type === "oblio") {
     state.log.push(`L'Oblio avvolge ${territory}.`);
     
-    // UNIQUE: Il Vuoto (b1_vuoto) resets all buffs/weakens in the match for this play
-    if (card.id === "b1_vuoto") {
+    // UNIQUE: "resetter" trait resets all buffs/weakens in the match for this play
+    if (card.traits?.includes("resetter")) {
       state.buffs = { player: 0, ai: 0 };
       state.weakens = { player: 0, ai: 0 };
-      state.log.push(`Il Vuoto ha azzerato gli effetti globali.`);
+      state.log.push(`${card.name} ha azzerato gli effetti globali.`);
     }
   }
 }
@@ -210,39 +283,68 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
 function processEndTurnTriggers(state: MatchState) {
   (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach(t => {
     state.board[t].forEach(o => {
-      // UNIQUE: Eternità (e10_eternita) grows +1 each turn
-      if (o.cardId === "e10_eternita") {
+      const cardDef = cardsById[o.cardId];
+      // UNIQUE: "growth" trait grows +1 each turn
+      if (cardDef?.traits?.includes("growth")) {
         o.power += 1;
       }
     });
   });
 }
 
+function recalculateBoard(state: MatchState) {
+  (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach(t => {
+    state.board[t].forEach(o => {
+      const def = cardsById[o.cardId];
+      if (def) {
+        o.power = powerWithRules(state, def, o.side, t, o.uid);
+      }
+    });
+  });
+}
+
 function aiTurn(state: MatchState) {
-  // simple greedy: play affordable cards on weakest territory
+  // Adaptive AI profile: changes priorities to avoid predictable turns.
+  const style = state.aiStyle;
   let safety = 6;
   while (safety-- > 0) {
     const affordable = state.hand.ai
       .map((id) => cardsById[id])
       .filter((c) => c && c.cost <= state.focus.ai)
-      .sort((a, b) => b.power / b.cost - a.power / a.cost);
+      .sort((a, b) => {
+        const score = (card: CardDef) => {
+          const efficiency = card.power / Math.max(1, card.cost);
+          if (style === "aggressive") return card.power * 1.45 + efficiency * 0.35 + card.cost * 0.25;
+          if (style === "control") {
+            const utility = card.effect.kind === "weaken_enemy" || card.effect.kind === "heal" || card.effect.kind === "draw" ? 4.5 : 0;
+            return efficiency * 1 + utility + card.cost * 0.05;
+          }
+          return efficiency * 1.35 + card.power * 0.55;
+        };
+        return score(b) - score(a);
+      });
     if (affordable.length === 0) break;
     const card = affordable[0];
-    // pick territory where ai is losing most (or random)
+    // Territory choice also depends on the selected AI style.
     const tIds: TerritoryId[] = ["memoria", "trauma", "sogno"];
     const scored = tIds.map((t) => {
       const aiP = state.board[t].filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
       const plP = state.board[t].filter((c) => c.side === "player").reduce((s, c) => s + c.power, 0);
-      return { t, diff: aiP - plP };
-    }).sort((a, b) => a.diff - b.diff);
+      const diff = aiP - plP;
+      const territoryValue = t === "sogno" ? 1 : t === "memoria" ? 0.8 : 0.6;
+      if (style === "aggressive") return { t, score: diff * -0.45 + territoryValue + plP * 0.35 };
+      if (style === "control") return { t, score: diff * -1.35 + territoryValue * 0.75 };
+      return { t, score: diff * -0.95 + territoryValue };
+    }).sort((a, b) => b.score - a.score);
     const territory = scored[0].t;
     state.focus.ai -= card.cost;
     const idx = state.hand.ai.indexOf(card.id);
     if (idx >= 0) state.hand.ai.splice(idx, 1);
     applyEffect(state, card, "ai", territory);
-    const power = powerWithRules(state, card, "ai", territory);
-    state.board[territory].push({ uid: `ai-${state.turn}-${Math.random()}`, cardId: card.id, side: "ai", power });
-    state.log.push(`Avversario gioca ${card.name} su ${territory}.`);
+    const uid = `ai-${state.turn}-${Math.random()}`;
+    state.board[territory].push({ uid, cardId: card.id, side: "ai", power: 0 });
+    recalculateBoard(state);
+    state.log.push(`Avversario (${style}) gioca ${card.name} su ${territory} (Costo ${card.cost}).`);
   }
 }
 
@@ -289,6 +391,10 @@ export const useGame = create<AppStore>()(
         const validCollection = player.collection.filter(id => masterIds.includes(id));
         const validDeck = player.deck.filter(id => masterIds.includes(id));
         
+        // Ensure starting cards are ALWAYS in collection if somehow lost
+        const starterIds = buildStarterDeck();
+        const finalCollection = Array.from(new Set([...validCollection, ...starterIds]));
+
         // Check if current match is still valid
         let matchInvalid = false;
         if (match) {
@@ -299,14 +405,13 @@ export const useGame = create<AppStore>()(
           }
         }
         
-        // If collection size changed, deck has invalid IDs, or match is invalid, update state
-        const needsSync = validCollection.length !== masterIds.length || validDeck.length !== player.deck.length || matchInvalid;
+        const needsSync = finalCollection.length !== player.collection.length || validDeck.length !== player.deck.length || matchInvalid;
         
         if (needsSync) {
           set(state => ({
             player: {
               ...state.player,
-              collection: masterIds, // Garantisci l'accesso a tutte le 60 carte aggiornate
+              collection: finalCollection,
               deck: validDeck.length === 15 ? validDeck : buildStarterDeck()
             },
             match: matchInvalid ? null : state.match
@@ -316,6 +421,8 @@ export const useGame = create<AppStore>()(
       settings: { soundOn: true, musicVolume: 0.5, sfxVolume: 0.8, vibration: true, hints: true, animSpeed: 1, language: "Italiano" },
       match: null,
       onboardingDone: false,
+      syncStatus: "idle",
+      lastSyncedAt: null,
 
       setOnboardingDone: () => set({ onboardingDone: true }),
 
@@ -333,9 +440,10 @@ export const useGame = create<AppStore>()(
         m.hand.player.splice(idx, 1);
         m.focus.player -= card.cost;
         applyEffect(m, card, "player", territory);
-        const power = powerWithRules(m, card, "player", territory);
-        m.board[territory].push({ uid: `p-${m.turn}-${Math.random()}`, cardId, side: "player", power });
-        m.log.push(`Giochi ${card.name} su ${territory}.`);
+        const uid = `p-${m.turn}-${Math.random()}`;
+        m.board[territory].push({ uid, cardId, side: "player", power: 0 }); // Temporary power
+        recalculateBoard(m);
+        m.log.push(`Giochi ${card.name} su ${territory} (Costo ${card.cost}).`);
         return { match: m };
       }),
 
@@ -346,16 +454,28 @@ export const useGame = create<AppStore>()(
         aiTurn(m);
         // Process end-of-turn triggers (like growth)
         processEndTurnTriggers(m);
+        // Territory rule: controller of Memoria draws one card.
+        const memoriaPlayer = m.board.memoria.filter((c) => c.side === "player").reduce((sum, c) => sum + c.power, 0);
+        const memoriaAi = m.board.memoria.filter((c) => c.side === "ai").reduce((sum, c) => sum + c.power, 0);
+        if (memoriaPlayer !== memoriaAi) {
+          const controller: Side = memoriaPlayer > memoriaAi ? "player" : "ai";
+          const bonusDraw = m.deck[controller].shift();
+          if (bonusDraw) {
+            m.hand[controller].push(bonusDraw);
+            m.log.push(`${controller === "player" ? "Controlli" : "L'avversario controlla"} Memoria: pesca bonus.`);
+          }
+        }
         // reset turn buffs/weakens
         m.buffs = { player: 0, ai: 0 };
         m.weakens = { player: 0, ai: 0 };
         m.turn += 1;
         m.focus.player = Math.min(m.maxFocus, m.turn + 2);
-        m.focus.ai = Math.min(m.maxFocus, m.turn + 2);
+        m.focus.ai = Math.min(m.maxFocus, m.turn + 3);
         // draw
         const drawP = m.deck.player.shift(); if (drawP) m.hand.player.push(drawP);
         const drawA = m.deck.ai.shift(); if (drawA) m.hand.ai.push(drawA);
         m.log.push(`Turno ${m.turn}.`);
+        recalculateBoard(m);
         endMatchIfNeeded(m);
         return { match: m };
       }),
@@ -366,36 +486,46 @@ export const useGame = create<AppStore>()(
 
         let updatedPlayer = { ...player };
         
-        // award rewards on win
-        if (match.status === "ended" && match.result === "win") {
-          updatedPlayer.xp += 120;
-          updatedPlayer.gold += 50;
-          updatedPlayer.fragments += 25;
-          updatedPlayer.wins += 1;
+        if (match.status === "ended") {
+          const rewards = getMatchRewards(match.result);
+          updatedPlayer.xp += rewards.xp;
+          updatedPlayer.gold += rewards.gold;
+          updatedPlayer.fragments += rewards.fragments;
+          updatedPlayer.gems += rewards.gems;
           updatedPlayer.matches += 1;
-          if (updatedPlayer.xp >= updatedPlayer.xpToNext) { 
-            updatedPlayer.level += 1; 
-            updatedPlayer.xp = updatedPlayer.xp - updatedPlayer.xpToNext; 
-            updatedPlayer.xpToNext = Math.round(updatedPlayer.xpToNext * 1.15); 
+          if (match.result === "win") updatedPlayer.wins += 1;
+          updatedPlayer.rankPoints = Math.max(0, updatedPlayer.rankPoints + rewards.rankPointsDelta);
+          updatedPlayer.rank = getRankFromPoints(updatedPlayer.rankPoints);
+          while (updatedPlayer.xp >= updatedPlayer.xpToNext) {
+            updatedPlayer.level += 1;
+            updatedPlayer.xp = updatedPlayer.xp - updatedPlayer.xpToNext;
+            updatedPlayer.xpToNext = Math.round(updatedPlayer.xpToNext * 1.15);
+            
+            // LEVEL REWARD: Grant 3 new cards suitable for the new level
+            const rewardPool = CARDS.filter(c => 
+              (c.unlockLevel ?? 1) <= updatedPlayer.level && 
+              !updatedPlayer.collection.includes(c.id)
+            );
+            if (rewardPool.length > 0) {
+              const rewards = shuffle(rewardPool).slice(0, 3).map(c => c.id);
+              updatedPlayer.collection = Array.from(new Set([...updatedPlayer.collection, ...rewards]));
+            }
           }
-        } else if (match.status === "ended") {
-          updatedPlayer.matches += 1;
-          updatedPlayer.xp += 40;
         }
 
         set({ match: null, player: updatedPlayer });
         
         // Auto-sync if user is logged in
         if (user?.uid) {
-          syncWithCloud(user.uid);
+          get().syncWithCloud(user.uid);
         }
       },
 
       saveDeck: (deck) => {
-        const { user, syncWithCloud } = get();
+        const { user } = get();
         set((s) => ({ player: { ...s.player, deck } }));
         if (user?.uid) {
-          syncWithCloud(user.uid);
+          get().syncWithCloud(user.uid);
         }
       },
 
@@ -405,23 +535,45 @@ export const useGame = create<AppStore>()(
         const s = get();
         const balance = currency === "gold" ? s.player.gold : s.player.gems;
         if (balance < cost) return null;
-        const pulled = shuffle(CARDS).slice(0, 5).map((c) => c.id);
+        
+        // Filter cards by level
+        const availableCards = CARDS.filter(c => (c.unlockLevel ?? 1) <= s.player.level);
+        const pool = availableCards.length >= 10 ? availableCards : CARDS; // Fallback if pool too small
+        
+        const pulled = shuffle(pool).slice(0, 5).map((c) => c.id);
+        const newCollection = Array.from(new Set([...s.player.collection, ...pulled]));
+
         set({
           player: {
             ...s.player,
             gold: currency === "gold" ? s.player.gold - cost : s.player.gold,
             gems: currency === "gems" ? s.player.gems - cost : s.player.gems,
             fragments: s.player.fragments + 5,
+            collection: newCollection
           },
         });
+        
+        if (s.user?.uid) get().syncWithCloud(s.user.uid);
+        
         return pulled;
       },
 
       addGold: (n) => set((s) => ({ player: { ...s.player, gold: s.player.gold + n } })),
 
       syncWithCloud: async (userId: string) => {
+        if (get().syncStatus === "syncing") return;
+        
+        set({ syncStatus: "syncing" });
         const { player } = get();
-        await savePlayerToCloud(userId, player);
+        const success = await savePlayerToCloud(userId, player);
+        
+        if (success) {
+          set({ syncStatus: "saved", lastSyncedAt: new Date().toISOString() });
+          // Reset to idle after a few seconds
+          setTimeout(() => set({ syncStatus: "idle" }), 3000);
+        } else {
+          set({ syncStatus: "error" });
+        }
       },
 
       user: null,
@@ -452,7 +604,7 @@ export const useGame = create<AppStore>()(
         removeItem: () => {},
       } as any)),
       partialize: (state) => {
-        const { user, ...rest } = state;
+        const { user, syncStatus, lastSyncedAt, ...rest } = state;
         return rest;
       }
     }

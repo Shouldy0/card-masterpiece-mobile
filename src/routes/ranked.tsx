@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { MobileFrame } from "@/components/Common";
 import { BottomNav } from "@/components/BottomNav";
-import { useGame } from "@/game/store";
+import { useGame, getNextRankMilestone } from "@/game/store";
 import { ArrowLeft, Crown, Package } from "lucide-react";
 
 export const Route = createFileRoute("/ranked")({ component: Ranked });
@@ -10,6 +10,7 @@ function Ranked() {
   const player = useGame((s) => s.player);
   const startMatch = useGame((s) => s.startMatch);
   const navigate = useNavigate();
+  const nextMilestone = getNextRankMilestone(player.rankPoints);
 
   return (
     <MobileFrame>
@@ -29,8 +30,11 @@ function Ranked() {
         <p className="mt-4 font-display text-2xl gold-text">{player.rank}</p>
         <div className="mt-4 grid w-full max-w-xs grid-cols-2 gap-3">
           <div className="rounded-xl gold-frame bg-card/60 p-3 text-center"><p className="text-[9px] uppercase text-muted-foreground">Punteggio</p><p className="font-display text-lg text-foreground">{player.rankPoints}</p></div>
-          <div className="rounded-xl gold-frame bg-card/60 p-3 text-center"><p className="text-[9px] uppercase text-muted-foreground">Prossimo</p><p className="font-display text-lg text-foreground">1.600</p></div>
+          <div className="rounded-xl gold-frame bg-card/60 p-3 text-center"><p className="text-[9px] uppercase text-muted-foreground">Prossimo</p><p className="font-display text-lg text-foreground">{nextMilestone.toLocaleString("it-IT")}</p></div>
         </div>
+        <p className="mt-2 text-[10px] text-muted-foreground text-center">
+          I punti Ranked si aggiornano dopo ogni battaglia completata.
+        </p>
       </div>
 
       <div className="mt-6 mx-4">
