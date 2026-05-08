@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" width="360" height="480">
+<defs>
+<radialGradient id="v" cx="50%" cy="40%" r="75%"><stop offset="0%" stop-color="#0d001a"/><stop offset="100%" stop-color="#0a0015"/></radialGradient>
+<linearGradient id="tb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0)"/><stop offset="50%" stop-color="rgba(0,0,0,0.85)"/><stop offset="100%" stop-color="rgba(0,0,0,1)"/></linearGradient>
+<linearGradient id="ph" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8b4513"/></linearGradient>
+<filter id="g"><feGaussianBlur stdDeviation="8"/></filter>
+<filter id="g2"><feGaussianBlur stdDeviation="4"/></filter>
+<filter id="g3"><feGaussianBlur stdDeviation="15"/></filter>
+</defs>
+<g clip-path="url(#c)">
+<rect x="0" y="0" width="360" height="480" fill="#0d001a"/>
+<rect x="0" y="0" width="360" height="480" fill="url(#v)"/>
+<circle cx="180" cy="180" r="90" fill="#a855f7" opacity="0.25" filter="url(#g)"/>
+<path d="M140,220 L140,160 Q140,130 160,120 L180,115 L200,120 Q220,130 220,160 L220,220 Z" fill="none" stroke="" stroke-width="0" opacity=""/>
+<circle cx="180" cy="150" r="20" fill="#fbbf24" opacity="0.3" filter="url(#g)"/>
+<circle cx="180" cy="150" r="8" fill="#ffd700" opacity="0.6"/>
+<circle cx="180" cy="150" r="4" fill="#fff" opacity="0.9"/>
+<path d="M160,190 L200,190 M160,200 L195,200 M160,210 L190,210" fill="none" stroke="undefined" stroke-width="1" opacity="1"/>
+<circle cx="226.56195195874014" cy="211.047687036013" r="0.5" fill="#fff" opacity="0.43363069420973005"/><circle cx="244.18264542462506" cy="112.46118861314446" r="1.5" fill="#fff" opacity="0.32583487333462946"/><circle cx="225.04804023976436" cy="76.08951311560031" r="0.5" fill="#fff" opacity="0.28367056031086413"/><circle cx="258.9080390341877" cy="155.564621850982" r="1.5" fill="#fff" opacity="0.21129900997867784"/><circle cx="133.0264016237881" cy="95.79520212819546" r="0.5" fill="#fff" opacity="0.33600875770594085"/><circle cx="297.4122627232835" cy="45.664748613507825" r="1.5" fill="#fff" opacity="0.41774097973395324"/><circle cx="275.80455342292" cy="179.40765352602602" r="0.5" fill="#fff" opacity="0.22937245648794563"/><circle cx="286.0262209849292" cy="159.6509522998209" r="1.5" fill="#fff" opacity="0.5475951535254918"/><circle cx="127.7517095254798" cy="51.80009020149268" r="0.5" fill="#fff" opacity="0.5370823704446637"/><circle cx="55.94929614593684" cy="120.15288010958834" r="1.5" fill="#fff" opacity="0.5566924308183689"/><circle cx="272.118167907297" cy="166.63599891437653" r="0.5" fill="#fff" opacity="0.2045503362573701"/><circle cx="229.70183640652394" cy="147.59218325998447" r="1.5" fill="#fff" opacity="0.44947145405568467"/><circle cx="138.6185351407159" cy="109.08323507051972" r="0.5" fill="#fff" opacity="0.23995486332932084"/><circle cx="194.25636667913264" cy="146.46890174126383" r="1.5" fill="#fff" opacity="0.4091051891626655"/><circle cx="181.19861288222782" cy="72.13463962332534" r="0.5" fill="#fff" opacity="0.21848067202159768"/>
+<rect x="0" y="0" width="360" height="480" fill="none" stroke="#000" stroke-width="80" opacity="0.5" rx="16"/>
+<rect x="0.5" y="0.5" width="359" height="479" fill="none" stroke="rgba(255,215,0,0.15)" stroke-width="1" rx="16"/>
+<rect x="2" y="2" width="356" height="476" fill="none" stroke="#60a5fa" stroke-width="1.5" rx="14" opacity="0.6"/>
+<rect x="2" y="2" width="356" height="476" fill="none" stroke="rgba(255,215,0,0.35)" stroke-width="1.5" rx="14"/>
+<path d="M 8 8 L 8 22 M 8 8 L 22 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
+<path d="M 352 8 L 352 22 M 352 8 L 338 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
+<path d="M 8 472 L 8 458 M 8 472 L 22 472" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
+<path d="M 352 472 L 352 458 M 352 472 L 338 472" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
+<circle cx="32" cy="32" r="22" fill="#a855f7" opacity="0.9"/>
+<circle cx="32" cy="32" r="22" fill="none" stroke="rgba(255,215,0,0.5)" stroke-width="1.5"/>
+<circle cx="28" cy="28" r="8" fill="rgba(255,255,255,0.2)"/>
+<text x="32" y="34" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="900" fill="#fff" font-family="Cinzel,serif">2</text>
+<circle cx="328" cy="32" r="16" fill="rgba(0,0,0,0.6)" stroke="rgba(255,215,0,0.2)" stroke-width="1.5"/>
+<circle cx="328" cy="32" r="5" fill="#a855f7"><animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/></circle>
+<rect x="0" y="300" width="360" height="180" fill="url(#tb)"/>
+<text x="180" y="425" text-anchor="middle" font-size="17" fill="#fff" font-family="Cinzel,serif" font-weight="700" letter-spacing="3">NOSTALGIA</text>
+<text x="180" y="452" text-anchor="middle" font-size="8" fill="#60a5fa" font-family="Montserrat,sans-serif" letter-spacing="4" opacity="0.7">RARA</text>
+<g transform="translate(180,460)"><polygon points="-30,-18 30,-18 40,0 30,18 -30,18 -40,0" fill="url(#ph)" stroke="rgba(255,215,0,0.8)" stroke-width="1.5"/><polygon points="-28,-16 28,-16 38,0 28,16 -28,16 -38,0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/><text x="0" y="3" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" fill="#000" font-family="Cinzel,serif">3</text></g>
+</g>
+</svg>

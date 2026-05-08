@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" width="360" height="480">
+<defs>
+<radialGradient id="v" cx="50%" cy="40%" r="75%"><stop offset="0%" stop-color="#0d0005"/><stop offset="100%" stop-color="#0a0003"/></radialGradient>
+<linearGradient id="tb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0)"/><stop offset="50%" stop-color="rgba(0,0,0,0.85)"/><stop offset="100%" stop-color="rgba(0,0,0,1)"/></linearGradient>
+<linearGradient id="ph" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8b4513"/></linearGradient>
+<filter id="g"><feGaussianBlur stdDeviation="8"/></filter>
+<filter id="g2"><feGaussianBlur stdDeviation="4"/></filter>
+<filter id="g3"><feGaussianBlur stdDeviation="15"/></filter>
+</defs>
+<g clip-path="url(#c)">
+<rect x="0" y="0" width="360" height="480" fill="#0d0005"/>
+<rect x="0" y="0" width="360" height="480" fill="url(#v)"/>
+<circle cx="180" cy="180" r="110" fill="#ef4444" opacity="0.35" filter="url(#g)"/>
+<path d="M180,110 L195,180 L225,200 L195,210 L180,260 L165,210 L135,200 L165,180 Z" fill="none" stroke="" stroke-width="0" opacity=""/>
+<path d="M180,110 L195,180 L225,200 L195,210 L180,260 L165,210 L135,200 L165,180 Z" fill="none" stroke="0.4" stroke-width="2" opacity="1"/>
+<circle cx="180" cy="170" r="20" fill="#ef4444" opacity="0.2" filter="url(#g)"/>
+<circle cx="180" cy="170" r="6" fill="#fff" opacity="0.5"/>
+<path d="M120,200 L240,200" fill="none" stroke="0.5" stroke-width="1.5" opacity="1"/>
+<circle cx="210.8690306116361" cy="182.92461351484752" r="1.0981784541028934" fill="#ef4444" opacity="0.29965892364881697"/><circle cx="145.44191336820666" cy="159.64990125179943" r="1.6160107610294663" fill="#ef4444" opacity="0.22853876347082527"/><circle cx="118.44573905416681" cy="211.0837708329499" r="0.6917228647253929" fill="#ef4444" opacity="0.17860111417564975"/><circle cx="247.39076547338175" cy="181.46267873826864" r="1.2622691008799114" fill="#ef4444" opacity="0.1372346446766275"/><circle cx="153.90982985219347" cy="209.67986799096374" r="1.7041862242996146" fill="#ef4444" opacity="0.24042412300225746"/><circle cx="177.20380328003404" cy="181.2609782732835" r="0.6050551431268035" fill="#ef4444" opacity="0.2872628303754441"/><circle cx="90.5060565450086" cy="152.28491174060872" r="0.8765000921549337" fill="#ef4444" opacity="0.12021746738151103"/><circle cx="215.72764285863894" cy="167.33052018295496" r="1.3156079721910876" fill="#ef4444" opacity="0.22911260941585376"/><circle cx="142.50373110552513" cy="146.05259082976056" r="0.5513357108776118" fill="#ef4444" opacity="0.2233501396666921"/><circle cx="255.95704683059773" cy="130.46740291950658" r="1.6427151362657533" fill="#ef4444" opacity="0.16864470374531132"/>
+<rect x="0" y="0" width="360" height="480" fill="none" stroke="#000" stroke-width="80" opacity="0.5" rx="16"/>
+<rect x="0.5" y="0.5" width="359" height="479" fill="none" stroke="rgba(255,215,0,0.15)" stroke-width="1" rx="16"/>
+<rect x="2" y="2" width="356" height="476" fill="none" stroke="#fbbf24" stroke-width="3" rx="14" opacity="0.6"/>
+<rect x="2" y="2" width="356" height="476" fill="none" stroke="rgba(255,215,0,0.35)" stroke-width="1.5" rx="14"/>
+<path d="M 8 8 L 8 22 M 8 8 L 22 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
+<path d="M 352 8 L 352 22 M 352 8 L 338 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
+<path d="M 8 472 L 8 458 M 8 472 L 22 472" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
+<path d="M 352 472 L 352 458 M 352 472 L 338 472" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
+<circle cx="32" cy="32" r="22" fill="#ef4444" opacity="0.9"/>
+<circle cx="32" cy="32" r="22" fill="none" stroke="rgba(255,215,0,0.5)" stroke-width="1.5"/>
+<circle cx="28" cy="28" r="8" fill="rgba(255,255,255,0.2)"/>
+<text x="32" y="34" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="900" fill="#fff" font-family="Cinzel,serif">6</text>
+<circle cx="328" cy="32" r="16" fill="rgba(0,0,0,0.6)" stroke="rgba(255,215,0,0.2)" stroke-width="1.5"/>
+<circle cx="328" cy="32" r="5" fill="#ef4444"><animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/></circle>
+<rect x="0" y="300" width="360" height="180" fill="url(#tb)"/>
+<text x="180" y="425" text-anchor="middle" font-size="17" fill="#fff" font-family="Cinzel,serif" font-weight="700" letter-spacing="3">IL BOIA</text>
+<text x="180" y="452" text-anchor="middle" font-size="8" fill="#fbbf24" font-family="Montserrat,sans-serif" letter-spacing="4" opacity="0.7">LEGGENDARIA</text>
+<g transform="translate(180,460)"><polygon points="-30,-18 30,-18 40,0 30,18 -30,18 -40,0" fill="url(#ph)" stroke="rgba(255,215,0,0.8)" stroke-width="1.5"/><polygon points="-28,-16 28,-16 38,0 28,16 -28,16 -38,0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/><text x="0" y="3" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" fill="#000" font-family="Cinzel,serif">9</text></g>
+</g>
+</svg>

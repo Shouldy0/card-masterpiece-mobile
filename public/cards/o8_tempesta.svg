@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" width="360" height="480">
+<defs>
+<radialGradient id="v" cx="50%" cy="40%" r="75%"><stop offset="0%" stop-color="#0d0800"/><stop offset="100%" stop-color="#0a0600"/></radialGradient>
+<linearGradient id="tb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0)"/><stop offset="50%" stop-color="rgba(0,0,0,0.85)"/><stop offset="100%" stop-color="rgba(0,0,0,1)"/></linearGradient>
+<linearGradient id="ph" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8b4513"/></linearGradient>
+<filter id="g"><feGaussianBlur stdDeviation="8"/></filter>
+<filter id="g2"><feGaussianBlur stdDeviation="4"/></filter>
+<filter id="g3"><feGaussianBlur stdDeviation="15"/></filter>
+</defs>
+<g clip-path="url(#c)">
+<rect x="0" y="0" width="360" height="480" fill="#0d0800"/>
+<rect x="0" y="0" width="360" height="480" fill="url(#v)"/>
+<circle cx="180" cy="180" r="120" fill="#eab308" opacity="0.3" filter="url(#g)"/>
+<path d="M245.67156842115534,80 Q275.67156842115537,120.34352267509169 225.67156842115534,200.3435226750917" fill="none" stroke="0.4297239694343945" stroke-width="2.476152367932353" opacity="1"/><path d="M129.66907919843243,80 Q159.66907919843243,122.97044843032398 109.66907919843243,202.97044843032398" fill="none" stroke="0.4908233760180838" stroke-width="2.9429036199598446" opacity="1"/><path d="M242.61697229809388,80 Q272.61697229809386,161.15120394291188 222.61697229809388,241.15120394291188" fill="none" stroke="0.47520298392952787" stroke-width="2.4956395568248015" opacity="1"/><path d="M258.3056847873028,80 Q288.3056847873028,191.38043485765223 238.30568478730282,271.38043485765223" fill="none" stroke="0.48571490709369664" stroke-width="2.0312414523481754" opacity="1"/><path d="M221.88242633077218,80 Q251.88242633077218,172.64001915839444 201.88242633077218,252.64001915839444" fill="none" stroke="0.3784534298129283" stroke-width="2.958195649344465" opacity="1"/>
+<ellipse cx="180" cy="120" rx="100" ry="40" fill="rgba(50,50,50,0.2)" opacity="1"/>
+<ellipse cx="180" cy="260" rx="120" ry="50" fill="rgba(50,50,50,0.2)" opacity="1"/>
+<circle cx="249.2177447515039" cy="94.2160777001766" r="1.0843701523889546" fill="#ffd700" opacity="0.3110889121876636"/><circle cx="61.7199819867555" cy="318.31387577460646" r="0.7587846915308134" fill="#ffd700" opacity="0.3534388598071515"/><circle cx="312.004558333605" cy="124.6011147409527" r="1.737583955272688" fill="#ffd700" opacity="0.341302400734089"/><circle cx="208.42893931908847" cy="75.88069260126392" r="1.131892144438003" fill="#ffd700" opacity="0.21737897430309336"/><circle cx="310.7958831441509" cy="348.758089462505" r="1.698597813103572" fill="#ffd700" opacity="0.3283445347434093"/><circle cx="211.23451240375582" cy="329.9621815290243" r="0.8572202218843706" fill="#ffd700" opacity="0.3752020188372799"/><circle cx="194.27553888832736" cy="243.51384335101298" r="1.9014527788805855" fill="#ffd700" opacity="0.3522898189251833"/><circle cx="207.14450070625037" cy="240.29325617319137" r="1.4290291589124788" fill="#ffd700" opacity="0.2937529671015249"/><circle cx="55.69255572792622" cy="125.8718553215569" r="0.9564391045436462" fill="#ffd700" opacity="0.12420619895498514"/><circle cx="158.63449790503375" cy="322.66803494007837" r="1.5835883389727434" fill="#ffd700" opacity="0.3677991414877647"/><circle cx="50.758101198233" cy="240.25937515867744" r="1.0566965595530102" fill="#ffd700" opacity="0.3848643020409519"/><circle cx="97.46058069799362" cy="74.80231740142496" r="0.8885620495785347" fill="#ffd700" opacity="0.15817534318212045"/><circle cx="283.5298954935764" cy="95.34089119675329" r="1.034329940387321" fill="#ffd700" opacity="0.1446871180876326"/><circle cx="191.44572145842923" cy="68.7365151092892" r="1.5865300067881412" fill="#ffd700" opacity="0.25387909077063364"/><circle cx="188.09597099073312" cy="230.62545721723006" r="1.66114505810868" fill="#ffd700" opacity="0.33050820496967415"/>
+<circle cx="180" cy="160" r="6" fill="#ffd700" opacity="0.4"/>
+<rect x="0" y="0" width="360" height="480" fill="none" stroke="#000" stroke-width="80" opacity="0.5" rx="16"/>
+<rect x="0.5" y="0.5" width="359" height="479" fill="none" stroke="rgba(255,215,0,0.15)" stroke-width="1" rx="16"/>
+<rect x="2" y="2" width="356" height="476" fill="none" stroke="#a855f7" stroke-width="2" rx="14" opacity="0.6"/>
+<rect x="2" y="2" width="356" height="476" fill="none" stroke="rgba(255,215,0,0.35)" stroke-width="1.5" rx="14"/>
+<path d="M 8 8 L 8 22 M 8 8 L 22 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
+<path d="M 352 8 L 352 22 M 352 8 L 338 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
+<path d="M 8 472 L 8 458 M 8 472 L 22 472" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
+<path d="M 352 472 L 352 458 M 352 472 L 338 472" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
+<circle cx="32" cy="32" r="22" fill="#eab308" opacity="0.9"/>
+<circle cx="32" cy="32" r="22" fill="none" stroke="rgba(255,215,0,0.5)" stroke-width="1.5"/>
+<circle cx="28" cy="28" r="8" fill="rgba(255,255,255,0.2)"/>
+<text x="32" y="34" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="900" fill="#fff" font-family="Cinzel,serif">5</text>
+<circle cx="328" cy="32" r="16" fill="rgba(0,0,0,0.6)" stroke="rgba(255,215,0,0.2)" stroke-width="1.5"/>
+<circle cx="328" cy="32" r="5" fill="#eab308"><animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/></circle>
+<rect x="0" y="300" width="360" height="180" fill="url(#tb)"/>
+<text x="180" y="425" text-anchor="middle" font-size="17" fill="#fff" font-family="Cinzel,serif" font-weight="700" letter-spacing="3">TEMPESTA</text>
+<text x="180" y="452" text-anchor="middle" font-size="8" fill="#a855f7" font-family="Montserrat,sans-serif" letter-spacing="4" opacity="0.7">EPICA</text>
+<g transform="translate(180,460)"><polygon points="-30,-18 30,-18 40,0 30,18 -30,18 -40,0" fill="url(#ph)" stroke="rgba(255,215,0,0.8)" stroke-width="1.5"/><polygon points="-28,-16 28,-16 38,0 28,16 -28,16 -38,0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/><text x="0" y="3" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" fill="#000" font-family="Cinzel,serif">7</text></g>
+</g>
+</svg>
