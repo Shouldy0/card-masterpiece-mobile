@@ -139,18 +139,30 @@ function Home() {
 }
 
 function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
-  const [isOpening, setIsOpening] = React.useState(false);
-  const [revealed, setRevealed] = React.useState<string[] | null>(null);
+  const [stage, setStage] = React.useState<"idle" | "opening" | "revealing" | "done">("idle");
+  const [revealed, setRevealed] = React.useState<string[]>([]);
   const { play } = useSound();
 
   const handleOpen = () => {
-    setIsOpening(true);
+    setStage("opening");
     play("ripple");
+    
+    // Phase 1: The "Burst"
     setTimeout(() => {
       const cards = onOpen();
-      setRevealed(cards);
+      setStage("revealing");
       play("victory");
-    }, 1500);
+      
+      // Phase 2: Sequential Reveal
+      cards.forEach((id, i) => {
+        setTimeout(() => {
+          setRevealed(prev => [...prev, id]);
+          play("card_deal");
+        }, i * 150);
+      });
+
+      setTimeout(() => setStage("done"), cards.length * 150 + 500);
+    }, 2000);
   };
 
   return (
@@ -158,70 +170,142 @@ function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center"
+      className="fixed inset-0 z-[100] bg-black/98 backdrop-blur-3xl flex flex-col items-center justify-center p-6 overflow-hidden"
     >
-      {!revealed ? (
-        <div className="flex flex-col items-center">
+      {/* Background Magic Particles */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div 
+          animate={{ rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-[600px] border border-gold/10 rounded-full border-dashed"
+        />
+        <motion.div 
+          animate={{ rotate: -360 }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 size-[400px] border border-mystic/10 rounded-full border-dashed"
+        />
+      </div>
+
+      {stage === "idle" || stage === "opening" ? (
+        <div className="flex flex-col items-center z-10">
           <motion.div
-            animate={isOpening ? { 
-              scale: [1, 1.5, 0],
-              rotate: [0, 20, -20, 360],
-              filter: ["blur(0px)", "blur(10px)", "blur(20px)"]
+            layoutId="starter-pack"
+            animate={stage === "opening" ? { 
+              scale: [1, 1.4, 0],
+              rotate: [0, 10, -10, 720],
+              y: [0, -50, 0]
             } : { 
-              y: [0, -20, 0],
-              rotate: [0, 5, -5, 0] 
+              y: [0, -15, 0],
+              rotateZ: [0, 2, -2, 0]
             }}
-            transition={{ duration: isOpening ? 1.5 : 4, repeat: isOpening ? 0 : Infinity }}
-            className="relative size-64 mb-8 cursor-pointer"
-            onClick={!isOpening ? handleOpen : undefined}
+            transition={{ duration: stage === "opening" ? 2 : 4, repeat: stage === "opening" ? 0 : Infinity }}
+            className="relative size-64 mb-12 cursor-pointer group"
+            onClick={stage === "idle" ? handleOpen : undefined}
           >
-             {/* Pack Visual */}
-             <div className="absolute inset-0 bg-gradient-to-br from-gold via-mystic to-abyss rounded-3xl shadow-[0_0_60px_rgba(255,215,0,0.4)] flex items-center justify-center border-2 border-gold/50">
-                <Sparkles className="size-24 text-white drop-shadow-[0_0_20px_white]" />
+             {/* Glowing Aura */}
+             <div className="absolute -inset-10 bg-gold/10 blur-3xl rounded-full animate-pulse" />
+             <div className="absolute -inset-20 bg-mystic/5 blur-[80px] rounded-full" />
+
+             {/* The Pack Asset */}
+             <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1e] via-[#2a2a2e] to-black rounded-[2rem] shadow-2xl flex flex-col items-center justify-center border-2 border-gold/30 overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30" />
+                
+                {/* Gold Filigree */}
+                <div className="absolute top-4 left-4 size-8 border-t-2 border-l-2 border-gold/40 rounded-tl-xl" />
+                <div className="absolute top-4 right-4 size-8 border-t-2 border-r-2 border-gold/40 rounded-tr-xl" />
+                <div className="absolute bottom-4 left-4 size-8 border-b-2 border-l-2 border-gold/40 rounded-bl-xl" />
+                <div className="absolute bottom-4 right-4 size-8 border-b-2 border-r-2 border-gold/40 rounded-br-xl" />
+
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Sparkles className="size-24 text-gold drop-shadow-[0_0_15px_rgba(255,215,0,0.5)]" />
+                </motion.div>
+                
+                <div className="mt-4 flex flex-col items-center">
+                  <span className="font-display text-[10px] text-gold tracking-[0.5em] uppercase font-black">Memory Pack</span>
+                  <div className="h-px w-24 bg-gradient-to-r from-transparent via-gold/40 to-transparent mt-1" />
+                </div>
              </div>
-             <div className="absolute -inset-4 rounded-3xl border border-gold/20 animate-pulse" />
+
+             {/* Interact Hint */}
+             {stage === "idle" && (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="absolute -bottom-12 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] text-gold/60 uppercase tracking-[0.4em] animate-pulse"
+                >
+                  Tocca per sintonizzare
+                </motion.div>
+             )}
           </motion.div>
           
           <h2 className="font-display text-2xl text-gold tracking-widest uppercase mb-2">Pacco Iniziale</h2>
-          <p className="text-sm text-foreground/60 mb-8 max-w-xs">Tocca il pacchetto per sintonizzare la tua prima coscienza e ricevere le tue memorie di base.</p>
-          
-          <button 
-            onClick={handleOpen}
-            disabled={isOpening}
-            className="px-12 py-4 rounded-full bg-gold/10 border border-gold/30 text-gold font-display text-sm tracking-[0.2em] uppercase hover:bg-gold/20 transition-all"
-          >
-            {isOpening ? "SINTONIZZAZIONE..." : "APRI PACCHETTO"}
-          </button>
+          <p className="text-sm text-foreground/40 mb-8 max-w-xs text-center leading-relaxed">Le tue prime 15 memorie stanno per manifestarsi nella tua coscienza.</p>
         </div>
       ) : (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full flex flex-col items-center"
-        >
-          <h2 className="font-display text-2xl text-gold tracking-widest uppercase mb-1">Coscienza Sintonizzata</h2>
-          <p className="text-[10px] text-white/40 uppercase tracking-[0.3em] mb-8">Hai sbloccato 15 Memorie Comuni</p>
+        <div className="w-full flex flex-col items-center z-10 max-w-lg">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-10"
+          >
+            <h2 className="font-display text-3xl text-gold tracking-widest uppercase mb-1">Coscienza Risvegliata</h2>
+            <div className="flex items-center justify-center gap-4">
+               <div className="h-px w-12 bg-gold/20" />
+               <p className="text-[10px] text-white/40 uppercase tracking-[0.4em]">15 Memorie Sintonizzate</p>
+               <div className="h-px w-12 bg-gold/20" />
+            </div>
+          </motion.div>
           
-          <div className="grid grid-cols-3 gap-2 mb-10 max-h-[50vh] overflow-y-auto px-4 py-4 custom-scrollbar">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-12 p-4 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md max-h-[60vh] overflow-y-auto custom-scrollbar shadow-inner">
             {revealed.map((id, idx) => (
               <motion.div 
                 key={`${id}-${idx}`}
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: idx * 0.05 }}
+                initial={{ opacity: 0, scale: 0, rotate: -20, y: 50 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0, y: 0 }}
+                transition={{ 
+                  type: "spring",
+                  stiffness: 260,
+                  damping: 20
+                }}
               >
                 <GameCard card={cardsById[id]} size="sm" />
               </motion.div>
             ))}
+            
+            {/* Placeholders for remaining to-be-revealed cards */}
+            {Array.from({ length: 15 - revealed.length }).map((_, i) => (
+              <div key={`empty-${i}`} className="size-24 rounded-xl bg-white/5 border border-white/5 animate-pulse" />
+            ))}
           </div>
 
-          <button 
-            onClick={() => window.location.reload()} 
-            className="px-12 py-5 rounded-full bg-mystic-glow text-foreground font-display font-bold text-sm tracking-[0.2em] uppercase shadow-[0_0_40px_rgba(150,100,255,0.4)]"
-          >
-            INIZIA IL VIAGGIO
-          </button>
-        </motion.div>
+          <AnimatePresence>
+            {stage === "done" && (
+              <motion.button 
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.location.reload()} 
+                className="px-16 py-5 rounded-full bg-gradient-to-r from-gold via-mystic-glow to-gold text-abyss font-display font-black text-xs tracking-[0.3em] uppercase shadow-[0_0_50px_rgba(255,215,0,0.4)] transition-shadow hover:shadow-[0_0_70px_rgba(255,215,0,0.6)]"
+              >
+                INIZIA IL VIAGGIO
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {/* Opening Flash Overlay */}
+      {stage === "opening" && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 1, 0] }}
+          transition={{ duration: 2, times: [0, 0.8, 1] }}
+          className="fixed inset-0 bg-white z-[110] pointer-events-none mix-blend-overlay"
+        />
       )}
     </motion.div>
   );
