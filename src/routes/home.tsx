@@ -1,9 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
-import React, { useEffect, useRef, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { useTexture, Float, Environment, ContactShadows, PerspectiveCamera } from "@react-three/drei";
-import * as THREE from "three";
+import React, { useEffect } from "react";
 import { MobileFrame } from "@/components/Common";
 import { BottomNav } from "@/components/BottomNav";
 import { useGame } from "@/game/store";
@@ -200,49 +197,71 @@ function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
       className="fixed inset-0 z-[100] bg-black backdrop-blur-3xl flex flex-col items-center justify-center p-6 overflow-hidden"
     >
       {stage === "idle" || stage === "opening" ? (
-        <div className="relative w-full h-[400px] flex items-center justify-center z-10">
+        <div className="flex flex-col items-center z-10" style={{ perspective: "1500px" }}>
           <motion.div
             layoutId="starter-pack"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={stage === "opening" ? { 
-              scale: [1, 1.2, 0],
-              opacity: [1, 1, 0],
-              y: [0, -100, 0],
-            } : { 
-              opacity: 1, 
-              scale: 1 
+            onPointerMove={handlePointerMove}
+            onPointerLeave={handlePointerLeave}
+            style={{ 
+              rotateX: stage === "idle" ? rotateX : 0, 
+              rotateY: stage === "idle" ? rotateY : 0,
+              transformStyle: "preserve-3d" 
             }}
-            transition={{ duration: stage === "opening" ? 2 : 1 }}
-            className="w-full h-full cursor-pointer relative"
+            animate={stage === "opening" ? { 
+              scale: [1, 1.5, 0],
+              rotateZ: [0, 20, -20, 720],
+              y: [0, -100, 0],
+              filter: ["brightness(1) blur(0px)", "brightness(3) blur(10px)", "brightness(0) blur(20px)"]
+            } : { 
+              y: [0, -20, 0],
+            }}
+            transition={{ duration: stage === "opening" ? 2 : 4, repeat: stage === "opening" ? 0 : Infinity }}
+            className="relative size-80 mb-12 cursor-pointer group"
             onClick={stage === "idle" ? handleOpen : undefined}
           >
-             <Suspense fallback={<div className="text-gold animate-pulse">Sintonizzazione 3D...</div>}>
-                <Canvas shadows gl={{ antialias: true, alpha: true }}>
-                   <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
-                   <ambientLight intensity={1.5} />
-                   <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={5} castShadow />
-                   <pointLight position={[-10, -10, -10]} intensity={2} color="#6a0dad" />
-                   
-                   <Float speed={2} rotationIntensity={1.5} floatIntensity={1}>
-                      <PackModel textureUrl="/assets/starter-pack.png" isOpening={stage === "opening"} />
-                   </Float>
+             {/* Energetic Aura behind the artifact */}
+             <motion.div 
+               animate={{ 
+                 scale: [1, 1.2, 1],
+                 opacity: [0.3, 0.6, 0.3]
+               }}
+               transition={{ duration: 3, repeat: Infinity }}
+               className="absolute -inset-20 bg-gradient-to-t from-mystic-glow/20 to-transparent blur-[100px] rounded-full pointer-events-none"
+             />
 
-                   <Environment preset="night" />
-                   <ContactShadows position={[0, -2.5, 0]} opacity={0.6} scale={10} blur={2} far={4} />
-                </Canvas>
-             </Suspense>
+             {/* The Masterpiece Artifact */}
+             <div className="absolute inset-0 drop-shadow-[0_0_50px_rgba(150,100,255,0.3)]">
+                <img 
+                  src="/assets/starter-pack.png" 
+                  alt="Starter Pack" 
+                  className="size-full object-contain mix-blend-lighten select-none"
+                />
+             </div>
+
+             {/* Dynamic Gloss/Reflectance Overlay */}
+             <motion.div 
+               style={{
+                 x: useTransform(mouseX, [-150, 150], [-100, 100]),
+                 y: useTransform(mouseY, [-150, 150], [-100, 100]),
+                 background: "radial-gradient(circle at center, rgba(255,255,255,0.15) 0%, transparent 70%)"
+               }}
+               className="absolute inset-0 pointer-events-none mix-blend-overlay rounded-full"
+             />
 
              {/* Interact Hint */}
              {stage === "idle" && (
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="absolute bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] text-gold/60 uppercase tracking-[0.5em] animate-pulse pointer-events-none"
+                  className="absolute -bottom-16 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] text-gold tracking-[0.5em] uppercase font-black animate-pulse"
                 >
-                  Tocca per aprire
+                  Sintonizza la tua Realtà
                 </motion.div>
              )}
           </motion.div>
+          
+          <h2 className="font-display text-3xl gold-text tracking-[0.2em] uppercase mb-2">Pacco Iniziale</h2>
+          <p className="text-[10px] text-white/30 uppercase tracking-[0.4em] mb-8 max-w-xs text-center leading-relaxed">Le tue memorie di base si stanno manifestando.</p>
         </div>
       ) : (
         <div className="w-full flex flex-col items-center z-10 max-w-lg">
@@ -311,47 +330,6 @@ function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
   );
 }
 
-function PackModel({ textureUrl, isOpening }: { textureUrl: string, isOpening: boolean }) {
-  const meshRef = useRef<THREE.Mesh>(null!);
-  const texture = useTexture(textureUrl);
-  
-  useFrame((state, delta) => {
-    if (isOpening) {
-      meshRef.current.rotation.y += delta * 15;
-      meshRef.current.rotation.x += delta * 5;
-      meshRef.current.position.z += delta * 5;
-    } else {
-      // Gentle floating animation
-      meshRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.2;
-      meshRef.current.rotation.x = Math.cos(state.clock.elapsedTime * 0.5) * 0.1;
-      meshRef.current.position.y = Math.sin(state.clock.elapsedTime) * 0.1;
-    }
-  });
-
-  return (
-    <group>
-      {/* RIM LIGHT: Makes the 3D edges pop */}
-      <pointLight position={[0, 0, -2]} intensity={5} color="#ffd700" />
-      
-      <mesh ref={meshRef} castShadow receiveShadow>
-        {/* Increased thickness to args 0.5 for more 'Volume' */}
-        <boxGeometry args={[2.4, 3.4, 0.5]} />
-        
-        {/* Front Face: High Quality Texture */}
-        <meshStandardMaterial attach="material-4" map={texture} roughness={0.1} metalness={0.9} />
-        
-        {/* Back Face: Mysterious Dark Version */}
-        <meshStandardMaterial attach="material-5" map={texture} color="#222" roughness={0.6} metalness={0.1} />
-        
-        {/* SIDES: Textured Gold/Metallic foil look */}
-        <meshStandardMaterial attach="material-0" color="#8b6508" roughness={0.05} metalness={1} />
-        <meshStandardMaterial attach="material-1" color="#8b6508" roughness={0.05} metalness={1} />
-        <meshStandardMaterial attach="material-2" color="#b8860b" roughness={0.05} metalness={1} />
-        <meshStandardMaterial attach="material-3" color="#b8860b" roughness={0.05} metalness={1} />
-      </mesh>
-    </group>
-  );
-}
 
 function ResourcePill({ icon: Icon, value, color }: { icon: any; value: number; color: string }) {
   return (
