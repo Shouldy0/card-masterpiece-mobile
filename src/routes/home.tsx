@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { MobileFrame } from "@/components/Common";
 import { BottomNav } from "@/components/BottomNav";
 import { useGame } from "@/game/store";
