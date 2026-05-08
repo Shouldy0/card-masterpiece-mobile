@@ -67,9 +67,9 @@ export function getMatchRewards(result: MatchState["result"]): MatchRewards {
 }
 
 export function buildStarterDeck(): string[] {
-  // 15 cards from the new set
-  const ids = ["v1_ambizione", "v3_nostalgia", "v10_armonia", "o1_chiave_antica", "o3_giocattolo", "o6_giardino", "c1_giullare", "c3_vittima", "c7_bambino", "b2_silenzio", "b4_neve", "b7_pioggia", "s1_miraggio", "s3_nuvola", "s9_citta"];
-  return ids;
+  // Filter for Level 1 Commons (Starter Pool)
+  const starterPool = CARDS.filter(c => c.rarity === "comune" && (c.unlockLevel ?? 1) <= 1);
+  return shuffle(starterPool).slice(0, 15).map(c => c.id);
 }
 
 export function createInitialMatch(playerDeck: string[]): MatchState {
@@ -132,14 +132,17 @@ interface AppStore {
   settings: SettingsState;
   match: MatchState | null;
   onboardingDone: boolean;
+  onboardingPackOpened: boolean;
 
   // actions
   setOnboardingDone: () => void;
+  setOnboardingPackOpened: (v: boolean) => void;
   startMatch: () => void;
   playCard: (cardUid: string, territory: TerritoryId) => void;
   endTurn: () => void;
   exitMatch: () => void;
   saveDeck: (deck: string[]) => void;
+  openStarterPack: () => string[];
   toggleSetting: (k: keyof SettingsState, v: any) => void;
   syncCollection: () => void;
   buyPack: (cost: number, currency: "gold" | "gems") => string[] | null;
@@ -367,23 +370,26 @@ function endMatchIfNeeded(state: MatchState) {
 export const useGame = create<AppStore>()(
   persist(
     (set, get): AppStore => ({
-      player: {
-        level: 1,
-        xp: 0,
-        xpToNext: 100,
-        gold: 100,
-        fragments: 0,
-        gems: 0,
-        wins: 0,
-        matches: 0,
-        rank: "Sognatore Iniziale",
-        rankPoints: 0,
-        collection: CARDS.slice(0, 15).map((c) => c.id), // Start with a small collection
-        deck: buildStarterDeck(),
-        title: "Sognatore",
-      },
-      // Function to ensure collection is always synced with master list and remove obsolete IDs
-      syncCollection: () => {
+      player: (() => {
+        // Initial dummy state - real randomization happens on first initialization if needed
+        return {
+          level: 1,
+          xp: 0,
+          xpToNext: 100,
+          gold: 100,
+          fragments: 0,
+          gems: 0,
+          wins: 0,
+          matches: 0,
+          rank: "Sognatore Iniziale",
+          rankPoints: 0,
+          collection: [], 
+          deck: [],
+          title: "Sognatore",
+        };
+      })(),
+      onboardingDone: false,
+      onboardingPackOpened: false,
         const { player, match } = get();
         const masterIds = CARDS.map(c => c.id);
         
@@ -425,6 +431,7 @@ export const useGame = create<AppStore>()(
       lastSyncedAt: null,
 
       setOnboardingDone: () => set({ onboardingDone: true }),
+      setOnboardingPackOpened: (v) => set({ onboardingPackOpened: v }),
 
       startMatch: () => set({ match: createInitialMatch(get().player.deck) }),
 
@@ -529,6 +536,23 @@ export const useGame = create<AppStore>()(
         }
       },
 
+      openStarterPack: () => {
+        const { user } = get();
+        const starterCards = buildStarterDeck();
+        set((state) => ({
+          player: {
+            ...state.player,
+            collection: [...starterCards],
+            deck: [...starterCards]
+          },
+          onboardingPackOpened: true
+        }));
+        if (user?.uid) {
+          get().syncWithCloud(user.uid);
+        }
+        return starterCards;
+      },
+
       toggleSetting: (k, v) => set((s) => ({ settings: { ...s.settings, [k]: v } })),
 
       buyPack: (cost, currency) => {
@@ -578,23 +602,29 @@ export const useGame = create<AppStore>()(
 
       user: null,
       setUser: (user) => set({ user }),
-      resetPlayer: () => set({
-        player: {
-          level: 1,
-          xp: 0,
-          xpToNext: 100,
-          gold: 100,
-          fragments: 0,
-          gems: 0,
-          wins: 0,
-          matches: 0,
-          rank: "Sognatore Iniziale",
-          rankPoints: 0,
-          collection: CARDS.slice(0, 15).map((c) => c.id),
-          deck: buildStarterDeck(),
-          title: "Sognatore",
-        }
-      }),
+      resetPlayer: () => {
+        const starterDeck = buildStarterDeck();
+        set({
+          player: {
+            level: 1,
+            xp: 0,
+            xpToNext: 100,
+            gold: 100,
+            fragments: 0,
+            gems: 0,
+            wins: 0,
+            matches: 0,
+            rank: "Sognatore Iniziale",
+            rankPoints: 0,
+            collection: [...starterDeck],
+            deck: [...starterDeck],
+            title: "Sognatore",
+          },
+          onboardingDone: false,
+          onboardingPackOpened: false,
+          match: null
+        });
+      },
     }),
     { 
       name: "reverie-store-v2",

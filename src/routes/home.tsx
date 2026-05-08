@@ -7,12 +7,13 @@ import { useGame } from "@/game/store";
 import { sounds } from "@/utils/audio";
 import { Coins, Diamond, Plus, Library, BookOpen, ShoppingBag, Sparkles, Crown, Eye, Zap, Trophy } from "lucide-react";
 import { useSound } from "@/hooks/useSound";
+import { GameCard } from "@/components/GameCard";
+import { cardsById } from "@/game/cards";
 
 export const Route = createFileRoute("/home")({ component: Home });
 
 function Home() {
-  const player = useGame((s) => s.player);
-  const startMatch = useGame((s) => s.startMatch);
+  const { player, startMatch, onboardingPackOpened, openStarterPack } = useGame();
   const navigate = useNavigate();
   const { play } = useSound();
 
@@ -126,7 +127,103 @@ function Home() {
       </div>
 
       <BottomNav />
+
+      {/* STARTER PACK OPENING OVERLAY */}
+      <AnimatePresence>
+        {!onboardingPackOpened && (
+          <StarterPackOpening onOpen={openStarterPack} />
+        )}
+      </AnimatePresence>
     </MobileFrame>
+  );
+}
+
+function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
+  const [isOpening, setIsOpening] = React.useState(false);
+  const [revealed, setRevealed] = React.useState<string[] | null>(null);
+  const { play } = useSound();
+
+  const handleOpen = () => {
+    setIsOpening(true);
+    play("ripple");
+    setTimeout(() => {
+      const cards = onOpen();
+      setRevealed(cards);
+      play("victory");
+    }, 1500);
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center"
+    >
+      {!revealed ? (
+        <div className="flex flex-col items-center">
+          <motion.div
+            animate={isOpening ? { 
+              scale: [1, 1.5, 0],
+              rotate: [0, 20, -20, 360],
+              filter: ["blur(0px)", "blur(10px)", "blur(20px)"]
+            } : { 
+              y: [0, -20, 0],
+              rotate: [0, 5, -5, 0] 
+            }}
+            transition={{ duration: isOpening ? 1.5 : 4, repeat: isOpening ? 0 : Infinity }}
+            className="relative size-64 mb-8 cursor-pointer"
+            onClick={!isOpening ? handleOpen : undefined}
+          >
+             {/* Pack Visual */}
+             <div className="absolute inset-0 bg-gradient-to-br from-gold via-mystic to-abyss rounded-3xl shadow-[0_0_60px_rgba(255,215,0,0.4)] flex items-center justify-center border-2 border-gold/50">
+                <Sparkles className="size-24 text-white drop-shadow-[0_0_20px_white]" />
+             </div>
+             <div className="absolute -inset-4 rounded-3xl border border-gold/20 animate-pulse" />
+          </motion.div>
+          
+          <h2 className="font-display text-2xl text-gold tracking-widest uppercase mb-2">Pacco Iniziale</h2>
+          <p className="text-sm text-foreground/60 mb-8 max-w-xs">Tocca il pacchetto per sintonizzare la tua prima coscienza e ricevere le tue memorie di base.</p>
+          
+          <button 
+            onClick={handleOpen}
+            disabled={isOpening}
+            className="px-12 py-4 rounded-full bg-gold/10 border border-gold/30 text-gold font-display text-sm tracking-[0.2em] uppercase hover:bg-gold/20 transition-all"
+          >
+            {isOpening ? "SINTONIZZAZIONE..." : "APRI PACCHETTO"}
+          </button>
+        </div>
+      ) : (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full flex flex-col items-center"
+        >
+          <h2 className="font-display text-2xl text-gold tracking-widest uppercase mb-1">Coscienza Sintonizzata</h2>
+          <p className="text-[10px] text-white/40 uppercase tracking-[0.3em] mb-8">Hai sbloccato 15 Memorie Comuni</p>
+          
+          <div className="grid grid-cols-3 gap-2 mb-10 max-h-[50vh] overflow-y-auto px-4 py-4 custom-scrollbar">
+            {revealed.map((id, idx) => (
+              <motion.div 
+                key={`${id}-${idx}`}
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: idx * 0.05 }}
+              >
+                <GameCard card={cardsById[id]} size="sm" />
+              </motion.div>
+            ))}
+          </div>
+
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-12 py-5 rounded-full bg-mystic-glow text-foreground font-display font-bold text-sm tracking-[0.2em] uppercase shadow-[0_0_40px_rgba(150,100,255,0.4)]"
+          >
+            INIZIA IL VIAGGIO
+          </button>
+        </motion.div>
+      )}
+    </motion.div>
   );
 }
 
