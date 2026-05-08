@@ -175,31 +175,52 @@ function Match() {
              </div>
           </div>
 
-          {/* Hand Cards */}
-          <div className="flex justify-center -space-x-8 px-4">
-            {match.hand.player.map((id, i) => (
-              <motion.div
-                key={`${id}-${i}`}
-                initial={{ y: 50, opacity: 0, rotate: (i - 2) * 5 }}
-                animate={{ y: 0, opacity: 1, rotate: (i - 2) * 5 }}
-                whileHover={{ y: -60, rotate: 0, zIndex: 50, scale: 1.25 }}
-                onClick={() => handleSelect(id)}
-                className={cn(
-                  "relative cursor-pointer transition-all",
-                  selected === id ? "-translate-y-16 z-50 scale-125" : ""
-                )}
-              >
-                <CardFromId 
-                  id={id} 
-                  size="md" 
-                  selected={selected === id}
-                  faded={cardsById[id]?.cost > match.focus.player}
-                />
-                {selected === id && (
-                  <motion.div layoutId="selection-glow" className="absolute -inset-6 rounded-2xl bg-mystic-glow/30 blur-xl -z-10" />
-                )}
-              </motion.div>
-            ))}
+          {/* Hand Cards with Curved Fan Layout */}
+          <div className="flex justify-center h-32 px-4 relative mt-4">
+            {match.hand.player.map((id, i) => {
+              const totalCards = match.hand.player.length;
+              const middleIndex = (totalCards - 1) / 2;
+              const offset = i - middleIndex;
+              const rotation = offset * 8;
+              const translateY = Math.abs(offset) * 8;
+              const translateX = offset * 2;
+
+              return (
+                <motion.div
+                  key={`${id}-${i}`}
+                  initial={{ y: 100, opacity: 0 }}
+                  animate={{ 
+                    y: selected === id ? -80 : translateY, 
+                    x: selected === id ? 0 : translateX,
+                    opacity: 1, 
+                    rotate: selected === id ? 0 : rotation,
+                    zIndex: selected === id ? 100 : i 
+                  }}
+                  whileHover={{ 
+                    y: -100, 
+                    rotate: 0, 
+                    scale: 1.3,
+                    zIndex: 100,
+                    transition: { duration: 0.2 }
+                  }}
+                  onClick={() => handleSelect(id)}
+                  className={cn(
+                    "relative cursor-pointer -mx-4 transition-shadow",
+                    selected === id && "z-[100]"
+                  )}
+                >
+                  <CardFromId 
+                    id={id} 
+                    size="md" 
+                    selected={selected === id}
+                    faded={cardsById[id]?.cost > match.focus.player}
+                  />
+                  {selected === id && (
+                    <motion.div layoutId="selection-glow" className="absolute -inset-8 rounded-3xl bg-gold/20 blur-2xl -z-10" />
+                  )}
+                </motion.div>
+              );
+            })}
           </div>
 
           {/* Deck pile */}
@@ -240,33 +261,40 @@ function Match() {
 
 function PlayerAvatar({ side, name, sub, hp, focus, maxFocus }: { side: "player" | "ai"; name: string; sub: string; hp: number; focus: number; maxFocus: number }) {
   return (
-    <div className={cn("flex items-center gap-4", side === "player" ? "flex-row" : "flex-row")}>
+    <div className={cn("flex items-center gap-5", side === "ai" ? "flex-row-reverse text-right" : "flex-row")}>
       <div className="relative group">
-        {/* Outer Hexagon Glow */}
-        <div className="absolute -inset-1 bg-gradient-to-br from-mystic via-gold to-mystic rounded-2xl blur-md opacity-40 group-hover:opacity-100 transition-opacity" />
-        <div className="relative size-12 flex items-center justify-center bg-abyss ring-2 ring-gold/40 shadow-2xl rounded-xl overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-t from-abyss via-transparent to-transparent opacity-60 z-10" />
-          <Ghost className="h-6 w-6 text-gold/20" />
+        {/* Ornate Frame */}
+        <div className="absolute -inset-2 bg-gradient-to-br from-gold/40 via-mystic/40 to-gold/40 rounded-full blur-sm opacity-50 animate-spin-slow" />
+        <div className="relative size-14 flex items-center justify-center bg-black ring-2 ring-gold/60 shadow-[0_0_30px_rgba(255,215,0,0.2)] rounded-full overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-t from-mystic/40 via-transparent to-transparent z-10" />
+          <img 
+            src={side === "player" ? "https://api.dicebear.com/7.x/avataaars/svg?seed=Dreamer&backgroundColor=030617&mouth=smile" : "https://api.dicebear.com/7.x/avataaars/svg?seed=Shadow&backgroundColor=030617&eyes=closed"} 
+            alt="Avatar"
+            className="size-full object-cover scale-110"
+          />
           {/* HP Badge */}
-          <div className="absolute -bottom-1 -right-1 z-20">
-             <div className="size-7 rotate-45 bg-rose ring-2 ring-gold/60 flex items-center justify-center shadow-lg">
-                <span className="-rotate-45 font-display text-[10px] text-foreground">{hp}</span>
+          <div className="absolute top-0 right-0 z-20">
+             <div className="size-6 bg-rose ring-1 ring-white/20 flex items-center justify-center rounded-full shadow-lg">
+                <span className="font-display text-[9px] text-white font-black">{hp}</span>
              </div>
           </div>
         </div>
       </div>
-      <div>
-        <h3 className="font-display text-sm tracking-[0.2em] text-foreground leading-tight">{name}</h3>
-        <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">{sub}</p>
-        <div className="flex gap-1.5">
+      <div className="space-y-1">
+        <h3 className="font-display text-xs tracking-[0.3em] text-gold uppercase">{name}</h3>
+        <p className="text-[8px] text-white/40 uppercase tracking-[0.4em] font-sans">{sub}</p>
+        <div className={cn("flex gap-1", side === "ai" ? "justify-end" : "justify-start")}>
            {Array.from({ length: maxFocus }).map((_, i) => (
-             <div 
+             <motion.div 
                key={i} 
+               initial={false}
+               animate={{ 
+                 scale: i < focus ? [1, 1.2, 1] : 1,
+                 opacity: i < focus ? 1 : 0.2 
+               }}
                className={cn(
-                 "size-2.5 rotate-45 transition-all duration-500",
-                 i < focus 
-                   ? "bg-mystic shadow-[0_0_10px_var(--mystic-glow)] ring-1 ring-gold/40" 
-                   : "bg-abyss ring-1 ring-white/10"
+                 "size-2 rotate-45 rounded-sm border border-white/20",
+                 i < focus ? "bg-mystic shadow-[0_0_10px_#A855F7]" : "bg-white/5"
                )} 
              />
            ))}
@@ -280,66 +308,114 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
   const meta = territoryMeta[territory.id];
   const playerPower = cards.filter((c) => c.side === "player").reduce((s, c) => s + c.power, 0);
   const aiPower = cards.filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
+  const isWinning = playerPower > aiPower;
   
   return (
-    <div 
+    <motion.div 
+      whileHover={canPlay ? { scale: 1.02 } : {}}
       className={cn(
-        "flex-1 flex flex-col rounded-3xl relative overflow-hidden ring-1 transition-all",
-        canPlay ? "ring-gold shadow-[inset_0_0_40px_rgba(255,215,0,0.15)] animate-pulse cursor-pointer" : "ring-white/10 bg-card/20 backdrop-blur-sm"
+        "flex-1 flex flex-col rounded-3xl relative overflow-hidden border transition-all duration-500",
+        canPlay ? "border-gold/60 shadow-[0_0_30px_rgba(255,215,0,0.2)] cursor-pointer" : "border-white/10 bg-card/10 backdrop-blur-md",
+        isWinning && cards.length > 0 && "shadow-[inset_0_0_40px_rgba(255,215,0,0.05)]"
       )}
       onClick={onDrop}
     >
-      {/* Background Graphic */}
-      <div className="absolute inset-0 -z-10 opacity-40 pointer-events-none" style={{ backgroundColor: meta.bg }}>
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-9xl opacity-10">{meta.icon}</div>
+      {/* Dynamic Background Fog/Particles */}
+      <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
+         <div className="absolute inset-0 opacity-20" style={{ backgroundColor: meta.bg }} />
+         <motion.div 
+           animate={{ 
+             opacity: [0.1, 0.3, 0.1],
+             scale: [1, 1.2, 1],
+             rotate: [0, 90, 0]
+           }}
+           transition={{ duration: 15, repeat: Infinity }}
+           className={cn("absolute -top-1/2 -left-1/2 size-full blur-[80px]", meta.color.replace("text-", "bg-"))}
+         />
       </div>
-      
-      {/* Header */}
-      <div className={cn("p-4 border-b border-white/5 bg-gradient-to-b", meta.gradient)}>
-         <h4 className={cn("font-display text-[10px] uppercase tracking-[0.3em] text-center", meta.color)}>{territory.name}</h4>
-         <p className="text-[8px] text-muted-foreground text-center line-clamp-1 mt-1">{territory.rule}</p>
+
+      {/* Territory Label */}
+      <div className={cn("p-4 border-b border-white/5 bg-gradient-to-b relative overflow-hidden", meta.gradient)}>
+         <h4 className={cn("font-display text-[11px] uppercase tracking-[0.4em] text-center font-black", meta.color)}>{territory.name}</h4>
+         <p className="text-[8px] text-white/40 text-center line-clamp-1 mt-1 font-sans">{territory.rule}</p>
+         
+         {/* Animated Icon */}
+         <motion.div 
+           animate={{ y: [0, -4, 0], opacity: [0.2, 0.5, 0.2] }}
+           transition={{ duration: 4, repeat: Infinity }}
+           className="absolute top-2 right-2 text-lg"
+         >
+           {meta.icon}
+         </motion.div>
       </div>
 
       {/* Opponent Area */}
-      <div className="flex-1 p-2 flex flex-col gap-2 items-center justify-start overflow-y-auto">
-         {cards.filter(c => c.side === "ai").map(c => (
-           <motion.div key={c.uid} initial={{ scale: 0, y: -20 }} animate={{ scale: 1, y: 0 }}>
+      <div className="flex-1 p-2 flex flex-col gap-2 items-center justify-start overflow-y-auto pt-4">
+         {cards.filter(c => c.side === "ai").map((c, i) => (
+           <motion.div key={c.uid} initial={{ scale: 0, y: -40, rotate: -10 }} animate={{ scale: 1, y: 0, rotate: 0 }} transition={{ type: "spring", damping: 15 }}>
              <CardFromId id={c.cardId} size="xs" />
            </motion.div>
          ))}
-         {cards.filter(c => c.side === "ai").length === 0 && (
-           <div className="size-16 rounded-xl border border-dashed border-white/10 flex items-center justify-center opacity-20">
-             <Ghost className="h-6 w-6" />
-           </div>
-         )}
       </div>
 
-      {/* Score Divider */}
-      <div className="py-2 flex items-center justify-center gap-4 relative">
-         <div className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-         <div className="relative z-10 flex flex-col items-center">
-            <span className="text-[8px] uppercase text-muted-foreground tracking-widest">Tu</span>
-            <div className={cn("font-display text-xl", playerPower > aiPower ? "text-gold glow-gold" : "text-foreground")}>{playerPower}</div>
+      {/* Master Score Display (CCC - Center Combat Component) */}
+      <div className="py-4 flex items-center justify-center gap-6 relative">
+         <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+         
+         <div className="relative z-10 flex flex-col items-center group">
+            <span className="text-[8px] uppercase text-white/40 tracking-[0.2em] font-black">PLAYER</span>
+            <div className={cn(
+              "font-display text-3xl transition-all duration-500",
+              isWinning ? "text-gold scale-125 drop-shadow-[0_0_15px_rgba(255,215,0,0.6)]" : "text-white/60"
+            )}>
+              {playerPower}
+            </div>
+            {isWinning && cards.length > 0 && (
+              <motion.div layoutId={`win-crown-${territory.id}`} className="absolute -top-1 size-1 bg-gold rounded-full blur-[2px]" />
+            )}
          </div>
+
          <div className="relative z-10 flex flex-col items-center">
-            <span className="text-[8px] uppercase text-muted-foreground tracking-widest">Avv.</span>
-            <div className={cn("font-display text-xl", aiPower > playerPower ? "text-rose" : "text-muted-foreground")}>{aiPower}</div>
+            <span className="text-[8px] uppercase text-white/40 tracking-[0.2em] font-black">ENEMY</span>
+            <div className={cn(
+              "font-display text-2xl transition-all duration-500",
+              aiPower > playerPower ? "text-rose scale-110" : "text-white/30"
+            )}>
+              {aiPower}
+            </div>
          </div>
       </div>
 
       {/* Player Area */}
-      <div className="flex-1 p-2 flex flex-col-reverse gap-2 items-center justify-start overflow-y-auto">
-         {cards.filter(c => c.side === "player").map(c => (
-           <motion.div key={c.uid} initial={{ scale: 0, y: 20 }} animate={{ scale: 1, y: 0 }}>
-             <CardFromId id={c.cardId} size="xs" glow={playerPower > aiPower} />
+      <div className="flex-1 p-2 flex flex-col-reverse gap-2 items-center justify-start overflow-y-auto pb-4">
+         {cards.filter(c => c.side === "player").map((c, i) => (
+           <motion.div 
+             key={c.uid} 
+             initial={{ scale: 0, y: 40, rotate: 10 }} 
+             animate={{ scale: 1, y: 0, rotate: 0 }} 
+             transition={{ type: "spring", damping: 12 }}
+             className="relative"
+           >
+             <CardFromId id={c.cardId} size="xs" glow={isWinning} />
+             {isWinning && (
+               <div className="absolute -inset-1 bg-gold/10 blur-sm rounded-lg -z-10 animate-pulse" />
+             )}
            </motion.div>
          ))}
-         {cards.filter(c => c.side === "player").length === 0 && (
-           <div className="size-16 rounded-xl border border-dashed border-white/10 flex items-center justify-center opacity-20">
-             <Play className="h-6 w-6 rotate-90" />
-           </div>
-         )}
       </div>
-    </div>
+      
+      {/* Play Indicator Overlay */}
+      {canPlay && (
+        <div className="absolute inset-0 bg-gold/5 flex items-center justify-center pointer-events-none">
+          <motion.div 
+            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="size-20 rounded-full border-2 border-gold/40 flex items-center justify-center"
+          >
+            <Zap className="text-gold size-8 fill-gold/20" />
+          </motion.div>
+        </div>
+      )}
+    </motion.div>
   );
 }
