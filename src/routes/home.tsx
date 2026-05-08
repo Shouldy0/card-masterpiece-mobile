@@ -220,29 +220,56 @@ function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
             className="relative size-64 mb-12 cursor-pointer group"
             onClick={stage === "idle" ? handleOpen : undefined}
           >
-             <motion.div 
-               style={{ transformStyle: "preserve-3d" }}
-               className="absolute inset-0 overflow-hidden"
-             >
-                <img 
-                  src="/assets/starter-pack.png" 
-                  alt="Starter Pack" 
-                  className="size-full object-contain mix-blend-lighten"
-                />
+             {/* THE 3D BOX CONTAINER */}
+             <div className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
                 
-                {/* Dynamic 3D Light Reflection */}
-                <motion.div 
-                  style={{
-                    background: "linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%)",
-                    x: useTransform(mouseX, [-100, 100], [-150, 150]),
-                    y: useTransform(mouseY, [-100, 100], [-150, 150]),
-                  }}
-                  className="absolute inset-[-100%] pointer-events-none mix-blend-overlay"
+                {/* FRONT FACE */}
+                <div 
+                  className="absolute inset-0 bg-black rounded-[2rem] overflow-hidden border border-white/10"
+                  style={{ transform: "translateZ(15px)", backfaceVisibility: "hidden" }}
+                >
+                  <img src="/assets/starter-pack.png" alt="Front" className="size-full object-contain mix-blend-lighten scale-110" />
+                  <motion.div 
+                    style={{
+                      background: "linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%)",
+                      x: useTransform(mouseX, [-100, 100], [-150, 150]),
+                    }}
+                    className="absolute inset-[-100%] pointer-events-none mix-blend-overlay"
+                  />
+                </div>
+
+                {/* BACK FACE */}
+                <div 
+                  className="absolute inset-0 bg-black rounded-[2rem] overflow-hidden border border-white/10"
+                  style={{ transform: "translateZ(-15px) rotateY(180deg)", backfaceVisibility: "hidden" }}
+                >
+                   <img src="/assets/starter-pack.png" alt="Back" className="size-full object-contain opacity-40 grayscale" />
+                </div>
+
+                {/* LEFT SIDE */}
+                <div 
+                  className="absolute top-0 bottom-0 left-0 w-[30px] bg-gradient-to-r from-[#0a0a0c] to-[#1a1a1c] border-y border-white/5"
+                  style={{ transform: "translateX(-15px) rotateY(-90deg)" }}
                 />
 
-                {/* Ambient Occlusion / Shadow Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-white/5 pointer-events-none" />
-             </motion.div>
+                {/* RIGHT SIDE */}
+                <div 
+                  className="absolute top-0 bottom-0 right-0 w-[30px] bg-gradient-to-l from-[#0a0a0c] to-[#1a1a1c] border-y border-white/5"
+                  style={{ transform: "translateX(15px) rotateY(90deg)" }}
+                />
+
+                {/* TOP SIDE */}
+                <div 
+                  className="absolute left-0 right-0 top-0 h-[30px] bg-gradient-to-b from-[#1a1a1c] to-[#0a0a0c] border-x border-white/5"
+                  style={{ transform: "translateY(-15px) rotateX(90deg)" }}
+                />
+
+                {/* BOTTOM SIDE */}
+                <div 
+                  className="absolute left-0 right-0 bottom-0 h-[30px] bg-gradient-to-t from-[#1a1a1c] to-[#0a0a0c] border-x border-white/5"
+                  style={{ transform: "translateY(15px) rotateX(-90deg)" }}
+                />
+             </div>
 
              {/* Interact Hint */}
              {stage === "idle" && (
