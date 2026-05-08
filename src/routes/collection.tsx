@@ -110,7 +110,8 @@ function Collection() {
               <div className="grid grid-cols-3 gap-y-10 gap-x-4 mb-10">
                 <AnimatePresence mode="popLayout">
                   {filteredCards.map((card, i) => {
-                    const isOwned = player.collection.includes(card.id);
+                    // FORCE UNLOCK FOR NEW ARCHETYPE CARDS TO SHOW THEM IMMEDIATELY
+                    const isOwned = player.collection.includes(card.id) || card.type === 'archetipo';
                     return (
                       <motion.div
                         key={card.id}
