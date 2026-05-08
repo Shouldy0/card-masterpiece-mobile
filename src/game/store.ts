@@ -306,7 +306,7 @@ export const useGame = create<AppStore>()(
           set(state => ({
             player: {
               ...state.player,
-              collection: masterIds, // For now, let's give them all 50
+              collection: masterIds, // Garantisci l'accesso a tutte le 60 carte aggiornate
               deck: validDeck.length === 15 ? validDeck : buildStarterDeck()
             },
             match: matchInvalid ? null : state.match
@@ -360,26 +360,44 @@ export const useGame = create<AppStore>()(
         return { match: m };
       }),
 
-      exitMatch: () => set((s) => {
-        // award rewards on win
-        if (s.match?.status === "ended" && s.match.result === "win") {
-          const p = { ...s.player };
-          p.xp += 120;
-          p.gold += 50;
-          p.fragments += 25;
-          p.wins += 1;
-          p.matches += 1;
-          if (p.xp >= p.xpToNext) { p.level += 1; p.xp = p.xp - p.xpToNext; p.xpToNext = Math.round(p.xpToNext * 1.15); }
-          return { match: null, player: p };
-        }
-        if (s.match?.status === "ended") {
-          const p = { ...s.player, matches: s.player.matches + 1, xp: s.player.xp + 40 };
-          return { match: null, player: p };
-        }
-        return { match: null };
-      }),
+      exitMatch: () => {
+        const { match, player, user, syncWithCloud } = get();
+        if (!match) return;
 
-      saveDeck: (deck) => set((s) => ({ player: { ...s.player, deck } })),
+        let updatedPlayer = { ...player };
+        
+        // award rewards on win
+        if (match.status === "ended" && match.result === "win") {
+          updatedPlayer.xp += 120;
+          updatedPlayer.gold += 50;
+          updatedPlayer.fragments += 25;
+          updatedPlayer.wins += 1;
+          updatedPlayer.matches += 1;
+          if (updatedPlayer.xp >= updatedPlayer.xpToNext) { 
+            updatedPlayer.level += 1; 
+            updatedPlayer.xp = updatedPlayer.xp - updatedPlayer.xpToNext; 
+            updatedPlayer.xpToNext = Math.round(updatedPlayer.xpToNext * 1.15); 
+          }
+        } else if (match.status === "ended") {
+          updatedPlayer.matches += 1;
+          updatedPlayer.xp += 40;
+        }
+
+        set({ match: null, player: updatedPlayer });
+        
+        // Auto-sync if user is logged in
+        if (user?.uid) {
+          syncWithCloud(user.uid);
+        }
+      },
+
+      saveDeck: (deck) => {
+        const { user, syncWithCloud } = get();
+        set((s) => ({ player: { ...s.player, deck } }));
+        if (user?.uid) {
+          syncWithCloud(user.uid);
+        }
+      },
 
       toggleSetting: (k, v) => set((s) => ({ settings: { ...s.settings, [k]: v } })),
 
