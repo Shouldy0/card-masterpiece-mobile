@@ -390,6 +390,7 @@ export const useGame = create<AppStore>()(
       })(),
       onboardingDone: false,
       onboardingPackOpened: false,
+      syncCollection: () => {
         const { player, match } = get();
         const masterIds = CARDS.map(c => c.id);
         
