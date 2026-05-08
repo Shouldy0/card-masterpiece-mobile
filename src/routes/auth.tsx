@@ -8,6 +8,8 @@ import { Eye, Mail, Lock, LogIn, UserPlus, Sparkles, Chrome } from "lucide-react
 import { toast } from "sonner";
 import { useSound } from "@/hooks/useSound";
 
+import { useGame } from "@/game/store";
+
 export const Route = createFileRoute("/auth")({ component: AuthPage });
 
 function AuthPage() {
@@ -43,6 +45,9 @@ function AuthPage() {
         await signInWithEmailAndPassword(firebaseAuth, email, password);
         toast.success("Bentornato, Sognatore");
       } else {
+        // RESET player to starter state for NEW user
+        useGame.getState().resetPlayer();
+        
         const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
         const { savePlayerToCloud } = await import("@/game/persistence");
         const currentPlayerState = useGame.getState().player;
@@ -68,7 +73,22 @@ function AuthPage() {
     try {
       const firebaseAuth = await getAuthInstance();
       if (!firebaseAuth) throw new Error("Sistema di autenticazione non disponibile");
-      await signInWithPopup(firebaseAuth, provider);
+      const userCredential = await signInWithPopup(firebaseAuth, provider);
+      
+      // Sync cloud data for Google users (initialize if new)
+      const { loadPlayerFromCloud, savePlayerToCloud } = await import("@/game/persistence");
+      const cloudData = await loadPlayerFromCloud(userCredential.user.uid);
+      
+      if (cloudData) {
+        useGame.setState({ player: cloudData });
+      } else {
+        // NEW Google user
+        useGame.getState().resetPlayer();
+        const initialData = useGame.getState().player;
+        await savePlayerToCloud(userCredential.user.uid, initialData);
+        toast.success("Benvenuto nel Sogno");
+      }
+      
       navigate({ to: "/home" });
     } catch (error: any) {
       toast.error(error.message);
