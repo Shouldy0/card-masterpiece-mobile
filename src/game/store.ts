@@ -545,8 +545,7 @@ export const useGame = create<AppStore>()(
             ...state.player,
             collection: [...starterCards],
             deck: [...starterCards]
-          },
-          onboardingPackOpened: true
+          }
         }));
         if (user?.uid) {
           get().syncWithCloud(user.uid);

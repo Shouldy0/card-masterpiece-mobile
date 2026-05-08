@@ -13,7 +13,7 @@ import { cardsById } from "@/game/cards";
 export const Route = createFileRoute("/home")({ component: Home });
 
 function Home() {
-  const { player, startMatch, onboardingPackOpened, openStarterPack } = useGame();
+  const { player, startMatch, onboardingPackOpened, openStarterPack, setOnboardingPackOpened } = useGame();
   const navigate = useNavigate();
   const { play } = useSound();
 
@@ -131,14 +131,17 @@ function Home() {
       {/* STARTER PACK OPENING OVERLAY */}
       <AnimatePresence>
         {!onboardingPackOpened && (
-          <StarterPackOpening onOpen={openStarterPack} />
+          <StarterPackOpening 
+            onOpen={openStarterPack} 
+            onComplete={() => setOnboardingPackOpened(true)} 
+          />
         )}
       </AnimatePresence>
     </MobileFrame>
   );
 }
 
-function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
+function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], onComplete: () => void }) {
   const [stage, setStage] = React.useState<"idle" | "opening" | "ritual" | "revealing" | "done">("idle");
   const [cards, setCards] = React.useState<string[]>([]);
   const [revealed, setRevealed] = React.useState<Set<number>>(new Set());
@@ -356,7 +359,7 @@ function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
                   animate={{ opacity: 1, y: 0 }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => window.location.reload()} 
+                  onClick={onComplete} 
                   className="px-16 py-5 rounded-full bg-gradient-to-r from-gold via-mystic-glow to-gold text-black font-display font-black text-xs tracking-[0.3em] uppercase shadow-[0_0_50px_rgba(255,215,0,0.4)]"
                 >
                   INIZIA IL VIAGGIO
