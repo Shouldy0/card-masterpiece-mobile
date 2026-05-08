@@ -1,6 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, Suspense } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { useTexture, Float, Environment, ContactShadows, PerspectiveCamera } from "@react-three/drei";
+import * as THREE from "three";
 import { MobileFrame } from "@/components/Common";
 import { BottomNav } from "@/components/BottomNav";
 import { useGame } from "@/game/store";
@@ -197,94 +200,49 @@ function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
       className="fixed inset-0 z-[100] bg-black backdrop-blur-3xl flex flex-col items-center justify-center p-6 overflow-hidden"
     >
       {stage === "idle" || stage === "opening" ? (
-        <div className="flex flex-col items-center z-10" style={{ perspective: "1200px" }}>
+        <div className="relative w-full h-[400px] flex items-center justify-center z-10">
           <motion.div
             layoutId="starter-pack"
-            onPointerMove={handlePointerMove}
-            onPointerLeave={handlePointerLeave}
-            style={{ 
-              rotateX: stage === "idle" ? rotateX : 0, 
-              rotateY: stage === "idle" ? rotateY : 0,
-              transformStyle: "preserve-3d" 
-            }}
+            initial={{ opacity: 0, scale: 0.8 }}
             animate={stage === "opening" ? { 
-              scale: [1, 1.4, 0],
-              rotate: [0, 10, -10, 720],
+              scale: [1, 1.2, 0],
+              opacity: [1, 1, 0],
               y: [0, -100, 0],
-              z: [0, 100, 0]
             } : { 
-              y: [0, -15, 0],
-              rotateZ: stage === "idle" ? [0, 1, -1, 0] : 0
+              opacity: 1, 
+              scale: 1 
             }}
-            transition={{ duration: stage === "opening" ? 2 : 5, repeat: stage === "opening" ? 0 : Infinity }}
-            className="relative size-64 mb-12 cursor-pointer group"
+            transition={{ duration: stage === "opening" ? 2 : 1 }}
+            className="w-full h-full cursor-pointer relative"
             onClick={stage === "idle" ? handleOpen : undefined}
           >
-             {/* THE 3D BOX CONTAINER */}
-             <div className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
-                
-                {/* FRONT FACE */}
-                <div 
-                  className="absolute inset-0 bg-black rounded-[2rem] overflow-hidden border border-white/10"
-                  style={{ transform: "translateZ(15px)", backfaceVisibility: "hidden" }}
-                >
-                  <img src="/assets/starter-pack.png" alt="Front" className="size-full object-contain mix-blend-lighten scale-110" />
-                  <motion.div 
-                    style={{
-                      background: "linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%)",
-                      x: useTransform(mouseX, [-100, 100], [-150, 150]),
-                    }}
-                    className="absolute inset-[-100%] pointer-events-none mix-blend-overlay"
-                  />
-                </div>
+             <Suspense fallback={<div className="text-gold animate-pulse">Sintonizzazione 3D...</div>}>
+                <Canvas shadows gl={{ antialias: true, alpha: true }}>
+                   <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
+                   <ambientLight intensity={1.5} />
+                   <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={5} castShadow />
+                   <pointLight position={[-10, -10, -10]} intensity={2} color="#6a0dad" />
+                   
+                   <Float speed={2} rotationIntensity={1.5} floatIntensity={1}>
+                      <PackModel textureUrl="/assets/starter-pack.png" isOpening={stage === "opening"} />
+                   </Float>
 
-                {/* BACK FACE */}
-                <div 
-                  className="absolute inset-0 bg-black rounded-[2rem] overflow-hidden border border-white/10"
-                  style={{ transform: "translateZ(-15px) rotateY(180deg)", backfaceVisibility: "hidden" }}
-                >
-                   <img src="/assets/starter-pack.png" alt="Back" className="size-full object-contain opacity-40 grayscale" />
-                </div>
-
-                {/* LEFT SIDE */}
-                <div 
-                  className="absolute top-0 bottom-0 left-0 w-[30px] bg-gradient-to-r from-[#0a0a0c] to-[#1a1a1c] border-y border-white/5"
-                  style={{ transform: "translateX(-15px) rotateY(-90deg)" }}
-                />
-
-                {/* RIGHT SIDE */}
-                <div 
-                  className="absolute top-0 bottom-0 right-0 w-[30px] bg-gradient-to-l from-[#0a0a0c] to-[#1a1a1c] border-y border-white/5"
-                  style={{ transform: "translateX(15px) rotateY(90deg)" }}
-                />
-
-                {/* TOP SIDE */}
-                <div 
-                  className="absolute left-0 right-0 top-0 h-[30px] bg-gradient-to-b from-[#1a1a1c] to-[#0a0a0c] border-x border-white/5"
-                  style={{ transform: "translateY(-15px) rotateX(90deg)" }}
-                />
-
-                {/* BOTTOM SIDE */}
-                <div 
-                  className="absolute left-0 right-0 bottom-0 h-[30px] bg-gradient-to-t from-[#1a1a1c] to-[#0a0a0c] border-x border-white/5"
-                  style={{ transform: "translateY(15px) rotateX(-90deg)" }}
-                />
-             </div>
+                   <Environment preset="night" />
+                   <ContactShadows position={[0, -2.5, 0]} opacity={0.6} scale={10} blur={2} far={4} />
+                </Canvas>
+             </Suspense>
 
              {/* Interact Hint */}
              {stage === "idle" && (
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="absolute -bottom-16 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] text-gold/60 uppercase tracking-[0.5em] animate-pulse"
+                  className="absolute bottom-4 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] text-gold/60 uppercase tracking-[0.5em] animate-pulse pointer-events-none"
                 >
-                  Sintonizza la Memoria
+                  Tocca per aprire
                 </motion.div>
              )}
           </motion.div>
-          
-          <h2 className="font-display text-2xl text-gold tracking-widest uppercase mb-2">Pacco Iniziale</h2>
-          <p className="text-sm text-foreground/40 mb-8 max-w-xs text-center leading-relaxed">Le tue prime 15 memorie stanno per manifestarsi nella tua coscienza.</p>
         </div>
       ) : (
         <div className="w-full flex flex-col items-center z-10 max-w-lg">
@@ -350,6 +308,36 @@ function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
         />
       )}
     </motion.div>
+  );
+}
+
+function PackModel({ textureUrl, isOpening }: { textureUrl: string, isOpening: boolean }) {
+  const meshRef = useRef<THREE.Mesh>(null!);
+  const texture = useTexture(textureUrl);
+  
+  useFrame((state, delta) => {
+    if (isOpening) {
+      meshRef.current.rotation.y += delta * 15;
+      meshRef.current.rotation.x += delta * 5;
+    } else {
+      meshRef.current.rotation.y += delta * 0.5;
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} castShadow receiveShadow>
+      <boxGeometry args={[2.2, 3.2, 0.4]} />
+      
+      {/* Front */}
+      <meshStandardMaterial attach="material-4" map={texture} transparent={true} roughness={0.1} metalness={0.8} />
+      {/* Back */}
+      <meshStandardMaterial attach="material-5" map={texture} transparent={true} opacity={0.5} roughness={0.5} metalness={0.2} />
+      {/* Sides */}
+      <meshStandardMaterial attach="material-0" color="#1a1a1e" roughness={0.2} metalness={0.9} />
+      <meshStandardMaterial attach="material-1" color="#1a1a1e" roughness={0.2} metalness={0.9} />
+      <meshStandardMaterial attach="material-2" color="#1a1a1e" roughness={0.2} metalness={0.9} />
+      <meshStandardMaterial attach="material-3" color="#1a1a1e" roughness={0.2} metalness={0.9} />
+    </mesh>
   );
 }
 
