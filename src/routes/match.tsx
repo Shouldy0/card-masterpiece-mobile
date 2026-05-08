@@ -159,11 +159,11 @@ function Match() {
 
                 <button 
                   onClick={handleEndTurn}
-                  className="relative group overflow-hidden rounded-full p-px bg-gradient-to-r from-mystic via-gold to-mystic shadow-[0_0_30px_-5px_rgba(255,215,0,0.4)] transition-transform active:scale-95"
+                  className="relative group overflow-hidden rounded-full p-px bg-gradient-to-r from-mystic via-gold to-mystic shadow-[0_0_20px_-5px_rgba(255,215,0,0.4)] transition-transform active:scale-95"
                 >
-                  <div className="px-8 py-6 rounded-full bg-abyss flex flex-col items-center justify-center ring-1 ring-gold/20 group-hover:bg-card/40 transition-colors">
-                    <span className="font-display text-base uppercase tracking-[0.2em] text-gold group-hover:text-foreground">FINE</span>
-                    <span className="font-display text-base uppercase tracking-[0.2em] text-gold group-hover:text-foreground -mt-1">TURNO</span>
+                  <div className="px-6 py-4 rounded-full bg-abyss flex flex-col items-center justify-center ring-1 ring-gold/20 group-hover:bg-card/40 transition-colors">
+                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-gold group-hover:text-foreground leading-none">FINE</span>
+                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-gold group-hover:text-foreground leading-none">TURNO</span>
                   </div>
                 </button>
 
@@ -176,17 +176,17 @@ function Match() {
           </div>
 
           {/* Hand Cards */}
-          <div className="flex justify-center -space-x-6 px-10">
+          <div className="flex justify-center -space-x-8 px-4">
             {match.hand.player.map((id, i) => (
               <motion.div
                 key={`${id}-${i}`}
                 initial={{ y: 50, opacity: 0, rotate: (i - 2) * 5 }}
                 animate={{ y: 0, opacity: 1, rotate: (i - 2) * 5 }}
-                whileHover={{ y: -40, rotate: 0, zIndex: 50, scale: 1.1 }}
+                whileHover={{ y: -60, rotate: 0, zIndex: 50, scale: 1.25 }}
                 onClick={() => handleSelect(id)}
                 className={cn(
                   "relative cursor-pointer transition-all",
-                  selected === id ? "-translate-y-12 z-50 scale-110" : ""
+                  selected === id ? "-translate-y-16 z-50 scale-125" : ""
                 )}
               >
                 <CardFromId 
@@ -196,7 +196,7 @@ function Match() {
                   faded={cardsById[id]?.cost > match.focus.player}
                 />
                 {selected === id && (
-                  <motion.div layoutId="selection-glow" className="absolute -inset-4 rounded-2xl bg-mystic-glow/20 blur-xl -z-10" />
+                  <motion.div layoutId="selection-glow" className="absolute -inset-6 rounded-2xl bg-mystic-glow/30 blur-xl -z-10" />
                 )}
               </motion.div>
             ))}
@@ -244,13 +244,13 @@ function PlayerAvatar({ side, name, sub, hp, focus, maxFocus }: { side: "player"
       <div className="relative group">
         {/* Outer Hexagon Glow */}
         <div className="absolute -inset-1 bg-gradient-to-br from-mystic via-gold to-mystic rounded-2xl blur-md opacity-40 group-hover:opacity-100 transition-opacity" />
-        <div className="relative size-16 flex items-center justify-center bg-abyss ring-2 ring-gold/40 shadow-2xl rounded-2xl overflow-hidden">
+        <div className="relative size-12 flex items-center justify-center bg-abyss ring-2 ring-gold/40 shadow-2xl rounded-xl overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-t from-abyss via-transparent to-transparent opacity-60 z-10" />
-          <Ghost className="h-8 w-8 text-gold/20" />
+          <Ghost className="h-6 w-6 text-gold/20" />
           {/* HP Badge */}
           <div className="absolute -bottom-1 -right-1 z-20">
-             <div className="size-8 rotate-45 bg-rose ring-2 ring-gold/60 flex items-center justify-center shadow-lg">
-                <span className="-rotate-45 font-display text-sm text-foreground">{hp}</span>
+             <div className="size-7 rotate-45 bg-rose ring-2 ring-gold/60 flex items-center justify-center shadow-lg">
+                <span className="-rotate-45 font-display text-[10px] text-foreground">{hp}</span>
              </div>
           </div>
         </div>

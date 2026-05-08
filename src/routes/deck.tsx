@@ -50,7 +50,7 @@ function Deck() {
       <div className="absolute top-[-10%] left-[-10%] size-64 bg-mystic/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] size-64 bg-gold/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <MobileFrame className="w-full h-full flex flex-col bg-transparent">
+      <MobileFrame className="w-full h-[100dvh] flex flex-col bg-transparent">
         
         {/* TOP SAFE AREA + HEADER */}
         <div className="shrink-0 pt-[env(safe-area-inset-top,20px)] bg-gradient-to-b from-black/60 to-transparent">
@@ -114,7 +114,7 @@ function Deck() {
              </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-y-10 gap-x-4 pt-4 mb-10 border-t border-white/5">
+          <div className="grid grid-cols-2 gap-y-10 gap-x-6 pt-4 mb-10 border-t border-white/5">
             {myCards.map((c) => {
               const isOwned = player.collection.includes(c.id);
               const inDeck = deck.includes(c.id);

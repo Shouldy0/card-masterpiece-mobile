@@ -107,7 +107,7 @@ function Collection() {
               </div>
 
               {/* Card Grid */}
-              <div className="grid grid-cols-3 gap-y-10 gap-x-4 mb-10">
+              <div className="grid grid-cols-2 gap-y-10 gap-x-6 mb-10">
                 <AnimatePresence mode="popLayout">
                   {filteredCards.map((card, i) => {
                     // FORCE UNLOCK FOR NEW ARCHETYPE CARDS TO SHOW THEM IMMEDIATELY
