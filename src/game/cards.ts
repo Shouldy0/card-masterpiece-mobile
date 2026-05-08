@@ -142,7 +142,7 @@ export const CARDS: CardDef[] = [
     text: "Sincronizza le tue risorse: pesca 1 carta e cura 2 HP.", 
     flavor: "Il silenzio perfetto tra due battiti del cuore.", 
     effect: { kind: "draw", amount: 1 }, 
-    art: "/cards/armonia.png" 
+    art: "/cards/archetipo/armonia.png" 
   },
 
   // --- FAZIONE: RICORDO (ORO - FRAMMENTI SACRI) ---
