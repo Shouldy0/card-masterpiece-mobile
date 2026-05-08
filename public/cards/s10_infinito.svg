@@ -1,43 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" width="360" height="480">
 <defs>
-<radialGradient id="v" cx="50%" cy="40%" r="75%"><stop offset="0%" stop-color="#000a0d"/><stop offset="100%" stop-color="#00080a"/></radialGradient>
-<linearGradient id="tb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0)"/><stop offset="50%" stop-color="rgba(0,0,0,0.85)"/><stop offset="100%" stop-color="rgba(0,0,0,1)"/></linearGradient>
-<linearGradient id="ph" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8b4513"/></linearGradient>
-<filter id="g"><feGaussianBlur stdDeviation="8"/></filter>
-<filter id="g2"><feGaussianBlur stdDeviation="4"/></filter>
-<filter id="g3"><feGaussianBlur stdDeviation="15"/></filter>
+<radialGradient id="bg_s10_infinito" cx="50%" cy="40%" r="80%"><stop offset="0%" stop-color="#22d3ee08"/><stop offset="60%" stop-color="#0891b215"/><stop offset="100%" stop-color="#050008"/></radialGradient>
+<linearGradient id="tb_s10_infinito" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0)"/><stop offset="50%" stop-color="rgba(0,0,0,0.85)"/><stop offset="100%" stop-color="rgba(0,0,0,1)"/></linearGradient>
+<linearGradient id="ph_s10_infinito" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8b4513"/></linearGradient>
+<filter id="g_s10_infinito"><feGaussianBlur stdDeviation="12"/></filter>
+<filter id="gm_s10_infinito"><feGaussianBlur stdDeviation="6"/></filter>
+<filter id="gs_s10_infinito"><feGaussianBlur stdDeviation="20"/></filter>
+<clipPath id="c_s10_infinito"><rect x="0" y="0" width="360" height="480" rx="16"/></clipPath>
 </defs>
-<g clip-path="url(#c)">
-<rect x="0" y="0" width="360" height="480" fill="#000a0d"/>
-<rect x="0" y="0" width="360" height="480" fill="url(#v)"/>
-<circle cx="180" cy="180" r="140" fill="#06b6d4" opacity="0.5" filter="url(#g)"/>
-<circle cx="180" cy="180" r="80" fill="#06b6d4" opacity="0.3" filter="url(#g)"/>
-<circle cx="180" cy="180" r="35" fill="none" opacity="1"/><circle cx="180" cy="180" r="45" fill="none" opacity="1"/><circle cx="180" cy="180" r="55" fill="none" opacity="1"/><circle cx="180" cy="180" r="65" fill="none" opacity="1"/><circle cx="180" cy="180" r="75" fill="none" opacity="1"/><circle cx="180" cy="180" r="85" fill="none" opacity="1"/><circle cx="180" cy="180" r="95" fill="none" opacity="1"/><circle cx="180" cy="180" r="105" fill="none" opacity="1"/>
-<path d="M120,180 Q150,140 180,180 Q210,220 240,180" fill="none" stroke="" stroke-width="0" opacity=""/>
-<path d="M120,180 Q150,140 180,180 Q210,220 240,180" fill="none" stroke="0.4" stroke-width="2.5" opacity="1"/>
-<path d="M120,180 Q150,220 180,180 Q210,140 240,180" fill="none" stroke="" stroke-width="0" opacity=""/>
-<path d="M120,180 Q150,220 180,180 Q210,140 240,180" fill="none" stroke="0.4" stroke-width="2.5" opacity="1"/>
-<circle cx="180" cy="180" r="8" fill="#fff" opacity="0.4"/>
-<circle cx="180" cy="180" r="3" fill="#ffd700" opacity="0.6"/>
-<circle cx="180" cy="180" r="90" fill="none" opacity="1"/>
+<g clip-path="url(#c_s10_infinito)">
+<rect x="0" y="0" width="360" height="480" fill="#050008"/>
+<rect x="0" y="0" width="360" height="480" fill="url(#bg_s10_infinito)"/>
+<circle cx="180" cy="200" r="130" fill="#22d3ee" filter="url(#g_s10_infinito)"/>
+<circle cx="180" cy="200" r="60" fill="#0891b2" filter="url(#g_s10_infinito)"/>
+<path d="M120,190 C100,150 160,150 180,190 C200,230 260,230 240,190 C220,150 160,150 180,190 C200,230 260,230 240,190" fill="none" stroke="#22d3ee" stroke-width="3" opacity="0.65" filter="url(#gm_s10_infinito)"/>
+<path d="M120,190 C100,150 160,150 180,190 C200,230 260,230 240,190 C220,150 160,150 180,190 C200,230 260,230 240,190" fill="none" stroke="#fff" stroke-width="1" opacity="0.35"/>
+<circle cx="188.0" cy="190.0" r="0.4" fill="#a5f3fc" opacity="0.45"><animate attributeName="opacity" values="0.45;0;0.45" dur="2.0s" repeatCount="indefinite"/></circle>
+<circle cx="190.2" cy="193.8" r="0.8" fill="#a5f3fc" opacity="0.43"><animate attributeName="opacity" values="0.43;0;0.43" dur="2.3s" repeatCount="indefinite"/></circle>
+<circle cx="189.8" cy="198.7" r="0.9" fill="#a5f3fc" opacity="0.42"><animate attributeName="opacity" values="0.42;0;0.42" dur="2.6s" repeatCount="indefinite"/></circle>
+<circle cx="186.2" cy="202.7" r="0.5" fill="#a5f3fc" opacity="0.41"><animate attributeName="opacity" values="0.41;0;0.41" dur="2.9s" repeatCount="indefinite"/></circle>
+<circle cx="179.4" cy="204.2" r="0.0" fill="#a5f3fc" opacity="0.39"><animate attributeName="opacity" values="0.39;0;0.39" dur="2.0s" repeatCount="indefinite"/></circle>
+<circle cx="170.3" cy="201.8" r="-0.1" fill="#a5f3fc" opacity="0.38"><animate attributeName="opacity" values="0.38;0;0.38" dur="2.3s" repeatCount="indefinite"/></circle>
+<circle cx="160.7" cy="195.1" r="0.3" fill="#a5f3fc" opacity="0.36"><animate attributeName="opacity" values="0.36;0;0.36" dur="2.6s" repeatCount="indefinite"/></circle>
+<circle cx="152.4" cy="185.2" r="0.7" fill="#a5f3fc" opacity="0.35"><animate attributeName="opacity" values="0.35;0;0.35" dur="2.9s" repeatCount="indefinite"/></circle>
+<circle cx="147.7" cy="174.4" r="0.9" fill="#a5f3fc" opacity="0.33"><animate attributeName="opacity" values="0.33;0;0.33" dur="2.0s" repeatCount="indefinite"/></circle>
+<circle cx="148.3" cy="165.5" r="0.6" fill="#a5f3fc" opacity="0.32"><animate attributeName="opacity" values="0.32;0;0.32" dur="2.3s" repeatCount="indefinite"/></circle>
+<circle cx="154.9" cy="161.3" r="0.1" fill="#a5f3fc" opacity="0.30"><animate attributeName="opacity" values="0.30;0;0.30" dur="2.6s" repeatCount="indefinite"/></circle>
+<circle cx="167.3" cy="163.8" r="-0.1" fill="#a5f3fc" opacity="0.29"><animate attributeName="opacity" values="0.29;0;0.29" dur="2.9s" repeatCount="indefinite"/></circle>
+<circle cx="183.9" cy="173.3" r="0.1" fill="#a5f3fc" opacity="0.27"><animate attributeName="opacity" values="0.27;0;0.27" dur="2.0s" repeatCount="indefinite"/></circle>
+<circle cx="202.3" cy="188.5" r="0.6" fill="#a5f3fc" opacity="0.26"><animate attributeName="opacity" values="0.26;0;0.26" dur="2.3s" repeatCount="indefinite"/></circle>
+<circle cx="219.2" cy="206.0" r="0.9" fill="#a5f3fc" opacity="0.24"><animate attributeName="opacity" values="0.24;0;0.24" dur="2.6s" repeatCount="indefinite"/></circle>
+<circle cx="231.5" cy="221.9" r="0.7" fill="#a5f3fc" opacity="0.23"><animate attributeName="opacity" values="0.23;0;0.23" dur="2.9s" repeatCount="indefinite"/></circle>
+<circle cx="236.3" cy="231.8" r="0.3" fill="#a5f3fc" opacity="0.21"><animate attributeName="opacity" values="0.21;0;0.21" dur="2.0s" repeatCount="indefinite"/></circle>
+<circle cx="231.9" cy="232.7" r="-0.1" fill="#a5f3fc" opacity="0.20"><animate attributeName="opacity" values="0.20;0;0.20" dur="2.3s" repeatCount="indefinite"/></circle>
+<circle cx="218.2" cy="223.2" r="0.0" fill="#a5f3fc" opacity="0.18"><animate attributeName="opacity" values="0.18;0;0.18" dur="2.6s" repeatCount="indefinite"/></circle>
+<circle cx="196.5" cy="204.8" r="0.5" fill="#a5f3fc" opacity="0.17"><animate attributeName="opacity" values="0.17;0;0.17" dur="2.9s" repeatCount="indefinite"/></circle>
+<circle cx="170.0" cy="181.0" r="0.9" fill="#a5f3fc" opacity="0.15"><animate attributeName="opacity" values="0.15;0;0.15" dur="2.0s" repeatCount="indefinite"/></circle>
+<circle cx="142.7" cy="157.2" r="0.8" fill="#a5f3fc" opacity="0.14"><animate attributeName="opacity" values="0.14;0;0.14" dur="2.3s" repeatCount="indefinite"/></circle>
+<circle cx="119.3" cy="139.1" r="0.4" fill="#a5f3fc" opacity="0.12"><animate attributeName="opacity" values="0.12;0;0.12" dur="2.6s" repeatCount="indefinite"/></circle>
+<circle cx="104.0" cy="131.6" r="-0.0" fill="#a5f3fc" opacity="0.11"><animate attributeName="opacity" values="0.11;0;0.11" dur="2.9s" repeatCount="indefinite"/></circle>
+<circle cx="100.3" cy="137.4" r="-0.1" fill="#a5f3fc" opacity="0.09"><animate attributeName="opacity" values="0.09;0;0.09" dur="2.0s" repeatCount="indefinite"/></circle>
+<circle cx="180" cy="190" r="5" fill="#fff" opacity="0.75"><animate attributeName="r" values="5;8;5" dur="2s" repeatCount="indefinite"/></circle>
+<g clip-path="url(#c_s10_infinito)">
+<circle cx="134.1" cy="199.1" r="0.8" fill="#a5f3fc" opacity="0.34"/><circle cx="174.7" cy="248.6" r="0.9" fill="#a5f3fc" opacity="0.39"/><circle cx="125.4" cy="188.4" r="0.8" fill="#a5f3fc" opacity="0.33"/><circle cx="168.8" cy="241.4" r="0.9" fill="#a5f3fc" opacity="0.39"/><circle cx="227.0" cy="312.2" r="1.0" fill="#a5f3fc" opacity="0.46"/><circle cx="32.2" cy="74.9" r="0.5" fill="#a5f3fc" opacity="0.22"/><circle cx="51.7" cy="98.6" r="0.6" fill="#a5f3fc" opacity="0.24"/><circle cx="65.2" cy="115.0" r="0.6" fill="#a5f3fc" opacity="0.26"/><circle cx="196.1" cy="274.6" r="0.9" fill="#a5f3fc" opacity="0.42"/><circle cx="236.0" cy="323.3" r="1.0" fill="#a5f3fc" opacity="0.47"/><circle cx="142.6" cy="209.4" r="0.8" fill="#a5f3fc" opacity="0.35"/><circle cx="110.3" cy="170.0" r="0.7" fill="#a5f3fc" opacity="0.31"/>
 <rect x="0" y="0" width="360" height="480" fill="none" stroke="#000" stroke-width="80" opacity="0.5" rx="16"/>
-<rect x="0.5" y="0.5" width="359" height="479" fill="none" stroke="rgba(255,215,0,0.15)" stroke-width="1" rx="16"/>
+<rect x="0.5" y="0.5" width="359" height="479" fill="none" stroke="#fbbf2444" stroke-width="1" rx="16"/>
 <rect x="2" y="2" width="356" height="476" fill="none" stroke="#fbbf24" stroke-width="3" rx="14" opacity="0.6"/>
 <rect x="2" y="2" width="356" height="476" fill="none" stroke="rgba(255,215,0,0.35)" stroke-width="1.5" rx="14"/>
 <path d="M 8 8 L 8 22 M 8 8 L 22 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
 <path d="M 352 8 L 352 22 M 352 8 L 338 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
 <path d="M 8 472 L 8 458 M 8 472 L 22 472" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
 <path d="M 352 472 L 352 458 M 352 472 L 338 472" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
-<circle cx="32" cy="32" r="22" fill="#06b6d4" opacity="0.9"/>
+<circle cx="32" cy="32" r="22" fill="#22d3ee" opacity="0.9"/>
 <circle cx="32" cy="32" r="22" fill="none" stroke="rgba(255,215,0,0.5)" stroke-width="1.5"/>
 <circle cx="28" cy="28" r="8" fill="rgba(255,255,255,0.2)"/>
 <text x="32" y="34" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="900" fill="#fff" font-family="Cinzel,serif">8</text>
-<circle cx="328" cy="32" r="16" fill="rgba(0,0,0,0.6)" stroke="rgba(255,215,0,0.2)" stroke-width="1.5"/>
-<circle cx="328" cy="32" r="5" fill="#06b6d4"><animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/></circle>
-<rect x="0" y="300" width="360" height="180" fill="url(#tb)"/>
+<circle cx="328" cy="32" r="16" fill="rgba(0,0,0,0.6)" stroke="#22d3ee44" stroke-width="1.5"/>
+<circle cx="328" cy="32" r="5" fill="#22d3ee"><animate attributeName="opacity" values="0.3;1;0.3" dur="2.1s" repeatCount="indefinite"/></circle>
+<rect x="0" y="300" width="360" height="180" fill="url(#tb_s10_infinito)"/>
 <text x="180" y="425" text-anchor="middle" font-size="17" fill="#fff" font-family="Cinzel,serif" font-weight="700" letter-spacing="3">L'INFINITO</text>
 <text x="180" y="452" text-anchor="middle" font-size="8" fill="#fbbf24" font-family="Montserrat,sans-serif" letter-spacing="4" opacity="0.7">LEGGENDARIA</text>
-<g transform="translate(180,460)"><polygon points="-30,-18 30,-18 40,0 30,18 -30,18 -40,0" fill="url(#ph)" stroke="rgba(255,215,0,0.8)" stroke-width="1.5"/><polygon points="-28,-16 28,-16 38,0 28,16 -28,16 -38,0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/><text x="0" y="3" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" fill="#000" font-family="Cinzel,serif">15</text></g>
+<g transform="translate(180,460)"><polygon points="-30,-18 30,-18 40,0 30,18 -30,18 -40,0" fill="url(#ph_s10_infinito)" stroke="rgba(255,215,0,0.8)" stroke-width="1.5"/><polygon points="-28,-16 28,-16 38,0 28,16 -28,16 -38,0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/><text x="0" y="3" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" fill="#000" font-family="Cinzel,serif">15</text></g>
+</g>
 </g>
 </svg>

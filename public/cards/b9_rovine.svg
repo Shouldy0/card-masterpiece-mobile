@@ -1,29 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" width="360" height="480">
 <defs>
-<radialGradient id="v" cx="50%" cy="40%" r="75%"><stop offset="0%" stop-color="#00030d"/><stop offset="100%" stop-color="#00020a"/></radialGradient>
-<linearGradient id="tb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0)"/><stop offset="50%" stop-color="rgba(0,0,0,0.85)"/><stop offset="100%" stop-color="rgba(0,0,0,1)"/></linearGradient>
-<linearGradient id="ph" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8b4513"/></linearGradient>
-<filter id="g"><feGaussianBlur stdDeviation="8"/></filter>
-<filter id="g2"><feGaussianBlur stdDeviation="4"/></filter>
-<filter id="g3"><feGaussianBlur stdDeviation="15"/></filter>
+<radialGradient id="bg_b9_rovine" cx="50%" cy="40%" r="80%"><stop offset="0%" stop-color="#3b82f608"/><stop offset="60%" stop-color="#1e3a5f15"/><stop offset="100%" stop-color="#050008"/></radialGradient>
+<linearGradient id="tb_b9_rovine" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0)"/><stop offset="50%" stop-color="rgba(0,0,0,0.85)"/><stop offset="100%" stop-color="rgba(0,0,0,1)"/></linearGradient>
+<linearGradient id="ph_b9_rovine" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8b4513"/></linearGradient>
+<filter id="g_b9_rovine"><feGaussianBlur stdDeviation="12"/></filter>
+<filter id="gm_b9_rovine"><feGaussianBlur stdDeviation="6"/></filter>
+<filter id="gs_b9_rovine"><feGaussianBlur stdDeviation="20"/></filter>
+<clipPath id="c_b9_rovine"><rect x="0" y="0" width="360" height="480" rx="16"/></clipPath>
 </defs>
-<g clip-path="url(#c)">
-<rect x="0" y="0" width="360" height="480" fill="#00030d"/>
-<rect x="0" y="0" width="360" height="480" fill="url(#v)"/>
-<circle cx="180" cy="180" r="100" fill="#3b82f6" opacity="0.25" filter="url(#g)"/>
-<path d="M110,100 L130,100 L130,260 L110,260 Z" fill="none" stroke="undefined" stroke-width="undefined" opacity="1"/>
-<path d="M150,140 L170,140 L170,260 L150,260 Z" fill="none" stroke="undefined" stroke-width="undefined" opacity="1"/>
-<path d="M210,120 L230,120 L230,260 L210,260 Z" fill="none" stroke="undefined" stroke-width="undefined" opacity="1"/>
-<path d="M110,100 L130,100 L130,260 L110,260 Z" fill="none" stroke="#3b82f6" stroke-width="1" opacity="0.2"/>
-<path d="M150,140 L170,140 L170,260 L150,260 Z" fill="none" stroke="#3b82f6" stroke-width="0.8" opacity="0.15"/>
-<path d="M210,120 L230,120 L230,260 L210,260 Z" fill="none" stroke="#3b82f6" stroke-width="1" opacity="0.2"/>
-<circle cx="130" cy="130" r="3" fill="#fff" opacity="0.3"/>
-<circle cx="160" cy="180" r="2" fill="#fff" opacity="0.3"/>
-<circle cx="220" cy="150" r="2.5" fill="#fff" opacity="0.3"/>
+<g clip-path="url(#c_b9_rovine)">
+<rect x="0" y="0" width="360" height="480" fill="#050008"/>
+<rect x="0" y="0" width="360" height="480" fill="url(#bg_b9_rovine)"/>
+<circle cx="180" cy="200" r="90" fill="#1e3a5f" filter="url(#g_b9_rovine)"/>
+<rect x="80" y="150" width="18" height="190" fill="#0a0a14" stroke="#93c5fd33" stroke-width="1" opacity="0.55"/>
+<rect x="260" y="170" width="18" height="170" fill="#0a0a14" stroke="#93c5fd33" stroke-width="1" opacity="0.55"/>
+<polygon points="80,150 89,170 89,150" fill="#000814" opacity="0.7"/>
+<polygon points="98,150 89,160 98,170" fill="#000814" opacity="0.7"/>
+<rect x="98" y="200" width="162" height="8" fill="#0a0a14" stroke="#93c5fd22" stroke-width="0.5" opacity="0.35"/>
+<polygon points="60,338 65,335 68,340 63,343" fill="#93c5fd22" opacity="0.25"/>
+<polygon points="98,330 103,327 106,332 101,335" fill="#93c5fd22" opacity="0.25"/>
+<polygon points="129,313 134,310 137,315 132,318" fill="#93c5fd22" opacity="0.25"/>
+<polygon points="151,302 156,299 159,304 154,307" fill="#93c5fd22" opacity="0.25"/>
+<polygon points="172,308 177,305 180,310 175,313" fill="#93c5fd22" opacity="0.25"/>
+<polygon points="200,325 205,322 208,327 203,330" fill="#93c5fd22" opacity="0.25"/>
+<polygon points="237,337 242,334 245,339 240,342" fill="#93c5fd22" opacity="0.25"/>
+<polygon points="277,334 282,331 285,336 280,339" fill="#93c5fd22" opacity="0.25"/>
+<circle cx="80" cy="253" r="0.5" fill="#93c5fd" opacity="0.16"/>
+<circle cx="219" cy="278" r="0.5" fill="#93c5fd" opacity="0.10"/>
+<circle cx="260" cy="248" r="0.5" fill="#93c5fd" opacity="0.11"/>
+<circle cx="74" cy="238" r="0.5" fill="#93c5fd" opacity="0.11"/>
+<circle cx="193" cy="322" r="0.5" fill="#93c5fd" opacity="0.16"/>
+<circle cx="269" cy="216" r="0.5" fill="#93c5fd" opacity="0.17"/>
+<circle cx="174" cy="174" r="0.5" fill="#93c5fd" opacity="0.21"/>
+<circle cx="218" cy="272" r="0.5" fill="#93c5fd" opacity="0.18"/>
+<g clip-path="url(#c_b9_rovine)">
+<circle cx="215.5" cy="298.3" r="1.0" fill="#93c5fd" opacity="0.44"/><circle cx="148.5" cy="216.6" r="0.8" fill="#93c5fd" opacity="0.36"/><circle cx="86.3" cy="140.8" r="0.7" fill="#93c5fd" opacity="0.28"/><circle cx="69.5" cy="120.3" r="0.6" fill="#93c5fd" opacity="0.26"/><circle cx="91.1" cy="146.6" r="0.7" fill="#93c5fd" opacity="0.29"/><circle cx="167.9" cy="240.3" r="0.9" fill="#93c5fd" opacity="0.38"/><circle cx="304.9" cy="407.3" r="1.2" fill="#93c5fd" opacity="0.56"/><circle cx="33.0" cy="75.8" r="0.5" fill="#93c5fd" opacity="0.22"/><circle cx="79.9" cy="133.0" r="0.6" fill="#93c5fd" opacity="0.27"/><circle cx="95.2" cy="151.7" r="0.7" fill="#93c5fd" opacity="0.29"/><circle cx="107.4" cy="166.6" r="0.7" fill="#93c5fd" opacity="0.31"/><circle cx="275.6" cy="371.6" r="1.1" fill="#93c5fd" opacity="0.52"/>
 <rect x="0" y="0" width="360" height="480" fill="none" stroke="#000" stroke-width="80" opacity="0.5" rx="16"/>
-<rect x="0.5" y="0.5" width="359" height="479" fill="none" stroke="rgba(255,215,0,0.15)" stroke-width="1" rx="16"/>
-<rect x="2" y="2" width="356" height="476" fill="none" stroke="#60a5fa" stroke-width="1.5" rx="14" opacity="0.6"/>
+<rect x="0.5" y="0.5" width="359" height="479" fill="none" stroke="#22d3ee44" stroke-width="1" rx="16"/>
+<rect x="2" y="2" width="356" height="476" fill="none" stroke="#22d3ee" stroke-width="3" rx="14" opacity="0.6"/>
 <rect x="2" y="2" width="356" height="476" fill="none" stroke="rgba(255,215,0,0.35)" stroke-width="1.5" rx="14"/>
 <path d="M 8 8 L 8 22 M 8 8 L 22 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
 <path d="M 352 8 L 352 22 M 352 8 L 338 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
@@ -33,11 +48,12 @@
 <circle cx="32" cy="32" r="22" fill="none" stroke="rgba(255,215,0,0.5)" stroke-width="1.5"/>
 <circle cx="28" cy="28" r="8" fill="rgba(255,255,255,0.2)"/>
 <text x="32" y="34" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="900" fill="#fff" font-family="Cinzel,serif">4</text>
-<circle cx="328" cy="32" r="16" fill="rgba(0,0,0,0.6)" stroke="rgba(255,215,0,0.2)" stroke-width="1.5"/>
-<circle cx="328" cy="32" r="5" fill="#3b82f6"><animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/></circle>
-<rect x="0" y="300" width="360" height="180" fill="url(#tb)"/>
+<circle cx="328" cy="32" r="16" fill="rgba(0,0,0,0.6)" stroke="#3b82f644" stroke-width="1.5"/>
+<circle cx="328" cy="32" r="5" fill="#3b82f6"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/></circle>
+<rect x="0" y="300" width="360" height="180" fill="url(#tb_b9_rovine)"/>
 <text x="180" y="425" text-anchor="middle" font-size="17" fill="#fff" font-family="Cinzel,serif" font-weight="700" letter-spacing="3">ROVINE</text>
-<text x="180" y="452" text-anchor="middle" font-size="8" fill="#60a5fa" font-family="Montserrat,sans-serif" letter-spacing="4" opacity="0.7">RARA</text>
-<g transform="translate(180,460)"><polygon points="-30,-18 30,-18 40,0 30,18 -30,18 -40,0" fill="url(#ph)" stroke="rgba(255,215,0,0.8)" stroke-width="1.5"/><polygon points="-28,-16 28,-16 38,0 28,16 -28,16 -38,0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/><text x="0" y="3" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" fill="#000" font-family="Cinzel,serif">6</text></g>
+<text x="180" y="452" text-anchor="middle" font-size="8" fill="#22d3ee" font-family="Montserrat,sans-serif" letter-spacing="4" opacity="0.7">RARA</text>
+<g transform="translate(180,460)"><polygon points="-30,-18 30,-18 40,0 30,18 -30,18 -40,0" fill="url(#ph_b9_rovine)" stroke="rgba(255,215,0,0.8)" stroke-width="1.5"/><polygon points="-28,-16 28,-16 38,0 28,16 -28,16 -38,0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/><text x="0" y="3" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" fill="#000" font-family="Cinzel,serif">6</text></g>
+</g>
 </g>
 </svg>

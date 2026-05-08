@@ -1,41 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" width="360" height="480">
 <defs>
-<radialGradient id="v" cx="50%" cy="40%" r="75%"><stop offset="0%" stop-color="#000a0d"/><stop offset="100%" stop-color="#00080a"/></radialGradient>
-<linearGradient id="tb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0)"/><stop offset="50%" stop-color="rgba(0,0,0,0.85)"/><stop offset="100%" stop-color="rgba(0,0,0,1)"/></linearGradient>
-<linearGradient id="ph" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8b4513"/></linearGradient>
-<filter id="g"><feGaussianBlur stdDeviation="8"/></filter>
-<filter id="g2"><feGaussianBlur stdDeviation="4"/></filter>
-<filter id="g3"><feGaussianBlur stdDeviation="15"/></filter>
+<radialGradient id="bg_s1_miraggio" cx="50%" cy="40%" r="80%"><stop offset="0%" stop-color="#22d3ee08"/><stop offset="60%" stop-color="#0891b215"/><stop offset="100%" stop-color="#050008"/></radialGradient>
+<linearGradient id="tb_s1_miraggio" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0)"/><stop offset="50%" stop-color="rgba(0,0,0,0.85)"/><stop offset="100%" stop-color="rgba(0,0,0,1)"/></linearGradient>
+<linearGradient id="ph_s1_miraggio" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8b4513"/></linearGradient>
+<filter id="g_s1_miraggio"><feGaussianBlur stdDeviation="12"/></filter>
+<filter id="gm_s1_miraggio"><feGaussianBlur stdDeviation="6"/></filter>
+<filter id="gs_s1_miraggio"><feGaussianBlur stdDeviation="20"/></filter>
+<clipPath id="c_s1_miraggio"><rect x="0" y="0" width="360" height="480" rx="16"/></clipPath>
 </defs>
-<g clip-path="url(#c)">
-<rect x="0" y="0" width="360" height="480" fill="#000a0d"/>
-<rect x="0" y="0" width="360" height="480" fill="url(#v)"/>
-<circle cx="180" cy="180" r="110" fill="#06b6d4" opacity="0.3" filter="url(#g)"/>
-<ellipse cx="180" cy="200" rx="70" ry="30" fill="rgba(6,182,212,0.06)" opacity="1"/>
-<path d="M140,170 Q180,160 220,170 L230,200 Q180,210 130,200 Z" fill="none" stroke="" stroke-width="0" opacity=""/>
-<path d="M140,170 Q180,160 220,170 L230,200 Q180,210 130,200 Z" fill="none" stroke="0.25" stroke-width="1.5" opacity="1"/>
-<circle cx="180" cy="180" r="20" fill="#06b6d4" opacity="0.12" filter="url(#g)"/>
-<circle cx="180" cy="180" r="5" fill="#fff" opacity="0.6"/>
-<ellipse cx="180" cy="200" rx="50" ry="5" fill="rgba(6,182,212,0.04)" opacity="1"/>
-<circle cx="251.7099417061996" cy="157.0166572805772" r="1.8352635103997175" fill="#06b6d4" opacity="0.22364794125986942"/><circle cx="237.0228081928928" cy="146.95054568869367" r="1.3157322923523649" fill="#06b6d4" opacity="0.20597996364146698"/><circle cx="117.64027018099489" cy="119.75346386407648" r="0.5831803575297627" fill="#06b6d4" opacity="0.11685005171072099"/><circle cx="124.91343154554816" cy="113.38370563995409" r="1.8046807429919058" fill="#06b6d4" opacity="0.12164777962475562"/><circle cx="272.9122942973678" cy="108.94245785513914" r="1.169880407043296" fill="#06b6d4" opacity="0.1211572220414265"/><circle cx="274.45507693556135" cy="97.73939900942749" r="0.9155220229495366" fill="#06b6d4" opacity="0.24241368252708095"/><circle cx="198.1920203285452" cy="109.82148632595579" r="1.336743939117215" fill="#06b6d4" opacity="0.19332846764794426"/><circle cx="76.31630647651586" cy="107.30214265897126" r="1.5646166617815043" fill="#06b6d4" opacity="0.28405640213597794"/>
+<g clip-path="url(#c_s1_miraggio)">
+<rect x="0" y="0" width="360" height="480" fill="#050008"/>
+<rect x="0" y="0" width="360" height="480" fill="url(#bg_s1_miraggio)"/>
+<circle cx="180" cy="180" r="90" fill="#0891b2" filter="url(#g_s1_miraggio)"/>
+<path d="M60,150 Q120,142 180,150 Q240,158 300,150" fill="none" stroke="#22d3ee" stroke-width="1.3" opacity="0.12"><animate attributeName="d" values="M60,150 Q120,142 180,150 Q240,158 300,150;M60,150 Q120,158 180,150 Q240,142 300,150;M60,150 Q120,142 180,150 Q240,158 300,150" dur="2.0s" repeatCount="indefinite"/></path>
+<path d="M60,190 Q120,182 180,190 Q240,198 300,190" fill="none" stroke="#22d3ee" stroke-width="1.1" opacity="0.10"><animate attributeName="d" values="M60,190 Q120,182 180,190 Q240,198 300,190;M60,190 Q120,198 180,190 Q240,182 300,190;M60,190 Q120,182 180,190 Q240,198 300,190" dur="2.3s" repeatCount="indefinite"/></path>
+<path d="M60,230 Q120,222 180,230 Q240,238 300,230" fill="none" stroke="#22d3ee" stroke-width="0.9" opacity="0.09"><animate attributeName="d" values="M60,230 Q120,222 180,230 Q240,238 300,230;M60,230 Q120,238 180,230 Q240,222 300,230;M60,230 Q120,222 180,230 Q240,238 300,230" dur="2.6s" repeatCount="indefinite"/></path>
+<path d="M60,270 Q120,262 180,270 Q240,278 300,270" fill="none" stroke="#22d3ee" stroke-width="0.8" opacity="0.07"><animate attributeName="d" values="M60,270 Q120,262 180,270 Q240,278 300,270;M60,270 Q120,278 180,270 Q240,262 300,270;M60,270 Q120,262 180,270 Q240,278 300,270" dur="2.9s" repeatCount="indefinite"/></path>
+<path d="M60,310 Q120,302 180,310 Q240,318 300,310" fill="none" stroke="#22d3ee" stroke-width="0.6" opacity="0.06"><animate attributeName="d" values="M60,310 Q120,302 180,310 Q240,318 300,310;M60,310 Q120,318 180,310 Q240,302 300,310;M60,310 Q120,302 180,310 Q240,318 300,310" dur="3.2s" repeatCount="indefinite"/></path>
+<path d="M60,350 Q120,342 180,350 Q240,358 300,350" fill="none" stroke="#22d3ee" stroke-width="0.4" opacity="0.04"><animate attributeName="d" values="M60,350 Q120,342 180,350 Q240,358 300,350;M60,350 Q120,358 180,350 Q240,342 300,350;M60,350 Q120,342 180,350 Q240,358 300,350" dur="3.5s" repeatCount="indefinite"/></path>
+<ellipse cx="180" cy="240" rx="45" ry="18" fill="#22d3ee12" opacity="0.35"/>
+<ellipse cx="180" cy="240" rx="28" ry="8" fill="#22d3ee15" opacity="0.25"/>
+<line x1="180" y1="240" x2="180" y2="195" stroke="#22d3ee" stroke-width="1.5" opacity="0.25"/>
+<path d="M180,198 Q162,190 148,194" fill="none" stroke="#22d3ee" stroke-width="0.8" opacity="0.18"/>
+<path d="M180,198 Q198,190 212,194" fill="none" stroke="#22d3ee" stroke-width="0.8" opacity="0.18"/>
+<g clip-path="url(#c_s1_miraggio)">
+<circle cx="140.3" cy="206.6" r="0.8" fill="#a5f3fc" opacity="0.35"/><circle cx="51.1" cy="97.9" r="0.6" fill="#a5f3fc" opacity="0.24"/><circle cx="20.0" cy="60.0" r="0.5" fill="#a5f3fc" opacity="0.20"/><circle cx="87.6" cy="142.4" r="0.7" fill="#a5f3fc" opacity="0.28"/><circle cx="247.0" cy="336.7" r="1.1" fill="#a5f3fc" opacity="0.48"/><circle cx="195.0" cy="273.2" r="0.9" fill="#a5f3fc" opacity="0.42"/><circle cx="256.4" cy="348.1" r="1.1" fill="#a5f3fc" opacity="0.50"/><circle cx="282.2" cy="379.6" r="1.2" fill="#a5f3fc" opacity="0.53"/><circle cx="40.3" cy="84.7" r="0.6" fill="#a5f3fc" opacity="0.23"/><circle cx="140.0" cy="206.3" r="0.8" fill="#a5f3fc" opacity="0.35"/><circle cx="290.0" cy="389.1" r="1.2" fill="#a5f3fc" opacity="0.54"/><circle cx="329.3" cy="437.0" r="1.3" fill="#a5f3fc" opacity="0.59"/>
 <rect x="0" y="0" width="360" height="480" fill="none" stroke="#000" stroke-width="80" opacity="0.5" rx="16"/>
-<rect x="0.5" y="0.5" width="359" height="479" fill="none" stroke="rgba(255,215,0,0.15)" stroke-width="1" rx="16"/>
-<rect x="2" y="2" width="356" height="476" fill="none" stroke="#888" stroke-width="1" rx="14" opacity="0.6"/>
+<rect x="0.5" y="0.5" width="359" height="479" fill="none" stroke="#9ca3af44" stroke-width="1" rx="16"/>
+<rect x="2" y="2" width="356" height="476" fill="none" stroke="#9ca3af" stroke-width="3" rx="14" opacity="0.6"/>
 <rect x="2" y="2" width="356" height="476" fill="none" stroke="rgba(255,215,0,0.35)" stroke-width="1.5" rx="14"/>
 <path d="M 8 8 L 8 22 M 8 8 L 22 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
 <path d="M 352 8 L 352 22 M 352 8 L 338 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
 <path d="M 8 472 L 8 458 M 8 472 L 22 472" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
 <path d="M 352 472 L 352 458 M 352 472 L 338 472" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
-<circle cx="32" cy="32" r="22" fill="#06b6d4" opacity="0.9"/>
+<circle cx="32" cy="32" r="22" fill="#22d3ee" opacity="0.9"/>
 <circle cx="32" cy="32" r="22" fill="none" stroke="rgba(255,215,0,0.5)" stroke-width="1.5"/>
 <circle cx="28" cy="28" r="8" fill="rgba(255,255,255,0.2)"/>
 <text x="32" y="34" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="900" fill="#fff" font-family="Cinzel,serif">2</text>
-<circle cx="328" cy="32" r="16" fill="rgba(0,0,0,0.6)" stroke="rgba(255,215,0,0.2)" stroke-width="1.5"/>
-<circle cx="328" cy="32" r="5" fill="#06b6d4"><animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/></circle>
-<rect x="0" y="300" width="360" height="180" fill="url(#tb)"/>
+<circle cx="328" cy="32" r="16" fill="rgba(0,0,0,0.6)" stroke="#22d3ee44" stroke-width="1.5"/>
+<circle cx="328" cy="32" r="5" fill="#22d3ee"><animate attributeName="opacity" values="0.3;1;0.3" dur="2.1s" repeatCount="indefinite"/></circle>
+<rect x="0" y="300" width="360" height="180" fill="url(#tb_s1_miraggio)"/>
 <text x="180" y="425" text-anchor="middle" font-size="17" fill="#fff" font-family="Cinzel,serif" font-weight="700" letter-spacing="3">MIRAGGIO</text>
-<text x="180" y="452" text-anchor="middle" font-size="8" fill="#888" font-family="Montserrat,sans-serif" letter-spacing="4" opacity="0.7">COMUNE</text>
-<g transform="translate(180,460)"><polygon points="-30,-18 30,-18 40,0 30,18 -30,18 -40,0" fill="url(#ph)" stroke="rgba(255,215,0,0.8)" stroke-width="1.5"/><polygon points="-28,-16 28,-16 38,0 28,16 -28,16 -38,0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/><text x="0" y="3" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" fill="#000" font-family="Cinzel,serif">2</text></g>
+<text x="180" y="452" text-anchor="middle" font-size="8" fill="#9ca3af" font-family="Montserrat,sans-serif" letter-spacing="4" opacity="0.7">COMUNE</text>
+<g transform="translate(180,460)"><polygon points="-30,-18 30,-18 40,0 30,18 -30,18 -40,0" fill="url(#ph_s1_miraggio)" stroke="rgba(255,215,0,0.8)" stroke-width="1.5"/><polygon points="-28,-16 28,-16 38,0 28,16 -28,16 -38,0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/><text x="0" y="3" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" fill="#000" font-family="Cinzel,serif">2</text></g>
+</g>
 </g>
 </svg>

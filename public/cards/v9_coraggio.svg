@@ -1,28 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" width="360" height="480">
 <defs>
-<radialGradient id="v" cx="50%" cy="40%" r="75%"><stop offset="0%" stop-color="#0d001a"/><stop offset="100%" stop-color="#0a0015"/></radialGradient>
-<linearGradient id="tb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0)"/><stop offset="50%" stop-color="rgba(0,0,0,0.85)"/><stop offset="100%" stop-color="rgba(0,0,0,1)"/></linearGradient>
-<linearGradient id="ph" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8b4513"/></linearGradient>
-<filter id="g"><feGaussianBlur stdDeviation="8"/></filter>
-<filter id="g2"><feGaussianBlur stdDeviation="4"/></filter>
-<filter id="g3"><feGaussianBlur stdDeviation="15"/></filter>
+<radialGradient id="bg_v9_coraggio" cx="50%" cy="40%" r="80%"><stop offset="0%" stop-color="#a855f708"/><stop offset="60%" stop-color="#7e22ce15"/><stop offset="100%" stop-color="#050008"/></radialGradient>
+<linearGradient id="tb_v9_coraggio" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0)"/><stop offset="50%" stop-color="rgba(0,0,0,0.85)"/><stop offset="100%" stop-color="rgba(0,0,0,1)"/></linearGradient>
+<linearGradient id="ph_v9_coraggio" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8b4513"/></linearGradient>
+<filter id="g_v9_coraggio"><feGaussianBlur stdDeviation="12"/></filter>
+<filter id="gm_v9_coraggio"><feGaussianBlur stdDeviation="6"/></filter>
+<filter id="gs_v9_coraggio"><feGaussianBlur stdDeviation="20"/></filter>
+<clipPath id="c_v9_coraggio"><rect x="0" y="0" width="360" height="480" rx="16"/></clipPath>
 </defs>
-<g clip-path="url(#c)">
-<rect x="0" y="0" width="360" height="480" fill="#0d001a"/>
-<rect x="0" y="0" width="360" height="480" fill="url(#v)"/>
-<circle cx="180" cy="180" r="130" fill="#a855f7" opacity="0.5" filter="url(#g)"/>
-<circle cx="180" cy="160" r="60" fill="#a855f7" opacity="0.3" filter="url(#g)"/>
-<path d="M140,220 L160,140 L180,120 L200,140 L220,220 L180,250 Z" fill="none" stroke="" stroke-width="0" opacity=""/>
-<path d="M140,220 L160,140 L180,120 L200,140 L220,220 L180,250 Z" fill="none" stroke="0.3" stroke-width="2" opacity="1"/>
-<circle cx="180" cy="160" r="20" fill="#fff" opacity="0.15"/>
-<circle cx="180" cy="160" r="10" fill="#ffd700" opacity="0.2"/>
-<circle cx="180" cy="160" r="5" fill="#fff" opacity="0.6"/>
-<path d="M160,180 L200,180 M170,190 L190,190" fill="none" stroke="0.3" stroke-width="1" opacity="1"/>
-<path d="M205,160 L250,160" fill="none" stroke="0.2" stroke-width="0.8" opacity="1"/><path d="M201.65063509461098,172.5 L240.62177826491072,195" fill="none" stroke="0.2" stroke-width="0.8" opacity="1"/><path d="M192.5,181.65063509461098 L215,220.6217782649107" fill="none" stroke="0.2" stroke-width="0.8" opacity="1"/><path d="M180,185 L180,230" fill="none" stroke="0.2" stroke-width="0.8" opacity="1"/><path d="M167.5,181.65063509461098 L145,220.62177826491072" fill="none" stroke="0.2" stroke-width="0.8" opacity="1"/><path d="M158.34936490538902,172.5 L119.37822173508928,195" fill="none" stroke="0.2" stroke-width="0.8" opacity="1"/><path d="M155,160 L110,160" fill="none" stroke="0.2" stroke-width="0.8" opacity="1"/><path d="M158.34936490538902,147.5 L119.37822173508928,125.00000000000003" fill="none" stroke="0.2" stroke-width="0.8" opacity="1"/><path d="M167.5,138.34936490538905 L144.99999999999997,99.37822173508931" fill="none" stroke="0.2" stroke-width="0.8" opacity="1"/><path d="M180,135 L180,90" fill="none" stroke="0.2" stroke-width="0.8" opacity="1"/><path d="M192.5,138.34936490538902 L215,99.3782217350893" fill="none" stroke="0.2" stroke-width="0.8" opacity="1"/><path d="M201.65063509461095,147.5 L240.6217782649107,124.99999999999997" fill="none" stroke="0.2" stroke-width="0.8" opacity="1"/>
+<g clip-path="url(#c_v9_coraggio)">
+<rect x="0" y="0" width="360" height="480" fill="#050008"/>
+<rect x="0" y="0" width="360" height="480" fill="url(#bg_v9_coraggio)"/>
+<circle cx="180" cy="200" r="100" fill="#fbbf24" filter="url(#g_v9_coraggio)"/>
+<path d="M180,110 L250,160 L250,240 Q250,290 180,330 Q110,290 110,240 L110,160 Z" fill="#fbbf2412" stroke="#fbbf24" stroke-width="2" opacity="0.6"/>
+<path d="M180,135 L230,170 L230,240 Q230,275 180,305 Q130,275 130,240 L130,170 Z" fill="none" stroke="#d8b4fe" stroke-width="1" opacity="0.3"/>
+<line x1="250" y1="200" x2="320" y2="200" stroke="#fbbf24" stroke-width="0.5" opacity="0.15"/>
+<line x1="229" y1="249" x2="279" y2="299" stroke="#fbbf24" stroke-width="0.5" opacity="0.15"/>
+<line x1="180" y1="270" x2="180" y2="340" stroke="#fbbf24" stroke-width="0.5" opacity="0.15"/>
+<line x1="131" y1="249" x2="81" y2="299" stroke="#fbbf24" stroke-width="0.5" opacity="0.15"/>
+<line x1="110" y1="200" x2="40" y2="200" stroke="#fbbf24" stroke-width="0.5" opacity="0.15"/>
+<line x1="131" y1="151" x2="81" y2="101" stroke="#fbbf24" stroke-width="0.5" opacity="0.15"/>
+<line x1="180" y1="130" x2="180" y2="60" stroke="#fbbf24" stroke-width="0.5" opacity="0.15"/>
+<line x1="229" y1="151" x2="279" y2="101" stroke="#fbbf24" stroke-width="0.5" opacity="0.15"/>
+<circle cx="180" cy="210" r="5" fill="#fff" opacity="0.7"/>
+<g clip-path="url(#c_v9_coraggio)">
+<circle cx="165.8" cy="237.7" r="0.9" fill="#d8b4fe" opacity="0.38"/><circle cx="266.0" cy="359.9" r="1.1" fill="#d8b4fe" opacity="0.51"/><circle cx="209.1" cy="290.5" r="1.0" fill="#d8b4fe" opacity="0.44"/><circle cx="225.2" cy="310.1" r="1.0" fill="#d8b4fe" opacity="0.46"/><circle cx="212.6" cy="294.7" r="1.0" fill="#d8b4fe" opacity="0.44"/><circle cx="235.5" cy="322.6" r="1.0" fill="#d8b4fe" opacity="0.47"/><circle cx="275.0" cy="370.8" r="1.1" fill="#d8b4fe" opacity="0.52"/><circle cx="194.0" cy="272.1" r="0.9" fill="#d8b4fe" opacity="0.42"/><circle cx="234.4" cy="321.3" r="1.0" fill="#d8b4fe" opacity="0.47"/><circle cx="128.5" cy="192.2" r="0.8" fill="#d8b4fe" opacity="0.34"/><circle cx="23.5" cy="64.3" r="0.5" fill="#d8b4fe" opacity="0.20"/><circle cx="339.2" cy="449.1" r="1.3" fill="#d8b4fe" opacity="0.60"/>
 <rect x="0" y="0" width="360" height="480" fill="none" stroke="#000" stroke-width="80" opacity="0.5" rx="16"/>
-<rect x="0.5" y="0.5" width="359" height="479" fill="none" stroke="rgba(255,215,0,0.15)" stroke-width="1" rx="16"/>
-<rect x="2" y="2" width="356" height="476" fill="none" stroke="#888" stroke-width="1" rx="14" opacity="0.6"/>
+<rect x="0.5" y="0.5" width="359" height="479" fill="none" stroke="#9ca3af44" stroke-width="1" rx="16"/>
+<rect x="2" y="2" width="356" height="476" fill="none" stroke="#9ca3af" stroke-width="3" rx="14" opacity="0.6"/>
 <rect x="2" y="2" width="356" height="476" fill="none" stroke="rgba(255,215,0,0.35)" stroke-width="1.5" rx="14"/>
 <path d="M 8 8 L 8 22 M 8 8 L 22 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
 <path d="M 352 8 L 352 22 M 352 8 L 338 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
@@ -32,11 +38,12 @@
 <circle cx="32" cy="32" r="22" fill="none" stroke="rgba(255,215,0,0.5)" stroke-width="1.5"/>
 <circle cx="28" cy="28" r="8" fill="rgba(255,255,255,0.2)"/>
 <text x="32" y="34" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="900" fill="#fff" font-family="Cinzel,serif">3</text>
-<circle cx="328" cy="32" r="16" fill="rgba(0,0,0,0.6)" stroke="rgba(255,215,0,0.2)" stroke-width="1.5"/>
-<circle cx="328" cy="32" r="5" fill="#a855f7"><animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/></circle>
-<rect x="0" y="300" width="360" height="180" fill="url(#tb)"/>
+<circle cx="328" cy="32" r="16" fill="rgba(0,0,0,0.6)" stroke="#a855f744" stroke-width="1.5"/>
+<circle cx="328" cy="32" r="5" fill="#a855f7"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite"/></circle>
+<rect x="0" y="300" width="360" height="180" fill="url(#tb_v9_coraggio)"/>
 <text x="180" y="425" text-anchor="middle" font-size="17" fill="#fff" font-family="Cinzel,serif" font-weight="700" letter-spacing="3">CORAGGIO</text>
-<text x="180" y="452" text-anchor="middle" font-size="8" fill="#888" font-family="Montserrat,sans-serif" letter-spacing="4" opacity="0.7">COMUNE</text>
-<g transform="translate(180,460)"><polygon points="-30,-18 30,-18 40,0 30,18 -30,18 -40,0" fill="url(#ph)" stroke="rgba(255,215,0,0.8)" stroke-width="1.5"/><polygon points="-28,-16 28,-16 38,0 28,16 -28,16 -38,0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/><text x="0" y="3" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" fill="#000" font-family="Cinzel,serif">4</text></g>
+<text x="180" y="452" text-anchor="middle" font-size="8" fill="#9ca3af" font-family="Montserrat,sans-serif" letter-spacing="4" opacity="0.7">COMUNE</text>
+<g transform="translate(180,460)"><polygon points="-30,-18 30,-18 40,0 30,18 -30,18 -40,0" fill="url(#ph_v9_coraggio)" stroke="rgba(255,215,0,0.8)" stroke-width="1.5"/><polygon points="-28,-16 28,-16 38,0 28,16 -28,16 -38,0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/><text x="0" y="3" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" fill="#000" font-family="Cinzel,serif">4</text></g>
+</g>
 </g>
 </svg>

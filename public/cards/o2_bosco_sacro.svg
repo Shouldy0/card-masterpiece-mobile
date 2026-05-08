@@ -1,40 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480" width="360" height="480">
 <defs>
-<radialGradient id="v" cx="50%" cy="40%" r="75%"><stop offset="0%" stop-color="#0d0800"/><stop offset="100%" stop-color="#0a0600"/></radialGradient>
-<linearGradient id="tb" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0)"/><stop offset="50%" stop-color="rgba(0,0,0,0.85)"/><stop offset="100%" stop-color="rgba(0,0,0,1)"/></linearGradient>
-<linearGradient id="ph" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8b4513"/></linearGradient>
-<filter id="g"><feGaussianBlur stdDeviation="8"/></filter>
-<filter id="g2"><feGaussianBlur stdDeviation="4"/></filter>
-<filter id="g3"><feGaussianBlur stdDeviation="15"/></filter>
+<radialGradient id="bg_o2_bosco_sacro" cx="50%" cy="40%" r="80%"><stop offset="0%" stop-color="#fbbf2408"/><stop offset="60%" stop-color="#b4530915"/><stop offset="100%" stop-color="#050008"/></radialGradient>
+<linearGradient id="tb_o2_bosco_sacro" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(0,0,0,0)"/><stop offset="50%" stop-color="rgba(0,0,0,0.85)"/><stop offset="100%" stop-color="rgba(0,0,0,1)"/></linearGradient>
+<linearGradient id="ph_o2_bosco_sacro" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#b8860b"/><stop offset="100%" stop-color="#8b4513"/></linearGradient>
+<filter id="g_o2_bosco_sacro"><feGaussianBlur stdDeviation="12"/></filter>
+<filter id="gm_o2_bosco_sacro"><feGaussianBlur stdDeviation="6"/></filter>
+<filter id="gs_o2_bosco_sacro"><feGaussianBlur stdDeviation="20"/></filter>
+<clipPath id="c_o2_bosco_sacro"><rect x="0" y="0" width="360" height="480" rx="16"/></clipPath>
 </defs>
-<g clip-path="url(#c)">
-<rect x="0" y="0" width="360" height="480" fill="#0d0800"/>
-<rect x="0" y="0" width="360" height="480" fill="url(#v)"/>
-<circle cx="180" cy="180" r="120" fill="#eab308" opacity="0.35" filter="url(#g)"/>
-<path d="M140,260 L120,120 Q150,100 180,110 Q210,100 240,120 L220,260 Z" fill="none" stroke="" stroke-width="0" opacity=""/>
-<path d="M140,260 L120,120 Q150,100 180,110 Q210,100 240,120 L220,260 Z" fill="none" stroke="0.25" stroke-width="1.5" opacity="1"/>
-<ellipse cx="147.37788130884158" cy="117.78246662561324" rx="6.110009034797149" ry="14.900167486151078" fill="#ffd700" opacity="0.1984242903670734"/><ellipse cx="155.45615061629903" cy="155.53732152864137" rx="13.358469412674307" ry="16.799264438609434" fill="#ffd700" opacity="0.2902750639014894"/><ellipse cx="171.65296715718085" cy="158.27352760889596" rx="6.302081970554843" ry="9.702464272916735" fill="#ffd700" opacity="0.16059787949356877"/><ellipse cx="221.74577608350273" cy="168.44115281730836" rx="13.092031314158133" ry="11.920810791776326" fill="#ffd700" opacity="0.2576046307777141"/><ellipse cx="153.16243207693427" cy="110.73508223025193" rx="5.702924922078464" ry="19.820609474207373" fill="#ffd700" opacity="0.13485097301071514"/><ellipse cx="201.16740227349024" cy="124.06919945053437" rx="10.913449662424645" ry="8.089503764473111" fill="#ffd700" opacity="0.2347120101463707"/><ellipse cx="160.36752791292517" cy="113.96197277690845" rx="8.157346311672637" ry="14.412414720108563" fill="#ffd700" opacity="0.26215386610176883"/><ellipse cx="172.5054808879441" cy="137.61005047452176" rx="5.392859070912358" ry="15.481908144621542" fill="#ffd700" opacity="0.1844531768504609"/>
-<circle cx="180" cy="90" r="40" fill="#ffd700" opacity="0.15" filter="url(#g)"/>
-<circle cx="180" cy="85" r="6" fill="#fff" opacity="0.6"/>
-<path d="M170,200 L190,200 M170,210 L190,210" fill="none" stroke="0.2" stroke-width="0.5" opacity="1"/>
+<g clip-path="url(#c_o2_bosco_sacro)">
+<rect x="0" y="0" width="360" height="480" fill="#050008"/>
+<rect x="0" y="0" width="360" height="480" fill="url(#bg_o2_bosco_sacro)"/>
+<circle cx="180" cy="200" r="110" fill="#b45309" filter="url(#g_o2_bosco_sacro)"/>
+<path d="M96,320 L97.33333333333333,220 L102.66666666666667,220 L104,320 Z" fill="#1a1200" stroke="#fbbf2433" stroke-width="0.5"/>
+<path d="M174,320 L176,220 L184,220 L186,320 Z" fill="#1a1200" stroke="#fbbf2433" stroke-width="0.5"/>
+<path d="M256,320 L257.3333333333333,220 L262.6666666666667,220 L264,320 Z" fill="#1a1200" stroke="#fbbf2433" stroke-width="0.5"/>
+<circle cx="100" cy="185" r="55" fill="#fbbf2415" filter="url(#g_o2_bosco_sacro)"/>
+<circle cx="100" cy="185" r="55" fill="none" stroke="#fbbf24" stroke-width="0.5" opacity="0.35"/>
+<circle cx="120" cy="192" r="1.5" fill="#fde68a" opacity="0.25"/>
+<circle cx="70" cy="150" r="1.5" fill="#fde68a" opacity="0.36"/>
+<circle cx="132" cy="221" r="1.5" fill="#fde68a" opacity="0.35"/>
+<circle cx="141" cy="175" r="1.5" fill="#fde68a" opacity="0.33"/>
+<circle cx="56" cy="175" r="1.5" fill="#fde68a" opacity="0.40"/>
+<circle cx="94" cy="218" r="1.5" fill="#fde68a" opacity="0.16"/>
+<circle cx="80" cy="171" r="1.5" fill="#fde68a" opacity="0.22"/>
+<circle cx="128" cy="168" r="1.5" fill="#fde68a" opacity="0.18"/>
+<circle cx="78" cy="155" r="1.5" fill="#fde68a" opacity="0.40"/>
+<circle cx="103" cy="199" r="1.5" fill="#fde68a" opacity="0.22"/>
+<circle cx="119" cy="188" r="1.5" fill="#fde68a" opacity="0.27"/>
+<circle cx="70" cy="185" r="1.5" fill="#fde68a" opacity="0.38"/>
+<circle cx="180" cy="165" r="70" fill="#fbbf2415" filter="url(#g_o2_bosco_sacro)"/>
+<circle cx="180" cy="165" r="70" fill="none" stroke="#fbbf24" stroke-width="0.5" opacity="0.35"/>
+<circle cx="208" cy="175" r="1.5" fill="#fde68a" opacity="0.16"/>
+<circle cx="195" cy="178" r="1.5" fill="#fde68a" opacity="0.22"/>
+<circle cx="205" cy="179" r="1.5" fill="#fde68a" opacity="0.17"/>
+<circle cx="160" cy="184" r="1.5" fill="#fde68a" opacity="0.35"/>
+<circle cx="146" cy="182" r="1.5" fill="#fde68a" opacity="0.36"/>
+<circle cx="161" cy="142" r="1.5" fill="#fde68a" opacity="0.33"/>
+<circle cx="158" cy="175" r="1.5" fill="#fde68a" opacity="0.34"/>
+<circle cx="187" cy="207" r="1.5" fill="#fde68a" opacity="0.25"/>
+<circle cx="131" cy="189" r="1.5" fill="#fde68a" opacity="0.17"/>
+<circle cx="148" cy="173" r="1.5" fill="#fde68a" opacity="0.20"/>
+<circle cx="179" cy="119" r="1.5" fill="#fde68a" opacity="0.19"/>
+<circle cx="174" cy="149" r="1.5" fill="#fde68a" opacity="0.26"/>
+<circle cx="260" cy="190" r="50" fill="#fbbf2415" filter="url(#g_o2_bosco_sacro)"/>
+<circle cx="260" cy="190" r="50" fill="none" stroke="#fbbf24" stroke-width="0.5" opacity="0.35"/>
+<circle cx="258" cy="179" r="1.5" fill="#fde68a" opacity="0.24"/>
+<circle cx="260" cy="234" r="1.5" fill="#fde68a" opacity="0.25"/>
+<circle cx="253" cy="171" r="1.5" fill="#fde68a" opacity="0.40"/>
+<circle cx="236" cy="196" r="1.5" fill="#fde68a" opacity="0.28"/>
+<circle cx="296" cy="186" r="1.5" fill="#fde68a" opacity="0.25"/>
+<circle cx="242" cy="159" r="1.5" fill="#fde68a" opacity="0.16"/>
+<circle cx="294" cy="175" r="1.5" fill="#fde68a" opacity="0.37"/>
+<circle cx="267" cy="208" r="1.5" fill="#fde68a" opacity="0.24"/>
+<circle cx="283" cy="166" r="1.5" fill="#fde68a" opacity="0.36"/>
+<circle cx="244" cy="205" r="1.5" fill="#fde68a" opacity="0.34"/>
+<circle cx="284" cy="218" r="1.5" fill="#fde68a" opacity="0.28"/>
+<circle cx="240" cy="183" r="1.5" fill="#fde68a" opacity="0.30"/>
+<ellipse cx="180" cy="340" rx="140" ry="25" fill="#fbbf2410"/>
+<g clip-path="url(#c_o2_bosco_sacro)">
+<circle cx="315.1" cy="419.7" r="1.2" fill="#fde68a" opacity="0.57"/><circle cx="339.9" cy="449.8" r="1.3" fill="#fde68a" opacity="0.60"/><circle cx="66.2" cy="116.4" r="0.6" fill="#fde68a" opacity="0.26"/><circle cx="162.9" cy="234.2" r="0.9" fill="#fde68a" opacity="0.38"/><circle cx="148.9" cy="217.1" r="0.8" fill="#fde68a" opacity="0.36"/><circle cx="278.0" cy="374.4" r="1.1" fill="#fde68a" opacity="0.52"/><circle cx="116.7" cy="177.8" r="0.7" fill="#fde68a" opacity="0.32"/><circle cx="215.0" cy="297.6" r="1.0" fill="#fde68a" opacity="0.44"/><circle cx="151.2" cy="220.0" r="0.8" fill="#fde68a" opacity="0.36"/><circle cx="309.6" cy="413.0" r="1.2" fill="#fde68a" opacity="0.56"/><circle cx="31.4" cy="73.9" r="0.5" fill="#fde68a" opacity="0.21"/><circle cx="139.3" cy="205.4" r="0.8" fill="#fde68a" opacity="0.35"/>
 <rect x="0" y="0" width="360" height="480" fill="none" stroke="#000" stroke-width="80" opacity="0.5" rx="16"/>
-<rect x="0.5" y="0.5" width="359" height="479" fill="none" stroke="rgba(255,215,0,0.15)" stroke-width="1" rx="16"/>
-<rect x="2" y="2" width="356" height="476" fill="none" stroke="#a855f7" stroke-width="2" rx="14" opacity="0.6"/>
+<rect x="0.5" y="0.5" width="359" height="479" fill="none" stroke="#a855f744" stroke-width="1" rx="16"/>
+<rect x="2" y="2" width="356" height="476" fill="none" stroke="#a855f7" stroke-width="3" rx="14" opacity="0.6"/>
 <rect x="2" y="2" width="356" height="476" fill="none" stroke="rgba(255,215,0,0.35)" stroke-width="1.5" rx="14"/>
 <path d="M 8 8 L 8 22 M 8 8 L 22 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
 <path d="M 352 8 L 352 22 M 352 8 L 338 8" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
 <path d="M 8 472 L 8 458 M 8 472 L 22 472" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
 <path d="M 352 472 L 352 458 M 352 472 L 338 472" fill="none" stroke="rgba(255,215,0,0.7)" stroke-width="1.5"/>
-<circle cx="32" cy="32" r="22" fill="#eab308" opacity="0.9"/>
+<circle cx="32" cy="32" r="22" fill="#fbbf24" opacity="0.9"/>
 <circle cx="32" cy="32" r="22" fill="none" stroke="rgba(255,215,0,0.5)" stroke-width="1.5"/>
 <circle cx="28" cy="28" r="8" fill="rgba(255,255,255,0.2)"/>
 <text x="32" y="34" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="900" fill="#fff" font-family="Cinzel,serif">4</text>
-<circle cx="328" cy="32" r="16" fill="rgba(0,0,0,0.6)" stroke="rgba(255,215,0,0.2)" stroke-width="1.5"/>
-<circle cx="328" cy="32" r="5" fill="#eab308"><animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/></circle>
-<rect x="0" y="300" width="360" height="180" fill="url(#tb)"/>
+<circle cx="328" cy="32" r="16" fill="rgba(0,0,0,0.6)" stroke="#fbbf2444" stroke-width="1.5"/>
+<circle cx="328" cy="32" r="5" fill="#fbbf24"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.8s" repeatCount="indefinite"/></circle>
+<rect x="0" y="300" width="360" height="180" fill="url(#tb_o2_bosco_sacro)"/>
 <text x="180" y="425" text-anchor="middle" font-size="17" fill="#fff" font-family="Cinzel,serif" font-weight="700" letter-spacing="3">BOSCO SACRO</text>
 <text x="180" y="452" text-anchor="middle" font-size="8" fill="#a855f7" font-family="Montserrat,sans-serif" letter-spacing="4" opacity="0.7">EPICA</text>
-<g transform="translate(180,460)"><polygon points="-30,-18 30,-18 40,0 30,18 -30,18 -40,0" fill="url(#ph)" stroke="rgba(255,215,0,0.8)" stroke-width="1.5"/><polygon points="-28,-16 28,-16 38,0 28,16 -28,16 -38,0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/><text x="0" y="3" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" fill="#000" font-family="Cinzel,serif">6</text></g>
+<g transform="translate(180,460)"><polygon points="-30,-18 30,-18 40,0 30,18 -30,18 -40,0" fill="url(#ph_o2_bosco_sacro)" stroke="rgba(255,215,0,0.8)" stroke-width="1.5"/><polygon points="-28,-16 28,-16 38,0 28,16 -28,16 -38,0" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/><text x="0" y="3" text-anchor="middle" dominant-baseline="central" font-size="22" font-weight="900" fill="#000" font-family="Cinzel,serif">6</text></g>
+</g>
 </g>
 </svg>
