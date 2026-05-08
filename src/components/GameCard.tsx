@@ -1,8 +1,9 @@
 import React from "react";
 import { CardDef, cardsById, CardType } from "@/game/cards";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Eye, Brain, BookOpen, Sparkles, Leaf } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CARD_SIZES, RARITY_BORDERS } from "@/game/constants";
 
 const typeIcon = {
   archetipo: Sparkles,
@@ -13,24 +14,9 @@ const typeIcon = {
   eco: Leaf,
 };
 
-const rarityBorder = {
-  comune: "border-white/10",
-  rara: "border-azure/40 shadow-[0_0_15px_rgba(59,130,246,0.3)]",
-  epica: "border-mystic/50 shadow-[0_0_20px_rgba(168,85,247,0.4)]",
-  leggendaria: "border-gold/60 shadow-[0_0_30px_rgba(255,215,0,0.5)]",
-};
-
-const sizes = {
-  xs: "w-16 h-24",
-  sm: "w-24 h-36",
-  md: "w-40 h-60",
-  lg: "w-56 h-80",
-  xl: "w-72 h-[420px]",
-};
-
 interface Props {
   card: CardDef;
-  size?: keyof typeof sizes;
+  size?: keyof typeof CARD_SIZES;
   glow?: boolean;
   faded?: boolean;
   selected?: boolean;
@@ -77,8 +63,8 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
       whileTap={onClick ? { scale: 0.95 } : undefined}
       className={cn(
         "relative shrink-0 rounded-[12px] overflow-hidden text-left transition-all duration-500 group bg-black shadow-2xl",
-        sizes[size],
-        rarityBorder[card.rarity],
+        CARD_SIZES[size],
+        RARITY_BORDERS[card.rarity],
         faded && "grayscale opacity-40 hover:grayscale-0 hover:opacity-100",
         selected && "ring-4 ring-gold shadow-[0_0_50px_rgba(255,215,0,0.6)] z-50",
         glow && "shadow-[0_0_30px_rgba(168,85,247,0.5)] animate-pulse"
@@ -246,11 +232,11 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
   );
 });
 
-export const CardBack = React.memo(function CardBack({ size = "md" }: { size?: keyof typeof sizes }) {
+export const CardBack = React.memo(function CardBack({ size = "md" }: { size?: keyof typeof CARD_SIZES }) {
   return (
     <div className={cn(
       "relative shrink-0 rounded-[12px] overflow-hidden bg-black shadow-2xl group", 
-      sizes[size]
+      CARD_SIZES[size]
     )}>
       {/* Master Back Aesthetic (Uniform with Frame) */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#1a0b2e,#000)]" />
