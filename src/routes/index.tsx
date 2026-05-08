@@ -28,17 +28,17 @@ function Loading() {
   }, [play]);
 
   useEffect(() => {
-    async function checkAuth() {
-      if (progress >= 100 && typeof window !== "undefined") {
+    if (progress >= 100) {
+      const check = async () => {
         const { getFirebase } = await import("@/lib/firebase");
         const { auth } = await getFirebase();
-        const user = auth?.currentUser;
+        if (!auth) return navigate({ to: "/auth" });
         
-        const t = setTimeout(() => navigate({ to: user ? "/home" : "/auth" }), 400);
-        return () => clearTimeout(t);
-      }
+        const user = auth.currentUser;
+        navigate({ to: user ? "/home" : "/auth" });
+      };
+      check();
     }
-    checkAuth();
   }, [progress, navigate]);
 
   return (

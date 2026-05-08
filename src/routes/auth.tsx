@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, getFirebase } from "@/lib/firebase";
 import { MobileFrame } from "@/components/Common";
 import { Eye, Mail, Lock, LogIn, UserPlus, Sparkles, Chrome } from "lucide-react";
 import { toast } from "sonner";
@@ -18,22 +18,46 @@ function AuthPage() {
   const navigate = useNavigate();
   const { play } = useSound();
 
+  const getAuthInstance = async () => {
+    if (auth) return auth;
+    const { auth: firebaseAuth } = await getFirebase();
+    return firebaseAuth;
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isLogin && password.length < 6) {
+      toast.error("La password deve essere di almeno 6 caratteri");
+      return;
+    }
+
     setLoading(true);
     play("lock");
 
     try {
+      const firebaseAuth = await getAuthInstance();
+      if (!firebaseAuth) throw new Error("Sistema di autenticazione non disponibile");
+
       if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(firebaseAuth, email, password);
         toast.success("Bentornato, Sognatore");
       } else {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+        const { savePlayerToCloud } = await import("@/game/persistence");
+        const currentPlayerState = useGame.getState().player;
+        await savePlayerToCloud(userCredential.user.uid, currentPlayerState);
         toast.success("La tua coscienza è stata sincronizzata");
       }
       navigate({ to: "/home" });
     } catch (error: any) {
-      toast.error(error.message);
+      console.error("Auth error:", error);
+      let msg = error.message;
+      if (error.code === "auth/email-already-in-use") msg = "Questa email è già registrata";
+      if (error.code === "auth/invalid-email") msg = "Email non valida";
+      if (error.code === "auth/weak-password") msg = "Password troppo debole";
+      if (error.code === "auth/operation-not-allowed") msg = "Registrazione con email disabilitata";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -42,7 +66,9 @@ function AuthPage() {
   const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const firebaseAuth = await getAuthInstance();
+      if (!firebaseAuth) throw new Error("Sistema di autenticazione non disponibile");
+      await signInWithPopup(firebaseAuth, provider);
       navigate({ to: "/home" });
     } catch (error: any) {
       toast.error(error.message);
@@ -50,74 +76,52 @@ function AuthPage() {
   };
 
   return (
-    <MobileFrame className="items-center justify-center px-8 text-center">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm space-y-8"
-      >
-        <div className="flex flex-col items-center gap-4">
-          <div className="size-20 rounded-full bg-mystic/20 ring-2 ring-gold/40 flex items-center justify-center">
-             <Eye className="size-10 text-gold animate-pulse" />
-          </div>
-          <h1 className="font-display text-3xl gold-text tracking-widest">REVERIE</h1>
-          <p className="text-xs text-gold/60 uppercase tracking-[0.3em]">Accedi alla tua coscienza</p>
+    <div className="min-h-screen bg-abyss p-8 flex flex-col items-center">
+      <div className="w-full max-w-sm space-y-8 mt-12">
+        <div className="text-center">
+          <h1 className="font-display text-4xl gold-text mb-2">REVERIE</h1>
+          <p className="text-xs text-gold/60 uppercase tracking-widest">Sincronizzazione</p>
         </div>
 
-        <form onSubmit={handleAuth} className="space-y-4">
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gold/40" />
+        <form onSubmit={handleAuth} className="space-y-6">
+          <div>
             <input
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-card/20 border border-gold/20 rounded-xl py-3 pl-10 pr-4 text-sm text-foreground focus:outline-none focus:border-gold/50 transition-all"
+              className="w-full bg-card border-2 border-gold/40 rounded-xl py-4 px-4 text-foreground focus:outline-none focus:border-gold"
               required
             />
           </div>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gold/40" />
+          <div>
             <input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-card/20 border border-gold/20 rounded-xl py-3 pl-10 pr-4 text-sm text-foreground focus:outline-none focus:border-gold/50 transition-all"
+              className="w-full bg-card border-2 border-gold/40 rounded-xl py-4 px-4 text-foreground focus:outline-none focus:border-gold"
               required
+              minLength={6}
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-mystic/40 hover:bg-mystic/60 ring-1 ring-gold/50 rounded-xl py-3 font-display text-sm gold-text flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+            className="w-full bg-mystic py-4 rounded-xl font-display text-lg gold-text border border-gold/50 shadow-lg disabled:opacity-50"
           >
-            {loading ? <Sparkles className="size-4 animate-spin" /> : isLogin ? <LogIn className="size-4" /> : <UserPlus className="size-4" />}
-            {isLogin ? "ACCEDI" : "REGISTRATI"}
+            {loading ? "CARICAMENTO..." : isLogin ? "ACCEDI" : "REGISTRATI"}
           </button>
         </form>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gold/10"></div></div>
-          <div className="relative flex justify-center text-[8px] uppercase tracking-widest"><span className="bg-abyss px-2 text-gold/40">Oppure</span></div>
-        </div>
-
-        <button
-          onClick={loginWithGoogle}
-          className="w-full bg-white/5 hover:bg-white/10 ring-1 ring-white/10 rounded-xl py-3 text-xs text-foreground flex items-center justify-center gap-2 transition-all"
-        >
-          <Chrome className="size-4 text-blue-400" />
-          ACCEDI CON GOOGLE
-        </button>
-
-        <p className="text-[10px] text-gold/40">
-          {isLogin ? "Non hai un account?" : "Hai già un account?"}{" "}
+        <p className="text-center text-sm text-gold/60">
+          {isLogin ? "Nuovo sognatore?" : "Sei già dei nostri?"}{" "}
           <button onClick={() => setIsLogin(!isLogin)} className="text-gold underline font-bold ml-1">
-            {isLogin ? "Registrati ora" : "Accedi qui"}
+            {isLogin ? "Crea account" : "Accedi qui"}
           </button>
         </p>
-      </motion.div>
-    </MobileFrame>
+      </div>
+    </div>
   );
 }

@@ -109,6 +109,7 @@ interface AppStore {
   syncWithCloud: (userId: string) => Promise<void>;
   user: any | null;
   setUser: (user: any | null) => void;
+  resetPlayer: () => void;
 }
 
 function powerWithRules(state: MatchState, card: CardDef, side: Side, territory: TerritoryId): number {
@@ -265,17 +266,17 @@ export const useGame = create<AppStore>()(
   persist(
     (set, get): AppStore => ({
       player: {
-        level: 23,
-        xp: 450,
-        xpToNext: 1000,
-        gold: 12450,
-        fragments: 25,
-        gems: 850,
-        wins: 368,
-        matches: 742,
-        rank: "Sognatore I",
-        rankPoints: 1250,
-        collection: CARDS.map((c) => c.id),
+        level: 1,
+        xp: 0,
+        xpToNext: 100,
+        gold: 100,
+        fragments: 0,
+        gems: 0,
+        wins: 0,
+        matches: 0,
+        rank: "Sognatore Iniziale",
+        rankPoints: 0,
+        collection: CARDS.slice(0, 15).map((c) => c.id), // Start with a small collection
         deck: buildStarterDeck(),
         title: "Sognatore",
       },
@@ -407,9 +408,26 @@ export const useGame = create<AppStore>()(
 
       user: null,
       setUser: (user) => set({ user }),
+      resetPlayer: () => set({
+        player: {
+          level: 1,
+          xp: 0,
+          xpToNext: 100,
+          gold: 100,
+          fragments: 0,
+          gems: 0,
+          wins: 0,
+          matches: 0,
+          rank: "Sognatore Iniziale",
+          rankPoints: 0,
+          collection: CARDS.slice(0, 15).map((c) => c.id),
+          deck: buildStarterDeck(),
+          title: "Sognatore",
+        }
+      }),
     }),
     { 
-      name: "reverie-store-v1",
+      name: "reverie-store-v2",
       storage: createJSONStorage(() => (typeof window !== "undefined" ? localStorage : {
         getItem: () => null,
         setItem: () => {},
