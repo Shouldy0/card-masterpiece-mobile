@@ -194,16 +194,16 @@ export const CARDS: CardDef[] = [
   { id: "s10_risveglio", name: "L'Ultimo Risveglio", type: "sogno", cost: 5, power: 6, rarity: "leggendaria", text: "Pesca 1 e Cura 2.", flavor: "Quando il sogno finisce, inizia la vera battaglia.", effect: { kind: "draw", amount: 1 }, art: "/cards/ultimo_risveglio.png?v=3" },
 
   // --- FAZIONE: ECO (SMERALDO - NATURA E TEMPO) ---
-  { id: "e1_radice", name: "Radice Profonda", type: "eco", cost: 2, power: 3, rarity: "comune", text: "Stabilità.", flavor: "Le fondamenta della mente sono vive.", effect: { kind: "none" }, art: "/cards/e1_radice.svg" },
-  { id: "e2_germoglio", name: "Germoglio", type: "eco", cost: 1, power: 1, rarity: "comune", text: "Crescita.", flavor: "Ogni grande idea inizia con un piccolo respiro.", effect: { kind: "none" }, art: "/cards/e2_germoglio.svg" },
-  { id: "e3_foresta", name: "Foresta di Echi", type: "eco", cost: 5, power: 7, rarity: "epica", text: "+1 Potere.", flavor: "Le voci del passato risuonano tra le foglie d'argento.", effect: { kind: "buff_self", amount: 1 }, art: "/cards/e3_foresta.svg" },
-  { id: "e4_pioggia_smeraldo", name: "Pioggia Smeraldo", type: "eco", cost: 3, power: 4, rarity: "rara", text: "Cura 2 HP.", flavor: "Un lavaggio purificatore per la coscienza stanca.", effect: { kind: "heal", amount: 2 }, art: "/cards/e4_pioggia_smeraldo.svg" },
-  { id: "e5_ciclo", name: "Il Ciclo", type: "eco", cost: 4, power: 6, rarity: "epica", text: "Pesca 1 carta.", flavor: "Ciò che è stato, sarà ancora.", effect: { kind: "draw", amount: 1 }, art: "/cards/e5_ciclo.svg" },
-  { id: "e6_quercia", name: "Quercia Antica", type: "eco", cost: 6, power: 10, rarity: "leggendaria", text: "Immortale.", flavor: "Ho visto imperi mentali sorgere e cadere.", effect: { kind: "none" }, art: "/cards/e6_quercia.svg" },
-  { id: "e7_muschio", name: "Muschio Morbido", type: "eco", cost: 2, power: 2, rarity: "comune", text: "Protezione.", flavor: "Il silenzio della natura è una maschera perfetta.", effect: { kind: "none" }, art: "/cards/e7_muschio.svg" },
-  { id: "e8_vento", name: "Vento del Nord", type: "eco", cost: 3, power: 5, rarity: "rara", text: "Spostamento.", flavor: "Porta via i pensieri pesanti.", effect: { kind: "none" }, art: "/cards/e8_vento.svg" },
-  { id: "e9_pietra", name: "Pietra Filosofale", type: "eco", cost: 7, power: 12, rarity: "leggendaria", text: "Alchimia.", flavor: "Trasformare il dolore in saggezza pura.", effect: { kind: "none" }, art: "/cards/e9_pietra.svg" },
-  { id: "e10_eternita", name: "Eternità", type: "eco", cost: 8, power: 18, rarity: "leggendaria", text: "Fine del tempo.", flavor: "Il momento in cui tutto si ferma e tutto ha senso.", effect: { kind: "none" }, art: "/cards/e10_eternita.svg" },
+  { id: "e1_radice", name: "Radice Profonda", type: "eco", cost: 2, power: 3, rarity: "comune", text: "Stabilità.", flavor: "Le fondamenta della mente sono vive.", effect: { kind: "none" }, art: "/cards/radice_eco.png?v=3" },
+  { id: "e2_germoglio", name: "Germoglio", type: "eco", cost: 1, power: 1, rarity: "comune", text: "Crescita.", flavor: "Ogni grande idea inizia con un piccolo respiro.", effect: { kind: "none" }, art: "/cards/germoglio_eco.png?v=3" },
+  { id: "e3_foresta", name: "Foresta di Echi", type: "eco", cost: 5, power: 7, rarity: "epica", text: "+1 Potere.", flavor: "Le voci del passato risuonano tra le foglie d'argento.", effect: { kind: "buff_self", amount: 1 }, art: "/cards/foresta_eco.png?v=3" },
+  { id: "e4_pioggia_smeraldo", name: "Pioggia Smeraldo", type: "eco", cost: 3, power: 4, rarity: "rara", text: "Cura 2 HP.", flavor: "Un lavaggio purificatore per la coscienza stanca.", effect: { kind: "heal", amount: 2 }, art: "/cards/pioggia_smeraldo.png?v=3" },
+  { id: "e5_ciclo", name: "Il Ciclo", type: "eco", cost: 4, power: 6, rarity: "epica", text: "Pesca 1 carta.", flavor: "Ciò che è stato, sarà ancora.", effect: { kind: "draw", amount: 1 }, art: "/cards/giardino_ciclo.png?v=3" },
+  { id: "e6_quercia", name: "Quercia Antica", type: "eco", cost: 6, power: 10, rarity: "leggendaria", text: "Immortale.", flavor: "Ho visto imperi mentali sorgere e cadere.", effect: { kind: "none" }, art: "/cards/quercia_antica.png?v=3" },
+  { id: "e7_muschio", name: "Muschio Morbido", type: "eco", cost: 2, power: 2, rarity: "comune", text: "Protezione.", flavor: "Il silenzio della natura è una maschera perfetta.", effect: { kind: "none" }, art: "/cards/muschio_morbido.png?v=3" },
+  { id: "e8_vento", name: "Vento del Nord", type: "eco", cost: 3, power: 5, rarity: "rara", text: "Spostamento.", flavor: "Porta via i pensieri pesanti.", effect: { kind: "none" }, art: "/cards/vento_nord.png?v=3" },
+  { id: "e9_pietra", name: "Pietra Filosofale", type: "eco", cost: 7, power: 12, rarity: "leggendaria", text: "Alchimia.", flavor: "Trasformare il dolore in saggezza pura.", effect: { kind: "none" }, art: "/cards/pietra_filosofale.png?v=3" },
+  { id: "e10_eternita", name: "Eternità", type: "eco", cost: 8, power: 18, rarity: "leggendaria", text: "Fine del tempo.", flavor: "Il momento in cui tutto si ferma e tutto ha senso.", effect: { kind: "none" }, art: "/cards/eternita_eco.png?v=3" },
 ];
 
 export const cardsById = Object.fromEntries(CARDS.map((c) => [c.id, c]));
