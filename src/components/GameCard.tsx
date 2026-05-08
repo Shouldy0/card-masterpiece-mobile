@@ -20,6 +20,23 @@ const rarityBorder = {
   leggendaria: "border-gold/60 shadow-[0_0_30px_rgba(255,215,0,0.5)]",
 };
 
+const sizes = {
+  xs: "w-16 h-24",
+  sm: "w-24 h-36",
+  md: "w-40 h-60",
+  lg: "w-56 h-80",
+  xl: "w-72 h-[420px]",
+};
+
+interface Props {
+  card: CardDef;
+  size?: keyof typeof sizes;
+  glow?: boolean;
+  faded?: boolean;
+  selected?: boolean;
+  onClick?: () => void;
+}
+
 export const GameCard = React.memo(function GameCard({ card, size = "md", glow, faded, selected, onClick }: Props) {
   const [imgError, setImgError] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
