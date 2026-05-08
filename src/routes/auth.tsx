@@ -76,52 +76,57 @@ function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-abyss p-8 flex flex-col items-center">
-      <div className="w-full max-w-sm space-y-8 mt-12">
-        <div className="text-center">
-          <h1 className="font-display text-4xl gold-text mb-2">REVERIE</h1>
-          <p className="text-xs text-gold/60 uppercase tracking-widest">Sincronizzazione</p>
+    <MobileFrame className="px-8 pt-12 pb-10 flex flex-col justify-center min-h-screen">
+      <div className="flex flex-col items-center gap-4 mb-10">
+        <div className="size-20 rounded-full bg-mystic/20 ring-2 ring-gold/40 flex items-center justify-center">
+           <Eye className="size-10 text-gold animate-pulse" />
+        </div>
+        <h1 className="font-display text-4xl gold-text tracking-widest text-center">REVERIE</h1>
+        <p className="text-xs text-gold/60 uppercase tracking-[0.3em] text-center">Sincronizza la tua coscienza</p>
+      </div>
+
+      <form onSubmit={handleAuth} className="relative z-30 space-y-6">
+        <div className="relative">
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gold/40" />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full bg-card/40 border border-gold/20 rounded-xl py-3.5 pl-10 pr-4 text-sm text-foreground focus:outline-none focus:border-gold/50 transition-all"
+            required
+          />
+        </div>
+        <div className="relative">
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gold/40" />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full bg-card/40 border border-gold/20 rounded-xl py-3.5 pl-10 pr-4 text-sm text-foreground focus:outline-none focus:border-gold/50 transition-all"
+            required
+            minLength={6}
+          />
         </div>
 
-        <form onSubmit={handleAuth} className="space-y-6">
-          <div>
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-card border-2 border-gold/40 rounded-xl py-4 px-4 text-foreground focus:outline-none focus:border-gold"
-              required
-            />
-          </div>
-          <div>
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-card border-2 border-gold/40 rounded-xl py-4 px-4 text-foreground focus:outline-none focus:border-gold"
-              required
-              minLength={6}
-            />
-          </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-mystic hover:bg-mystic-glow ring-1 ring-gold/50 rounded-xl py-3.5 font-display text-sm gold-text flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)] disabled:opacity-50"
+        >
+          {loading ? "SINCRONIZZAZIONE..." : isLogin ? "ACCEDI" : "REGISTRATI"}
+        </button>
+      </form>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-mystic py-4 rounded-xl font-display text-lg gold-text border border-gold/50 shadow-lg disabled:opacity-50"
-          >
-            {loading ? "CARICAMENTO..." : isLogin ? "ACCEDI" : "REGISTRATI"}
-          </button>
-        </form>
-
-        <p className="text-center text-sm text-gold/60">
+      <div className="mt-8 pt-8 border-t border-gold/10">
+        <p className="text-center text-xs text-gold/40">
           {isLogin ? "Nuovo sognatore?" : "Sei già dei nostri?"}{" "}
-          <button onClick={() => setIsLogin(!isLogin)} className="text-gold underline font-bold ml-1">
+          <button onClick={() => setIsLogin(!isLogin)} className="text-gold underline font-bold ml-1 hover:text-mystic-glow transition-colors">
             {isLogin ? "Crea account" : "Accedi qui"}
           </button>
         </p>
       </div>
-    </div>
+    </MobileFrame>
   );
 }

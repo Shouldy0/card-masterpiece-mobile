@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 export function MobileFrame({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className="relative mx-auto flex h-full w-full max-w-[440px] flex-col bg-abyss/40">
+    <div className="relative mx-auto flex h-full w-full max-w-[440px] flex-col bg-abyss/40 nebula">
       <div className={cn("relative z-10 flex flex-1 flex-col w-full", className)}>
         {children}
       </div>

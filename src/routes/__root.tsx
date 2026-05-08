@@ -69,12 +69,6 @@ function RootComponent() {
 
   return (
     <div className="relative min-h-screen w-full bg-abyss">
-      <button 
-        onClick={() => alert("Interazione attiva!")}
-        className="fixed top-2 left-2 z-[9999] bg-gold text-abyss px-2 py-1 text-[10px] rounded font-bold"
-      >
-        DIAGNOSTIC: CLICK ME
-      </button>
       <main className="relative z-10 w-full min-h-screen">
         <Outlet />
       </main>
