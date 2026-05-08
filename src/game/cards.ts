@@ -170,16 +170,16 @@ export const CARDS: CardDef[] = [
   { id: "c10_boia", name: "Il Boia", type: "maschera", cost: 6, power: 9, rarity: "leggendaria", text: "Taglia il potere -3.", flavor: "La fine del viaggio è solo un altro colpo di scure.", effect: { kind: "weaken_enemy", amount: 3 }, art: "/cards/c10_boia.svg" },
 
   // --- FAZIONE: OBLIO (BLU FREDDO - VUOTO E PERDITA) ---
-  { id: "b1_vuoto", name: "Il Vuoto", type: "oblio", cost: 4, power: 5, rarity: "rara", text: "Annulla effetti.", flavor: "Non c'è nulla qui, nemmeno il dolore.", effect: { kind: "none" }, art: "/cards/b1_vuoto.svg" },
-  { id: "b2_silenzio", name: "Silenzio", type: "oblio", cost: 2, power: 3, rarity: "comune", text: "Senza voce.", flavor: "Il rumore del mondo è solo un ricordo lontano.", effect: { kind: "none" }, art: "/cards/b2_silenzio.svg" },
-  { id: "b3_oblio", name: "Oblio", type: "oblio", cost: 6, power: 8, rarity: "leggendaria", text: "Rimuovi 1 carta.", flavor: "Chi eri prima che il tempo ti mangiasse?", effect: { kind: "none" }, art: "/cards/b3_oblio.svg" },
-  { id: "b4_neve", name: "Neve Eterna", type: "oblio", cost: 3, power: 4, rarity: "comune", text: "Freddo intenso.", flavor: "Ogni fiocco è un ricordo che si gela.", effect: { kind: "none" }, art: "/cards/b4_neve.svg" },
-  { id: "b5_cenere_blu", name: "Cenere Blu", type: "oblio", cost: 5, power: 7, rarity: "epica", text: "Debuff -2.", flavor: "Ciò che resta dopo che la speranza si è spenta.", effect: { kind: "weaken_enemy", amount: 2 }, art: "/cards/b5_cenere_blu.svg" },
-  { id: "b6_abisso", name: "L'Abisso", type: "oblio", cost: 7, power: 11, rarity: "leggendaria", text: "Potere puro.", flavor: "L'oscurità è l'unica casa che ci accetta sempre.", effect: { kind: "none" }, art: "/cards/b6_abisso.svg" },
-  { id: "b7_pioggia", name: "Pioggia Fredda", type: "oblio", cost: 2, power: 2, rarity: "comune", text: "Pesca 1 carta.", flavor: "Lacrime dal cielo di un mondo dimenticato.", effect: { kind: "draw", amount: 1 }, art: "/cards/b7_pioggia.svg" },
-  { id: "b8_fantasma", name: "Il Fantasma", type: "oblio", cost: 3, power: 4, rarity: "rara", text: "Invisibile.", flavor: "Un'eco che ha smesso di cercare una voce.", effect: { kind: "none" }, art: "/cards/b8_fantasma.svg" },
-  { id: "b9_rovine", name: "Rovine", type: "oblio", cost: 4, power: 6, rarity: "rara", text: "Struttura fragile.", flavor: "Le fondamenta della mente stanno crollando.", effect: { kind: "none" }, art: "/cards/b9_rovine.svg" },
-  { id: "b10_ghiaccio", name: "Cuore di Ghiaccio", type: "oblio", cost: 5, power: 6, rarity: "epica", text: "Cura 3 HP.", flavor: "Congela il dolore per non sentirlo più.", effect: { kind: "heal", amount: 3 }, art: "/cards/b10_ghiaccio.svg" },
+  { id: "b1_vuoto", name: "Il Vuoto", type: "oblio", cost: 4, power: 5, rarity: "rara", text: "Annulla effetti.", flavor: "Non c'è nulla qui, nemmeno il dolore.", effect: { kind: "none" }, art: "/cards/vuoto.png?v=3" },
+  { id: "b2_silenzio", name: "Silenzio", type: "oblio", cost: 2, power: 3, rarity: "comune", text: "Senza voce.", flavor: "Il rumore del mondo è solo un ricordo lontano.", effect: { kind: "none" }, art: "/cards/silenzio.png?v=3" },
+  { id: "b3_oblio", name: "Oblio", type: "oblio", cost: 6, power: 8, rarity: "leggendaria", text: "Rimuovi 1 carta.", flavor: "Chi eri prima che il tempo ti mangiasse?", effect: { kind: "none" }, art: "/cards/oblio.png?v=3" },
+  { id: "b4_neve", name: "Neve Eterna", type: "oblio", cost: 3, power: 4, rarity: "comune", text: "Freddo intenso.", flavor: "Ogni fiocco è un ricordo che si gela.", effect: { kind: "none" }, art: "/cards/neve_eterna.png?v=3" },
+  { id: "b5_cenere_blu", name: "Cenere Blu", type: "oblio", cost: 5, power: 7, rarity: "epica", text: "Debuff -2.", flavor: "Ciò che resta dopo che la speranza si è spenta.", effect: { kind: "weaken_enemy", amount: 2 }, art: "/cards/cenere_blu.png?v=3" },
+  { id: "b6_abisso", name: "L'Abisso", type: "oblio", cost: 7, power: 11, rarity: "leggendaria", text: "Potere puro.", flavor: "L'oscurità è l'unica casa che ci accetta sempre.", effect: { kind: "none" }, art: "/cards/abisso.png?v=3" },
+  { id: "b7_pioggia", name: "Pioggia Fredda", type: "oblio", cost: 2, power: 2, rarity: "comune", text: "Pesca 1 carta.", flavor: "Lacrime dal cielo di un mondo dimenticato.", effect: { kind: "draw", amount: 1 }, art: "/cards/pioggia_fredda.png?v=3" },
+  { id: "b8_fantasma", name: "Il Fantasma", type: "oblio", cost: 3, power: 4, rarity: "rara", text: "Invisibile.", flavor: "Un'eco che ha smesso di cercare una voce.", effect: { kind: "none" }, art: "/cards/fantasma.png?v=3" },
+  { id: "b9_rovine", name: "Rovine", type: "oblio", cost: 4, power: 6, rarity: "rara", text: "Struttura fragile.", flavor: "Le fondamenta della mente stanno crollando.", effect: { kind: "none" }, art: "/cards/rovine.png?v=3" },
+  { id: "b10_ghiaccio", name: "Cuore di Ghiaccio", type: "oblio", cost: 5, power: 6, rarity: "epica", text: "Cura 3 HP.", flavor: "Congela il dolore per non sentirlo più.", effect: { kind: "heal", amount: 3 }, art: "/cards/cuore_ghiaccio.png?v=3" },
 
   // --- FAZIONE: SOGNO (CIANO - ILLUSIONE e SPERANZA) ---
   { id: "s1_miraggio", name: "Miraggio", type: "sogno", cost: 2, power: 2, rarity: "comune", text: "Illusione ottica.", flavor: "Bello da vedere, impossibile da toccare.", effect: { kind: "none" }, art: "/cards/s1_miraggio.svg" },
