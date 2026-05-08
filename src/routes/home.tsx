@@ -67,7 +67,7 @@ function Home() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.5 }}
-          className="relative mb-12"
+          className="relative mb-8"
         >
           <div className="absolute -inset-16 rounded-full bg-mystic/20 blur-3xl" />
           <motion.div 
@@ -84,7 +84,7 @@ function Home() {
               initial={{ opacity: 0, letterSpacing: "0.5em", paddingLeft: "0.5em" }}
               animate={{ opacity: 1, letterSpacing: "0.4em", paddingLeft: "0.4em" }}
               transition={{ duration: 1.2 }}
-              className="font-display text-6xl gold-text text-center"
+              className="font-display text-5xl gold-text text-center"
             >
               REVERIE
             </motion.h1>
@@ -105,7 +105,7 @@ function Home() {
             whileHover={{ scale: 1.02 }} 
             whileTap={{ scale: 0.98 }} 
             onClick={play_btn} 
-            className="w-full py-6 rounded-[2.5rem] bg-gradient-to-br from-mystic via-mystic-glow to-mystic text-foreground font-display text-xl font-bold uppercase tracking-[0.3em] shadow-[0_10px_40px_rgba(150,100,255,0.3)] border border-gold/20"
+            className="w-full py-5 rounded-[2.5rem] bg-gradient-to-br from-mystic via-mystic-glow to-mystic text-foreground font-display text-lg font-bold uppercase tracking-[0.3em] shadow-[0_10px_40px_rgba(150,100,255,0.3)] border border-gold/20"
           >
             GIOCA BATTAGLIA
           </motion.button>
