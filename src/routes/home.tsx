@@ -244,12 +244,12 @@ function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
              {/* The Pack Asset */}
              <motion.div 
                style={{ transformStyle: "preserve-3d" }}
-               className="absolute inset-0 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_60px_rgba(150,100,255,0.2)] overflow-hidden border border-white/10"
+               className="absolute inset-0 overflow-hidden"
              >
                 <img 
                   src="/assets/starter-pack.png" 
                   alt="Starter Pack" 
-                  className="size-full object-cover"
+                  className="size-full object-contain mix-blend-lighten"
                 />
                 
                 {/* Dynamic 3D Light Reflection */}
