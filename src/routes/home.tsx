@@ -204,29 +204,15 @@ function StarterPackOpening({ onOpen }: { onOpen: () => string[] }) {
           >
              {/* Glowing Aura */}
              <div className="absolute -inset-10 bg-gold/10 blur-3xl rounded-full animate-pulse" />
-             <div className="absolute -inset-20 bg-mystic/5 blur-[80px] rounded-full" />
-
-             {/* The Pack Asset */}
-             <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1e] via-[#2a2a2e] to-black rounded-[2rem] shadow-2xl flex flex-col items-center justify-center border-2 border-gold/30 overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-30" />
-                
-                {/* Gold Filigree */}
-                <div className="absolute top-4 left-4 size-8 border-t-2 border-l-2 border-gold/40 rounded-tl-xl" />
-                <div className="absolute top-4 right-4 size-8 border-t-2 border-r-2 border-gold/40 rounded-tr-xl" />
-                <div className="absolute bottom-4 left-4 size-8 border-b-2 border-l-2 border-gold/40 rounded-bl-xl" />
-                <div className="absolute bottom-4 right-4 size-8 border-b-2 border-r-2 border-gold/40 rounded-br-xl" />
-
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Sparkles className="size-24 text-gold drop-shadow-[0_0_15px_rgba(255,215,0,0.5)]" />
-                </motion.div>
-                
-                <div className="mt-4 flex flex-col items-center">
-                  <span className="font-display text-[10px] text-gold tracking-[0.5em] uppercase font-black">Memory Pack</span>
-                  <div className="h-px w-24 bg-gradient-to-r from-transparent via-gold/40 to-transparent mt-1" />
-                </div>
+             <div className="absolute -inset-20 bg-mystic/5 blur-[80px] rounded-full" />             {/* The Pack Asset */}
+             <div className="absolute inset-0 rounded-[2rem] shadow-[0_0_60px_rgba(150,100,255,0.2)] overflow-hidden">
+                <img 
+                  src="/assets/starter-pack.png" 
+                  alt="Starter Pack" 
+                  className="size-full object-cover"
+                />
+                {/* Dynamic Inner Glow Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-white/10 mix-blend-overlay" />
              </div>
 
              {/* Interact Hint */}
