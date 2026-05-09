@@ -22,12 +22,16 @@ function Home() {
     return () => {};
   }, []);
 
-  if (!player) return null;
-
   const play_btn = () => { play("whoosh"); startMatch(); navigate({ to: "/vs" }); };
 
   return (
     <MobileFrame>
+      {!player ? (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="size-10 rounded-full border-2 border-gold/20 border-t-gold animate-spin" />
+        </div>
+      ) : (
+        <>
       {/* top bar */}
       <header className="flex items-center justify-between px-4 pt-6">
         <Link to="/profile" className="flex items-center gap-2">
@@ -119,10 +123,12 @@ function Home() {
         </div>
       </div>
 
+        </>
+      )}
       <BottomNav />
 
       {/* STARTER PACK OPENING OVERLAY */}
-      {!onboardingPackOpened && (
+      {player && !onboardingPackOpened && (
         <StarterPackOpening 
           onOpen={openStarterPack} 
           onComplete={() => setOnboardingPackOpened(true)} 

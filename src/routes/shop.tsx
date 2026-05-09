@@ -55,9 +55,8 @@ function Shop() {
     return SHOP_ITEMS.filter(i => i.category === tab);
   }, [tab]);
 
-  if (!player) return null;
-
   const handleBuy = (item: ShopItem) => {
+    if (!player) return;
     if (item.type === "pack") {
       const r = buyPack(item.cost, item.currency);
       if (!r) { play("fail"); toast.error("Risorse insufficienti"); }
@@ -75,8 +74,8 @@ function Shop() {
         <Link to="/home" className="flex size-8 items-center justify-center rounded-full bg-card/60 ring-1 ring-gold/30"><ArrowLeft className="h-4 w-4 text-gold" /></Link>
         <h1 className="flex-1 text-center font-display text-base gold-text tracking-[0.2em] uppercase">Negozio</h1>
         <div className="flex flex-col items-end gap-0.5">
-          <div className="flex items-center gap-1 rounded-full bg-card/60 px-2 py-0.5 ring-1 ring-gold/30 text-[10px] text-gold font-bold"><Coins className="h-2.5 w-2.5" />{player.gold.toLocaleString("it-IT")}</div>
-          <div className="flex items-center gap-1 rounded-full bg-card/60 px-2 py-0.5 ring-1 ring-gold/30 text-[10px] text-mystic-glow font-bold"><Diamond className="h-2.5 w-2.5" />{player.gems}</div>
+          <div className="flex items-center gap-1 rounded-full bg-card/60 px-2 py-0.5 ring-1 ring-gold/30 text-[10px] text-gold font-bold"><Coins className="h-2.5 w-2.5" />{player?.gold.toLocaleString("it-IT")}</div>
+          <div className="flex items-center gap-1 rounded-full bg-card/60 px-2 py-0.5 ring-1 ring-gold/30 text-[10px] text-mystic-glow font-bold"><Diamond className="h-2.5 w-2.5" />{player?.gems}</div>
         </div>
       </header>
 
@@ -100,7 +99,7 @@ function Shop() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-5"
           >
-            {filteredItems.map((item) => (
+            {player && filteredItems.map((item) => (
               <ShopRow 
                 key={item.id} 
                 item={item} 
