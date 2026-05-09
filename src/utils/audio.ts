@@ -25,6 +25,7 @@ class SoundEngine {
   private musicVol = 0.5;
   private sfxVol = 0.8;
   private muted = false;
+  private melodyInterval: any = null;
 
   private sceneConfigs: Record<Exclude<SceneMusic, null>, SceneMusicConfig> = {
     home: {
@@ -148,6 +149,10 @@ class SoundEngine {
       });
 
       this.currentScene = scene;
+
+      if (scene === "home" || scene === "match") {
+        this.startGenerativeMelody(scene);
+      }
     } catch (e) {
       console.warn("Scene music blocked:", e);
     }
@@ -156,8 +161,11 @@ class SoundEngine {
   stopSceneMusic() {
     if (this.ambientGain && this.ctx) {
       const now = this.ctx.currentTime;
-      this.ambientGain.gain.linearRampToValueAtTime(0, now + 1);
       this.currentScene = null;
+      if (this.melodyInterval) {
+        clearInterval(this.melodyInterval);
+        this.melodyInterval = null;
+      }
       setTimeout(() => this.cleanupOscillators(), 1000);
     }
   }
@@ -183,6 +191,42 @@ class SoundEngine {
 
   stopAmbient() {
     this.stopSceneMusic();
+  }
+
+  private startGenerativeMelody(scene: string) {
+    if (this.melodyInterval) clearInterval(this.melodyInterval);
+    
+    const scale = scene === "home" ? [110, 130.81, 164.81, 196, 220, 261.63] : [73.42, 87.31, 110, 123.47];
+    const delay = scene === "home" ? 4000 : 2000;
+
+    this.melodyInterval = setInterval(() => {
+      if (!this.ctx || this.muted || !this.ambientGain) return;
+      
+      const now = this.ctx.currentTime;
+      const freq = scale[Math.floor(Math.random() * scale.length)];
+      
+      const osc = this.ctx.createOscillator();
+      const g = this.ctx.createGain();
+      const f = this.ctx.createBiquadFilter();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq * 2, now);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + 3);
+
+      f.type = "lowpass";
+      f.frequency.setValueAtTime(400, now);
+
+      g.gain.setValueAtTime(0, now);
+      g.gain.linearRampToValueAtTime(0.02, now + 1);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 4);
+
+      osc.connect(f);
+      f.connect(g);
+      g.connect(this.ambientGain!);
+      
+      osc.start(now);
+      osc.stop(now + 4);
+    }, delay);
   }
 
   play(type: "draw" | "success" | "fail" | "tick" | "record" | "lock" | "reroll" | "shuffle" | "victory" | "pulse" | "whoosh" | "chime" | "ripple" | "dream_enter" | "signature" | "card_flip" | "card_deal") {
