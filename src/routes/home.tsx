@@ -48,7 +48,10 @@ function Home() {
             <div className="flex items-center gap-2">
               <ResourcePill icon={Coins} value={player.gold} color="text-gold" />
               <ResourcePill icon={Diamond} value={player.gems} color="text-mystic-glow" />
-              <button className="size-7 rounded-full bg-mystic/30 ring-1 ring-gold/40 flex items-center justify-center text-gold">
+              <button 
+                onClick={() => navigate({ to: "/shop" })}
+                className="size-7 rounded-full bg-mystic/30 ring-1 ring-gold/40 flex items-center justify-center text-gold active:scale-95 transition-transform"
+              >
                 <Plus className="h-3 w-3" />
               </button>
             </div>
