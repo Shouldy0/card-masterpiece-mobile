@@ -452,7 +452,6 @@ export const useGame = create<AppStore>()(
       },
       settings: { soundOn: true, musicVolume: 0.5, sfxVolume: 0.8, vibration: true, hints: true, animSpeed: 1, language: "Italiano" },
       match: null,
-      onboardingDone: false,
       syncStatus: "idle",
       lastSyncedAt: null,
 
