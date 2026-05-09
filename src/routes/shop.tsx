@@ -47,9 +47,10 @@ const SHOP_ITEMS: ShopItem[] = [
 
 function Shop() {
   const { player, buyPack, buyCosmetic } = useGame();
-  if (!player) return null;
   const [tab, setTab] = useState<typeof tabs[number]>("Consigliati");
   const { play } = useSound();
+
+  if (!player) return null;
 
   const filteredItems = useMemo(() => {
     if (tab === "Consigliati") return SHOP_ITEMS.filter(i => i.category === "Consigliati" || i.badge);

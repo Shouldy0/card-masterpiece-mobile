@@ -14,9 +14,10 @@ export const Route = createFileRoute("/home")({ component: Home });
 
 function Home() {
   const { player, startMatch, onboardingPackOpened, openStarterPack, setOnboardingPackOpened } = useGame();
-  if (!player) return null;
   const navigate = useNavigate();
   const { play } = useSound();
+
+  if (!player) return null;
 
   useEffect(() => {
     sounds.startSceneMusic("home");
