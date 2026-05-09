@@ -11,6 +11,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Loading() {
+  console.log("REVERIE: Loading component rendering");
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
   const { play } = useSound();

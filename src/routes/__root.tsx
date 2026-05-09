@@ -36,6 +36,7 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
+  console.log("REVERIE: RootComponent rendering");
   const setUser = useGame((s) => s.setUser);
 
   useEffect(() => {
