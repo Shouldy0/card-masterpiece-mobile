@@ -13,127 +13,29 @@ import { cardsById } from "@/game/cards";
 export const Route = createFileRoute("/home")({ component: Home });
 
 function Home() {
-  const { player, startMatch, onboardingPackOpened, openStarterPack, setOnboardingPackOpened } = useGame();
+  const { player, startMatch } = useGame();
   const navigate = useNavigate();
-  const { play } = useSound();
-
-  useEffect(() => {
-    sounds.startSceneMusic("home");
-    return () => {};
-  }, []);
-
-  const play_btn = () => { play("whoosh"); startMatch(); navigate({ to: "/vs" }); };
 
   return (
-    <MobileFrame>
+    <MobileFrame className="items-center justify-center">
+      <h1 className="text-4xl gold-text">REVERIE</h1>
+      <p className="text-muted-foreground mt-4 uppercase tracking-widest text-[10px]">Accesso Effettuato</p>
+      
       {!player ? (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="size-10 rounded-full border-2 border-gold/20 border-t-gold animate-spin" />
-        </div>
+        <div className="mt-8 size-8 border-2 border-gold/20 border-t-gold animate-spin rounded-full" />
       ) : (
-        <>
-      {/* top bar */}
-      <header className="flex items-center justify-between px-4 pt-6">
-        <Link to="/profile" className="flex items-center gap-2">
-          <div className="size-10 rounded-full ring-2 ring-gold/60 bg-gradient-to-br from-mystic to-abyss flex items-center justify-center">
-            <Eye className="h-4 w-4 text-gold" />
-          </div>
-          <div>
-            <p className="font-display text-sm text-foreground leading-none">Dreamer</p>
-            <p className="text-[10px] text-muted-foreground">Livello {player.level}</p>
-          </div>
-        </Link>
-        <div className="flex items-center gap-2">
-          <ResourcePill icon={Coins} value={player.gold} color="text-gold" />
-          <ResourcePill icon={Diamond} value={player.gems} color="text-mystic-glow" />
-          <button className="size-7 rounded-full bg-mystic/30 ring-1 ring-gold/40 flex items-center justify-center text-gold">
-            <Plus className="h-3 w-3" />
+        <div className="flex flex-col items-center gap-6 mt-12">
+          <p className="text-gold font-display">Livello {player.level}</p>
+          <button 
+            onClick={() => { startMatch(); navigate({ to: "/vs" }); }}
+            className="px-12 py-4 rounded-full bg-mystic text-white font-display text-xs uppercase tracking-widest ring-1 ring-gold/40"
+          >
+            INIZIA BATTAGLIA
           </button>
         </div>
-      </header>
-
-      {/* UTILITY BAR: Missioni / Pass / Ranked */}
-      <div className="mt-4 flex items-center justify-center gap-3 px-6 flex-wrap">
-        <Link to="/events" className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-card/10 ring-1 ring-gold/10 hover:bg-card/20 transition-all group">
-          <Sparkles className="h-4 w-4 text-gold/60 group-hover:text-gold" />
-          <span className="text-[9px] uppercase tracking-widest text-gold/60 group-hover:text-gold">Missioni</span>
-        </Link>
-        <Link to="/pass" className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-card/10 ring-1 ring-gold/10 hover:bg-card/20 transition-all group">
-          <Crown className="h-4 w-4 text-gold/60 group-hover:text-gold" />
-          <span className="text-[9px] uppercase tracking-widest text-gold/60 group-hover:text-gold">Pass</span>
-        </Link>
-        <Link to="/ranked" className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-card/10 ring-1 ring-gold/10 hover:bg-card/20 transition-all group">
-          <Trophy className="h-4 w-4 text-gold/60 group-hover:text-gold" />
-          <span className="text-[9px] uppercase tracking-widest text-gold/60 group-hover:text-gold">Ranked</span>
-        </Link>
-      </div>
-
-      {/* HERO SECTION */}
-      <div className="relative mt-4 flex flex-1 flex-col items-center justify-center px-6 pb-12">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.5 }}
-          className="relative mb-8"
-        >
-          <div className="absolute -inset-16 rounded-full bg-mystic/20 blur-3xl" />
-          <motion.div 
-            animate={{ 
-              scale: [1, 1.1, 1],
-              opacity: [0.3, 0.5, 0.3] 
-            }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute left-1/2 top-1/2 -z-10 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-mystic-glow/30 via-gold/10 to-transparent blur-2xl" 
-          />
-           
-          <div className="relative flex flex-col items-center">
-            <motion.h1
-              initial={{ opacity: 0, letterSpacing: "0.5em", paddingLeft: "0.5em" }}
-              animate={{ opacity: 1, letterSpacing: "0.4em", paddingLeft: "0.4em" }}
-              transition={{ duration: 1.2 }}
-              className="font-display text-5xl gold-text text-center"
-            >
-              REVERIE
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="mt-2 text-[10px] uppercase tracking-[0.4em] text-gold/40 pl-[0.4em] text-center"
-            >
-              Sintonizza la tua coscienza
-            </motion.p>
-          </div>
-        </motion.div>
-
-        {/* PRIMARY ACTIONS: Clean & Large */}
-        <div className="w-full max-w-xs space-y-4">
-          <motion.button 
-            whileHover={{ scale: 1.02 }} 
-            whileTap={{ scale: 0.98 }} 
-            onClick={play_btn} 
-            className="w-full py-5 rounded-[2.5rem] bg-gradient-to-br from-mystic via-mystic-glow to-mystic text-foreground font-display text-lg font-bold uppercase tracking-[0.3em] shadow-[0_10px_40px_rgba(150,100,255,0.3)] border border-gold/20"
-          >
-            GIOCA BATTAGLIA
-          </motion.button>
-
-          <div className="pt-8 text-center">
-             <p className="text-[8px] uppercase tracking-[0.5em] text-gold/20">Esplora le profondità del tuo inconscio</p>
-          </div>
-        </div>
-      </div>
-
-        </>
       )}
+      
       <BottomNav />
-
-      {/* STARTER PACK OPENING OVERLAY */}
-      {player && !onboardingPackOpened && (
-        <StarterPackOpening 
-          onOpen={openStarterPack} 
-          onComplete={() => setOnboardingPackOpened(true)} 
-        />
-      )}
     </MobileFrame>
   );
 }
