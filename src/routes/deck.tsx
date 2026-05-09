@@ -114,7 +114,7 @@ function Deck() {
              </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-y-16 gap-x-6 pt-12 mb-20 border-t border-white/10">
+          <div className="grid grid-cols-2 gap-y-16 gap-x-12 pt-12 mb-20 border-t border-white/10">
             {myCards.map((c) => {
               const isOwned = player.collection.includes(c.id);
               const inDeck = deck.includes(c.id);
