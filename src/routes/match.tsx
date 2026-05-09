@@ -261,8 +261,8 @@ function Match() {
              </div>
            </div>
 
-           <div className="flex-1 flex justify-center items-end px-8 hand-container">
-              <div className="flex justify-center -space-x-12">
+            <div className="flex-1 flex justify-center items-end px-2 hand-container overflow-x-auto no-scrollbar">
+               <div className="flex justify-center gap-1.5">
                 {match.hand.player.map((id, i) => {
                   const total = match.hand.player.length;
                   const index = i - (total - 1) / 2;
