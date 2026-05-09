@@ -225,21 +225,27 @@ function Match() {
       <AnimatePresence>
         {match.isTutorial && tutorial && (
           <motion.div 
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed bottom-32 inset-x-6 z-[200] pointer-events-none"
+            className="fixed top-24 inset-x-6 z-[200]"
           >
-            <div className="bg-black/60 backdrop-blur-2xl border border-gold/40 rounded-3xl p-6 shadow-[0_0_50px_rgba(255,215,0,0.2)] flex items-start gap-4 ring-1 ring-white/10">
-               <div className="size-10 rounded-full bg-gold/10 flex items-center justify-center shrink-0 border border-gold/20">
-                  <Info className="size-5 text-gold" />
+            <div className="bg-black/80 backdrop-blur-xl border border-gold/40 rounded-2xl p-4 shadow-2xl flex items-start gap-3 ring-1 ring-white/10 relative">
+               <button 
+                onClick={() => setTutorialStep(99)} 
+                className="absolute -top-2 -right-2 size-6 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg pointer-events-auto"
+               >
+                 <X className="size-3" />
+               </button>
+               <div className="size-8 rounded-full bg-gold/10 flex items-center justify-center shrink-0 border border-gold/20">
+                  <Info className="size-4 text-gold" />
                </div>
                <div className="flex-1">
-                  <h4 className="font-display text-xs text-gold tracking-widest uppercase mb-1">{tutorial.title}</h4>
-                  <p className="text-[10px] text-white/70 leading-relaxed font-medium">{tutorial.desc}</p>
-                  <div className="mt-3 flex items-center gap-2">
-                     <ArrowUpCircle className="size-3 text-gold animate-bounce" />
-                     <span className="text-[8px] uppercase tracking-widest text-gold/60 font-black">{tutorial.target}</span>
+                  <h4 className="font-display text-[10px] text-gold tracking-widest uppercase mb-0.5">{tutorial.title}</h4>
+                  <p className="text-[9px] text-white/70 leading-tight font-medium">{tutorial.desc}</p>
+                  <div className="mt-2 flex items-center gap-2">
+                     <ArrowUpCircle className="size-2.5 text-gold animate-bounce" />
+                     <span className="text-[7px] uppercase tracking-widest text-gold/60 font-black">{tutorial.target}</span>
                   </div>
                </div>
             </div>
