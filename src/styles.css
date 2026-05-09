@@ -734,3 +734,12 @@
 .stream-current:nth-child(2) { top: 30%; animation-duration: 15s; opacity: 0.3; }
 .stream-current:nth-child(3) { top: 60%; animation-duration: 12s; opacity: 0.2; }
 .stream-current:nth-child(4) { top: 85%; animation-duration: 18s; opacity: 0.4; }
+
+/* --- Utility: Hide Scrollbar --- */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
