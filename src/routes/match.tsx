@@ -299,6 +299,9 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
   const playerPower = cards.filter((c) => c.side === "player").reduce((s, c) => s + c.power, 0);
   const aiPower = cards.filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
   const isWinning = playerPower > aiPower;
+  const isLosing = aiPower > playerPower;
+  const isContested = playerPower === aiPower && cards.length > 0;
+  const isNeutral = cards.length === 0;
 
   return (
     <motion.div 
@@ -309,10 +312,18 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
         `aura-${territory.id}`,
         territory.id === "trauma" && "trauma-cracks",
         territory.id === "sogno" && "dream-distortion",
-        canPlay ? "border-gold/60 ring-4 ring-gold/10 cursor-pointer scale-[1.02] z-20 shadow-[0_0_50px_rgba(255,215,0,0.2)]" : "border-white/5 bg-card/5 backdrop-blur-2xl",
-        isWinning && cards.length > 0 ? "border-gold/40 shadow-[inset_0_0_60px_rgba(255,215,0,0.1)]" : ""
+        isNeutral && "state-neutral",
+        isContested && "state-contested",
+        isWinning && "state-dominated-player",
+        isLosing && "state-dominated-ai",
+        canPlay ? "border-gold/60 ring-4 ring-gold/10 cursor-pointer scale-[1.02] z-20 shadow-[0_0_50px_rgba(255,215,0,0.2)]" : "border-white/5 bg-card/5 backdrop-blur-2xl"
       )}
     >
+      {/* Environmental Transformation Layer */}
+      <div className={cn(
+        "absolute inset-0 z-0 transition-opacity duration-1000",
+        isWinning ? "env-transform-gold opacity-100" : isLosing ? "env-transform-blood opacity-100" : "opacity-0"
+      )} />
       {/* Background Layer with Parallax & Particles */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         {/* Immersive Gradient Overlay */}
