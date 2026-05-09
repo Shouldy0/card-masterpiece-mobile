@@ -251,7 +251,7 @@ function Match() {
         </div>
 
         {/* Footer */}
-        <div className="mt-4 flex items-end justify-between">
+        <div className="mt-12 flex items-end justify-between">
            <div className="flex items-center gap-3">
              <HexAvatar side="player" hp={match.hp.player} name="YOU" sub="" />
              <div className="flex gap-1.5 ml-2">

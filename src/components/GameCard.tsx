@@ -56,6 +56,8 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
   return (
     <>
     <motion.button
+        animate={{ y: [0, -5, 0] }}
+        transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
       type="button"
       onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
