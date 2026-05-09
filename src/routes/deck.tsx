@@ -95,26 +95,26 @@ function Deck() {
         {/* SCROLLABLE CONTENT */}
         <div className="flex-1 overflow-y-auto px-6 custom-scrollbar pb-32">
           {/* Deck Preview Row */}
-          <div className="mb-6 px-1">
-             <div className="flex items-center justify-between mb-2">
+          <div className="mb-12 px-1">
+             <div className="flex items-center justify-between mb-4">
                 <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gold/60">Mazzo Selezionato</span>
                 <button onClick={save} className="text-[8px] font-black uppercase tracking-[0.2em] text-gold underline">Salva Modifiche</button>
              </div>
-             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+             <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
                 {deck.map((id) => {
                   const card = CARDS.find(c => c.id === id);
                   if (!card) return null;
                   return (
-                    <div key={id} className="shrink-0" onClick={() => remove(id)}>
+                    <div key={id} className="shrink-0 transition-transform active:scale-95" onClick={() => remove(id)}>
                       <GameCard card={card} size="xs" />
                     </div>
                   );
                 })}
-                {deck.length === 0 && <div className="text-[10px] text-white/20 italic">Seleziona memorie sotto...</div>}
+                {deck.length === 0 && <div className="text-[10px] text-white/20 italic py-4">Seleziona memorie sotto...</div>}
              </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-y-10 gap-x-6 pt-4 mb-10 border-t border-white/5">
+          <div className="grid grid-cols-2 gap-y-12 gap-x-8 pt-10 mb-10 border-t border-white/5">
             {myCards.map((c) => {
               const isOwned = player.collection.includes(c.id);
               const inDeck = deck.includes(c.id);
