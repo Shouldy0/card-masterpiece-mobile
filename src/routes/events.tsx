@@ -3,7 +3,7 @@ import { MobileFrame } from "@/components/Common";
 import { BottomNav } from "@/components/BottomNav";
 import { useGame } from "@/game/store";
 import { useSound } from "@/hooks/useSound";
-import { ArrowLeft, Sparkles, Calendar, Trophy, Target, Coins, Check } from "lucide-react";
+import { ArrowLeft, Sparkles, Calendar, Trophy, Target, Coins, Check, Zap, Crown } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/events")({ component: Events });
