@@ -95,162 +95,130 @@ function Match() {
       </div>
 
       {/* Main Layout */}
-      <div className="relative z-10 flex h-full flex-col">
-        {/* Header: Opponent Info */}
-        <div className="px-6 pt-6 flex justify-between items-start">
-           <PlayerAvatar side="ai" name="OMBRA NASCOSTA" sub="Coscienza Errante" hp={match.hp.ai} focus={match.focus.ai} maxFocus={match.maxFocus} />
-           <div className="flex gap-4 items-center">
-             <div className="flex gap-2">
-               <div className="flex items-center gap-1.5 rounded-lg bg-card/40 px-3 py-1.5 ring-1 ring-gold/20 backdrop-blur-md">
-                 <Skull className="h-4 w-4 text-rose" />
-                 <span className="font-display text-sm text-gold">2</span>
-               </div>
-               <div className="flex items-center gap-1.5 rounded-lg bg-card/40 px-3 py-1.5 ring-1 ring-gold/20 backdrop-blur-md">
-                 <ShieldCheck className="h-4 w-4 text-azure" />
-                 <span className="font-display text-sm text-gold">15</span>
-               </div>
+      <div className="relative z-10 flex h-full flex-col p-4">
+        {/* Concept Header: Top Row */}
+        <div className="flex justify-between items-start mb-6">
+           <div className="flex items-center gap-4">
+             <HexAvatar side="ai" hp={match.hp.ai} name="OMBRA NASCOSTA" sub="Coscienza Errante" />
+             <div className="flex flex-col gap-1.5 pt-2">
+                <div className="flex gap-1">
+                  {Array.from({ length: match.maxFocus }).map((_, i) => (
+                    <FocusDiamond key={i} active={i < match.focus.ai} />
+                  ))}
+                </div>
+                <span className="text-[8px] text-white/30 uppercase tracking-[0.2em] font-black">Focus Opponente</span>
              </div>
-             <button onClick={() => navigate({ to: "/settings" })} className="size-10 rounded-lg bg-card/40 ring-1 ring-gold/20 flex items-center justify-center backdrop-blur-md hover:bg-card/60 transition-colors relative">
+           </div>
+
+           <div className="flex gap-4">
+             <div className="flex items-center gap-1.5 rounded-full bg-card/40 px-4 py-2 ring-1 ring-white/10 backdrop-blur-md shadow-2xl">
+               <Skull className="h-4 w-4 text-rose" />
+               <span className="font-display text-sm text-gold">2</span>
+             </div>
+             <div className="flex items-center gap-1.5 rounded-full bg-card/40 px-4 py-2 ring-1 ring-white/10 backdrop-blur-md shadow-2xl">
+               <ShieldCheck className="h-4 w-4 text-azure" />
+               <span className="font-display text-sm text-gold">15</span>
+             </div>
+             <button onClick={() => navigate({ to: "/settings" })} className="size-10 rounded-full bg-card/40 ring-1 ring-white/10 flex items-center justify-center backdrop-blur-md hover:bg-card/60 transition-colors">
                <Settings className="h-5 w-5 text-gold/60" />
-               <SyncIndicator />
              </button>
            </div>
         </div>
 
-        <div className="flex justify-center -space-x-4 mt-2">
-          {Array.from({ length: match.hand.ai.length }).map((_, i) => (
-             <motion.div key={i} initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.05 }}>
-               <CardBack size="sm" />
-             </motion.div>
-          ))}
-        </div>
-
-        {/* Battlefield: 3 Territories */}
-        <div className="flex-1 flex gap-2 px-4 py-4 mt-2">
-          {TERRITORIES.map((t) => (
-            <TerritoryColumn
-              key={t.id}
-              territory={t}
-              cards={match.board[t.id]}
-              onDrop={() => handlePlay(t.id)}
-              canPlay={!!selected}
-            />
-          ))}
-        </div>
-
-        {/* Footer Area */}
-        <div className="relative pb-6 pt-2">
-          <div className="mx-6 mb-3 rounded-xl bg-card/30 ring-1 ring-gold/15 backdrop-blur-sm px-3 py-2">
-            <p className="text-[8px] uppercase tracking-[0.25em] text-gold/60 mb-1">Cronaca</p>
-            <div className="space-y-1">
-              {recentLog.map((entry, idx) => (
-                <p key={`${entry}-${idx}`} className="text-[9px] text-foreground/80 leading-tight">
-                  {entry}
-                </p>
-              ))}
-            </div>
+        {/* Central Combat Area */}
+        <div className="flex-1 flex gap-3 min-h-0">
+          {/* Territories */}
+          <div className="flex-1 flex gap-3">
+            {TERRITORIES.map((t) => (
+              <TerritoryColumn
+                key={t.id}
+                territory={t}
+                cards={match.board[t.id]}
+                onDrop={() => handlePlay(t.id)}
+                canPlay={!!selected}
+              />
+            ))}
           </div>
-          <div className="px-6 flex justify-between items-end mb-4">
-             <PlayerAvatar side="player" name="DREAMER" sub="Risvegliata" hp={match.hp.player} focus={match.focus.player} maxFocus={match.maxFocus} />
-             
-             {/* Phase Indicator & End Turn */}
-             <div className="flex items-center gap-6">
-                <div className="text-right">
-                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Turno {match.turn}/{match.maxTurns}</p>
-                  <div className="flex flex-col gap-1 items-end">
-                    <div className="flex items-center gap-2">
-                      <div className="size-1.5 rounded-full bg-gold shadow-[0_0_8px_var(--gold)]" />
-                      <span className="text-[10px] uppercase tracking-tighter text-foreground">Fase Gioco</span>
-                    </div>
-                    <div className="flex items-center gap-2 opacity-40">
-                      <div className="size-1.5 rounded-full bg-muted-foreground" />
-                      <span className="text-[10px] uppercase tracking-tighter text-muted-foreground">Rivelazione</span>
-                    </div>
-                  </div>
-                </div>
 
-                <button 
-                  onClick={handleEndTurn}
-                  className="relative group overflow-hidden rounded-full p-px bg-gradient-to-r from-mystic via-gold to-mystic shadow-[0_0_20px_-5px_rgba(255,215,0,0.4)] transition-transform active:scale-95"
-                >
-                  <div className="px-6 py-4 rounded-full bg-abyss flex flex-col items-center justify-center ring-1 ring-gold/20 group-hover:bg-card/40 transition-colors">
-                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-gold group-hover:text-foreground leading-none">FINE</span>
-                    <span className="font-display text-[10px] uppercase tracking-[0.2em] text-gold group-hover:text-foreground leading-none">TURNO</span>
-                  </div>
-                </button>
-
-                <div className="flex flex-col items-center">
-                  <Hourglass className="h-4 w-4 text-gold/40 mb-1" />
-                  <span className="font-display text-sm text-gold">1:12</span>
-                  <span className="text-[7px] uppercase text-muted-foreground">Tempo</span>
+          {/* Right Sidebar - Concept Style */}
+          <div className="w-24 flex flex-col items-center justify-center gap-12">
+             {/* Turn Info */}
+             <div className="flex flex-col items-center text-center gap-2">
+                <span className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-black">Turno</span>
+                <span className="font-display text-2xl text-gold">{match.turn}/{match.maxTurns}</span>
+                <div className="flex flex-col gap-2 mt-2">
+                  <PhaseIndicator active={true} label="Fase Gioco" />
+                  <PhaseIndicator active={false} label="Rivelazione" />
+                  <PhaseIndicator active={false} label="Fine Turno" />
                 </div>
              </div>
-          </div>
 
-          {/* Hand Cards with Curved Fan Layout */}
-          <div className="flex justify-center h-32 px-4 relative mt-4">
-            {match.hand.player.map((id, i) => {
-              const totalCards = match.hand.player.length;
-              const middleIndex = (totalCards - 1) / 2;
-              const offset = i - middleIndex;
-              const rotation = offset * 8;
-              const translateY = Math.abs(offset) * 8;
-              const translateX = offset * 2;
+             {/* Concept End Turn Button */}
+             <button 
+               onClick={handleEndTurn}
+               className="relative group size-20"
+             >
+                <div className="absolute inset-0 bg-gold/20 rounded-full blur-xl animate-pulse group-hover:bg-gold/40" />
+                <div className="absolute inset-0 rounded-full border-2 border-gold/40 ring-4 ring-gold/10" />
+                <div className="relative size-full rounded-full bg-gradient-to-br from-mystic via-abyss to-mystic flex flex-col items-center justify-center border border-white/10">
+                   <span className="font-display text-[9px] uppercase tracking-widest text-gold leading-none">FINE</span>
+                   <span className="font-display text-[9px] uppercase tracking-widest text-gold leading-none mt-1">TURNO</span>
+                </div>
+             </button>
 
-              return (
-                <motion.div
-                  key={`${id}-${i}`}
-                  initial={{ y: 100, opacity: 0 }}
-                  animate={{ 
-                    y: selected === id ? -80 : translateY, 
-                    x: selected === id ? 0 : translateX,
-                    opacity: 1, 
-                    rotate: selected === id ? 0 : rotation,
-                    zIndex: selected === id ? 100 : i,
-                    scale: selected === id ? 1.2 : 1
-                  }}
-                  transition={{ 
-                    type: "spring", 
-                    stiffness: 260, 
-                    damping: 20 
-                  }}
-                  whileHover={{ 
-                    y: -110, 
-                    rotate: 0, 
-                    scale: 1.4,
-                    zIndex: 150,
-                    transition: { duration: 0.25, ease: "easeOut" }
-                  }}
-                  onClick={() => handleSelect(id)}
-                  className={cn(
-                    "relative cursor-pointer -mx-4 transition-shadow",
-                    selected === id && "z-[100]"
-                  )}
-                >
-                  <CardFromId 
-                    id={id} 
-                    size="sm" 
-                    selected={selected === id}
-                    noInspect={true}
-                    faded={cardsById[id]?.cost > match.focus.player}
-                  />
-                  {selected === id && (
-                    <motion.div layoutId="selection-glow" className="absolute -inset-8 rounded-3xl bg-gold/20 blur-2xl -z-10" />
-                  )}
-                </motion.div>
-              );
-            })}
-          </div>
-
-          {/* Deck pile */}
-          <div className="absolute right-8 bottom-12 flex flex-col items-center gap-1 opacity-80">
-             <div className="relative">
-               <CardBack size="xs" />
-               <div className="absolute inset-0 flex items-center justify-center bg-abyss/60 backdrop-blur-[2px] rounded-lg">
-                 <span className="font-display text-lg text-gold">{match.deck.player.length}</span>
-               </div>
+             {/* Time counter */}
+             <div className="flex flex-col items-center gap-1 opacity-60">
+                <Hourglass className="size-4 text-gold/40" />
+                <span className="font-display text-sm text-gold">1:12</span>
              </div>
           </div>
+        </div>
+
+        {/* Footer: Hand & Player Info */}
+        <div className="mt-6 flex items-end justify-between">
+           <div className="flex items-center gap-6">
+             <HexAvatar side="player" hp={match.hp.player} name="DREAMER" sub="Risvegliata" />
+             <div className="flex flex-col gap-1.5 pb-2">
+                <div className="flex gap-1">
+                  {Array.from({ length: match.maxFocus }).map((_, i) => (
+                    <FocusDiamond key={i} active={i < match.focus.player} />
+                  ))}
+                </div>
+                <span className="text-[8px] text-white/30 uppercase tracking-[0.2em] font-black">Il tuo Focus</span>
+             </div>
+           </div>
+
+           {/* Hand Area - Centered & Fanned */}
+           <div className="flex-1 flex justify-center items-end px-12 -mb-2">
+              <div className="flex justify-center -space-x-8">
+                {match.hand.player.map((id, i) => {
+                  const total = match.hand.player.length;
+                  const rotation = (i - (total-1)/2) * 6;
+                  return (
+                    <motion.div
+                      key={`${id}-${i}`}
+                      whileHover={{ y: -100, scale: 1.5, rotate: 0, zIndex: 100 }}
+                      onClick={() => handleSelect(id)}
+                      className={cn("relative cursor-pointer transition-all", selected === id && "z-50 -translate-y-12 scale-125")}
+                      style={{ rotate: `${rotation}deg` }}
+                    >
+                      <CardFromId id={id} size="sm" noInspect selected={selected === id} faded={cardsById[id]?.cost > match.focus.player} />
+                    </motion.div>
+                  );
+                })}
+              </div>
+           </div>
+
+           {/* Deck & Stats */}
+           <div className="flex flex-col items-end gap-3">
+              <div className="relative group cursor-help">
+                 <div className="absolute -inset-1 bg-gold/20 blur opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
+                 <div className="relative bg-card/60 backdrop-blur-md rounded-xl p-3 ring-1 ring-white/10 flex items-center gap-3">
+                    <CardBack size="xs" />
+                    <span className="font-display text-2xl text-gold">{match.deck.player.length}</span>
+                 </div>
+              </div>
+           </div>
         </div>
       </div>
 
@@ -278,47 +246,67 @@ function Match() {
   );
 }
 
-function PlayerAvatar({ side, name, sub, hp, focus, maxFocus }: { side: "player" | "ai"; name: string; sub: string; hp: number; focus: number; maxFocus: number }) {
+function HexAvatar({ side, hp, name, sub }: { side: "player" | "ai"; hp: number; name: string; sub: string }) {
   return (
-    <div className={cn("flex items-center gap-5", side === "ai" ? "flex-row-reverse text-right" : "flex-row")}>
-      <div className="relative group">
-        {/* Ornate Frame */}
-        <div className="absolute -inset-2 bg-gradient-to-br from-gold/40 via-mystic/40 to-gold/40 rounded-full blur-sm opacity-50 animate-spin-slow" />
-        <div className="relative size-14 flex items-center justify-center bg-black ring-2 ring-gold/60 shadow-[0_0_30px_rgba(255,215,0,0.2)] rounded-full overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-t from-mystic/40 via-transparent to-transparent z-10" />
+    <div className="relative group">
+       {/* Animated Border */}
+       <div className={cn(
+         "absolute -inset-1 rounded-lg rotate-45 border-2 blur-[2px] animate-pulse opacity-50",
+         side === "player" ? "border-gold" : "border-rose"
+       )} />
+       
+       <div className="relative size-14 bg-abyss ring-2 ring-white/10 rounded-lg rotate-45 overflow-hidden flex items-center justify-center shadow-2xl">
           <img 
             src={side === "player" ? "https://api.dicebear.com/7.x/avataaars/svg?seed=Dreamer&backgroundColor=030617&mouth=smile" : "https://api.dicebear.com/7.x/avataaars/svg?seed=Shadow&backgroundColor=030617&eyes=closed"} 
             alt="Avatar"
-            className="size-full object-cover scale-110"
+            className="size-full object-cover -rotate-45 scale-125"
           />
-          {/* HP Badge */}
-          <div className="absolute top-0 right-0 z-20">
-             <div className="size-6 bg-rose ring-1 ring-white/20 flex items-center justify-center rounded-full shadow-lg">
-                <span className="font-display text-[9px] text-white font-black">{hp}</span>
-             </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+       </div>
+
+       {/* HP Badge */}
+       <div className="absolute -top-1 -right-1 z-20">
+          <div className={cn(
+            "size-7 rounded-lg rotate-45 border-2 flex items-center justify-center bg-abyss shadow-xl",
+            side === "player" ? "border-gold text-gold" : "border-rose text-rose"
+          )}>
+             <span className="-rotate-45 font-display text-xs font-black">{hp}</span>
           </div>
-        </div>
-      </div>
-      <div className="space-y-1">
-        <h3 className="font-display text-xs tracking-[0.3em] text-gold uppercase">{name}</h3>
-        <p className="text-[8px] text-white/40 uppercase tracking-[0.4em] font-sans">{sub}</p>
-        <div className={cn("flex gap-1", side === "ai" ? "justify-end" : "justify-start")}>
-           {Array.from({ length: maxFocus }).map((_, i) => (
-             <motion.div 
-               key={i} 
-               initial={false}
-               animate={{ 
-                 scale: i < focus ? [1, 1.2, 1] : 1,
-                 opacity: i < focus ? 1 : 0.2 
-               }}
-               className={cn(
-                 "size-2 rotate-45 rounded-sm border border-white/20",
-                 i < focus ? "bg-mystic shadow-[0_0_10px_#A855F7]" : "bg-white/5"
-               )} 
-             />
-           ))}
-        </div>
-      </div>
+       </div>
+
+       {/* Labels */}
+       <div className={cn(
+         "absolute top-0 left-16 whitespace-nowrap pt-0.5",
+         side === "ai" && "left-auto right-16 text-right"
+       )}>
+          <h3 className="font-display text-[9px] tracking-[0.2em] text-white uppercase">{name}</h3>
+          <p className="text-[5px] text-white/40 uppercase tracking-[0.3em] font-sans mt-0.5">{sub}</p>
+       </div>
+    </div>
+  );
+}
+
+function FocusDiamond({ active }: { active: boolean }) {
+  return (
+    <motion.div 
+      initial={false}
+      animate={{ 
+        scale: active ? [1, 1.2, 1] : 1,
+        opacity: active ? 1 : 0.2 
+      }}
+      className={cn(
+        "size-2 rotate-45 border shadow-lg transition-colors",
+        active ? "bg-mystic border-mystic shadow-mystic/40" : "bg-white/5 border-white/10"
+      )}
+    />
+  );
+}
+
+function PhaseIndicator({ active, label }: { active: boolean; label: string }) {
+  return (
+    <div className={cn("flex items-center gap-2 transition-opacity", !active && "opacity-20")}>
+       <div className={cn("size-1 rounded-full", active ? "bg-gold shadow-[0_0_8px_var(--gold)]" : "bg-white/40")} />
+       <span className="text-[6px] uppercase tracking-[0.1em] text-white/60 font-black whitespace-nowrap">{label}</span>
     </div>
   );
 }
@@ -438,18 +426,5 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
         </div>
       </div>
     </motion.div>
-  );
-}
-
-function SyncIndicator() {
-  const status = useGame(s => s.syncStatus);
-  if (status === "idle") return null;
-
-  return (
-    <div className="absolute -top-1 -right-1 flex items-center justify-center">
-      {status === "syncing" && <RefreshCw className="h-3 w-3 text-gold animate-spin" />}
-      {status === "saved" && <CheckCircle2 className="h-3 w-3 text-emerald-400" />}
-      {status === "error" && <Skull className="h-3 w-3 text-rose" />}
-    </div>
   );
 }
