@@ -48,7 +48,7 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
   const accent = getFactionAccent(card.type);
 
   const handleClick = () => {
-    if (size === "xl") setShowInspection(true);
+    if (size !== "xl") setShowInspection(true);
     onClick?.();
   };
 
@@ -203,7 +203,11 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
             className="flex flex-col items-center max-w-sm w-full"
             onClick={e => e.stopPropagation()}
           >
-            <GameCard card={card} size="xl" />
+            {/* Display static XL card without the inspection toggle to avoid recursion */}
+            <div className={cn("relative shrink-0 rounded-[12px] overflow-hidden bg-black shadow-2xl", CARD_SIZES.xl, RARITY_BORDERS[card.rarity])}>
+               <img src={card.art} className="absolute inset-0 h-full w-full object-cover" />
+               <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/95" />
+            </div>
             
             <div className="mt-8 text-center space-y-4">
               <div className="inline-block px-4 py-1 rounded-full border border-gold/30 bg-gold/5">

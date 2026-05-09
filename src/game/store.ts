@@ -704,6 +704,16 @@ export const useGame = create<AppStore>()(
         setItem: () => {},
         removeItem: () => {},
       } as any)),
+      version: 2,
+      migrate: (persistedState: any, version: number) => {
+        if (version < 2) {
+          // Migration from v1 to v2: ensure ownedCosmetics exists
+          if (persistedState && persistedState.player) {
+            persistedState.player.ownedCosmetics = persistedState.player.ownedCosmetics || ["default_board"];
+          }
+        }
+        return persistedState as AppStore;
+      },
       partialize: (state) => {
         const { user, syncStatus, lastSyncedAt, ...rest } = state;
         return rest;
