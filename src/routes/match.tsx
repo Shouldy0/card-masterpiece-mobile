@@ -94,40 +94,39 @@ function Match() {
         <div className="absolute bottom-0 -right-1/4 size-[800px] bg-rose/10 blur-[120px] animate-pulse" style={{ animationDelay: "2s" }} />
       </div>
 
+      {/* Minimal Bloom/Fog Overlay */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-mystic/10 to-transparent blur-3xl opacity-30" />
+        <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-gold/5 to-transparent blur-3xl opacity-20" />
+      </div>
+
       {/* Main Layout */}
       <div className="relative z-10 flex h-full flex-col p-4">
-        {/* Concept Header: Top Row */}
-        <div className="flex justify-between items-start mb-6">
-           <div className="flex items-center gap-4">
-             <HexAvatar side="ai" hp={match.hp.ai} name="OMBRA NASCOSTA" sub="Coscienza Errante" />
-             <div className="flex flex-col gap-1.5 pt-2">
-                <div className="flex gap-1">
-                  {Array.from({ length: match.maxFocus }).map((_, i) => (
-                    <FocusDiamond key={i} active={i < match.focus.ai} />
-                  ))}
-                </div>
-                <span className="text-[8px] text-white/30 uppercase tracking-[0.2em] font-black">Focus Opponente</span>
+        {/* Minimal Header */}
+        <div className="flex justify-between items-center mb-6">
+           <div className="flex items-center gap-3">
+             <HexAvatar side="ai" hp={match.hp.ai} name="OMBRA" sub="" />
+             <div className="flex gap-1.5 ml-2">
+               {Array.from({ length: match.maxFocus }).map((_, i) => (
+                 <FocusDiamond key={i} active={i < match.focus.ai} />
+               ))}
              </div>
            </div>
 
-           <div className="flex gap-4">
-             <div className="flex items-center gap-1.5 rounded-full bg-card/40 px-4 py-2 ring-1 ring-white/10 backdrop-blur-md shadow-2xl">
-               <Skull className="h-4 w-4 text-rose" />
-               <span className="font-display text-sm text-gold">2</span>
+           <div className="flex gap-3">
+             <div className="flex items-center gap-1.5 rounded-full bg-card/20 px-3 py-1.5 ring-1 ring-white/5 backdrop-blur-xl">
+               <Skull className="size-3 text-rose" />
+               <span className="font-display text-xs text-gold">2</span>
              </div>
-             <div className="flex items-center gap-1.5 rounded-full bg-card/40 px-4 py-2 ring-1 ring-white/10 backdrop-blur-md shadow-2xl">
-               <ShieldCheck className="h-4 w-4 text-azure" />
-               <span className="font-display text-sm text-gold">15</span>
+             <div className="flex items-center gap-1.5 rounded-full bg-card/20 px-3 py-1.5 ring-1 ring-white/5 backdrop-blur-xl">
+               <ShieldCheck className="size-3 text-azure" />
+               <span className="font-display text-xs text-gold">15</span>
              </div>
-             <button onClick={() => navigate({ to: "/settings" })} className="size-10 rounded-full bg-card/40 ring-1 ring-white/10 flex items-center justify-center backdrop-blur-md hover:bg-card/60 transition-colors">
-               <Settings className="h-5 w-5 text-gold/60" />
-             </button>
            </div>
         </div>
 
         {/* Central Combat Area */}
         <div className="flex-1 flex gap-3 min-h-0">
-          {/* Territories */}
           <div className="flex-1 flex gap-3">
             {TERRITORIES.map((t) => (
               <TerritoryColumn
@@ -140,66 +139,55 @@ function Match() {
             ))}
           </div>
 
-          {/* Right Sidebar - Concept Style */}
-          <div className="w-24 flex flex-col items-center justify-center gap-12">
-             {/* Turn Info */}
-             <div className="flex flex-col items-center text-center gap-2">
-                <span className="text-[10px] uppercase tracking-[0.3em] text-white/40 font-black">Turno</span>
-                <span className="font-display text-2xl text-gold">{match.turn}/{match.maxTurns}</span>
-                <div className="flex flex-col gap-2 mt-2">
-                  <PhaseIndicator active={true} label="Fase Gioco" />
-                  <PhaseIndicator active={false} label="Rivelazione" />
-                  <PhaseIndicator active={false} label="Fine Turno" />
+          {/* Minimal Sidebar */}
+          <div className="w-16 flex flex-col items-center justify-center gap-10">
+             <div className="flex flex-col items-center gap-1">
+                <span className="font-display text-xl text-gold">{match.turn}/{match.maxTurns}</span>
+                <div className="flex flex-col gap-1.5 mt-2">
+                  <div className={cn("size-1.5 rounded-full", true ? "bg-gold shadow-[0_0_8px_var(--gold)]" : "bg-white/10")} />
+                  <div className={cn("size-1.5 rounded-full", false ? "bg-gold" : "bg-white/10")} />
+                  <div className={cn("size-1.5 rounded-full", false ? "bg-gold" : "bg-white/10")} />
                 </div>
              </div>
 
-             {/* Concept End Turn Button */}
              <button 
                onClick={handleEndTurn}
-               className="relative group size-20"
+               className="relative group size-16"
              >
-                <div className="absolute inset-0 bg-gold/20 rounded-full blur-xl animate-pulse group-hover:bg-gold/40" />
-                <div className="absolute inset-0 rounded-full border-2 border-gold/40 ring-4 ring-gold/10" />
-                <div className="relative size-full rounded-full bg-gradient-to-br from-mystic via-abyss to-mystic flex flex-col items-center justify-center border border-white/10">
-                   <span className="font-display text-[9px] uppercase tracking-widest text-gold leading-none">FINE</span>
-                   <span className="font-display text-[9px] uppercase tracking-widest text-gold leading-none mt-1">TURNO</span>
+                <div className="absolute inset-0 bg-gold/20 rounded-full blur-xl group-hover:bg-gold/40 transition-all" />
+                <div className="relative size-full rounded-full bg-gradient-to-br from-mystic/40 to-abyss border border-white/10 flex items-center justify-center">
+                   <span className="font-display text-[8px] uppercase tracking-widest text-gold">VAI</span>
                 </div>
              </button>
 
-             {/* Time counter */}
-             <div className="flex flex-col items-center gap-1 opacity-60">
+             <div className="opacity-40">
                 <Hourglass className="size-4 text-gold/40" />
-                <span className="font-display text-sm text-gold">1:12</span>
              </div>
           </div>
         </div>
 
-        {/* Footer: Hand & Player Info */}
-        <div className="mt-6 flex items-end justify-between">
-           <div className="flex items-center gap-6">
-             <HexAvatar side="player" hp={match.hp.player} name="DREAMER" sub="Risvegliata" />
-             <div className="flex flex-col gap-1.5 pb-2">
-                <div className="flex gap-1">
-                  {Array.from({ length: match.maxFocus }).map((_, i) => (
-                    <FocusDiamond key={i} active={i < match.focus.player} />
-                  ))}
-                </div>
-                <span className="text-[8px] text-white/30 uppercase tracking-[0.2em] font-black">Il tuo Focus</span>
+        {/* Footer */}
+        <div className="mt-4 flex items-end justify-between">
+           <div className="flex items-center gap-3">
+             <HexAvatar side="player" hp={match.hp.player} name="YOU" sub="" />
+             <div className="flex gap-1.5 ml-2">
+               {Array.from({ length: match.maxFocus }).map((_, i) => (
+                 <FocusDiamond key={i} active={i < match.focus.player} />
+               ))}
              </div>
            </div>
 
-           {/* Hand Area - Centered & Fanned */}
-           <div className="flex-1 flex justify-center items-end px-12 -mb-2">
-              <div className="flex justify-center -space-x-8">
+           <div className="flex-1 flex justify-center items-end px-8">
+              <div className="flex justify-center -space-x-10">
                 {match.hand.player.map((id, i) => {
                   const total = match.hand.player.length;
-                  const rotation = (i - (total-1)/2) * 6;
+                  const rotation = (i - (total-1)/2) * 5;
                   return (
                     <motion.div
                       key={`${id}-${i}`}
-                      whileHover={{ y: -100, scale: 1.5, rotate: 0, zIndex: 100 }}
+                      whileHover={{ y: -120, scale: 1.6, rotate: 0, zIndex: 100 }}
                       onClick={() => handleSelect(id)}
-                      className={cn("relative cursor-pointer transition-all", selected === id && "z-50 -translate-y-12 scale-125")}
+                      className={cn("relative cursor-pointer transition-all", selected === id && "z-50 -translate-y-16 scale-140")}
                       style={{ rotate: `${rotation}deg` }}
                     >
                       <CardFromId id={id} size="sm" noInspect selected={selected === id} faded={cardsById[id]?.cost > match.focus.player} />
@@ -209,17 +197,13 @@ function Match() {
               </div>
            </div>
 
-           {/* Deck & Stats */}
-           <div className="flex flex-col items-end gap-3">
-              <div className="relative group cursor-help">
-                 <div className="absolute -inset-1 bg-gold/20 blur opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
-                 <div className="relative bg-card/60 backdrop-blur-md rounded-xl p-3 ring-1 ring-white/10 flex items-center gap-3">
-                    <CardBack size="xs" />
-                    <span className="font-display text-2xl text-gold">{match.deck.player.length}</span>
-                 </div>
+           <div className="flex flex-col items-end gap-2">
+              <div className="relative bg-card/20 backdrop-blur-2xl rounded-full size-12 flex items-center justify-center ring-1 ring-white/5">
+                 <span className="font-display text-lg text-gold">{match.deck.player.length}</span>
               </div>
            </div>
         </div>
+      </div>
       </div>
 
       {/* Reveal Animation Overlay */}
