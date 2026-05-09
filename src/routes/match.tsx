@@ -144,6 +144,14 @@ function Match() {
 
   return (
     <div className="relative h-[100dvh] w-screen overflow-hidden bg-abyss text-foreground font-serif">
+      {/* Ritual Background Layers */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="ritual-symbol" />
+        <div className="haunted-grain" />
+        <div className="vignette-haunted" />
+        <div className="absolute inset-0 bg-mystic/20 mix-blend-color" />
+      </div>
+
       {/* Background Nebula */}
       <div className="fixed inset-0 pointer-events-none opacity-40">
         <div className="absolute top-0 -left-1/4 size-[800px] bg-mystic-glow/20 blur-[120px] animate-pulse" />
@@ -151,7 +159,7 @@ function Match() {
       </div>
 
       {/* Minimal Bloom/Fog Overlay */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden ritual-tension">
         <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-mystic/10 to-transparent blur-3xl opacity-30" />
         <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-gold/5 to-transparent blur-3xl opacity-20" />
       </div>

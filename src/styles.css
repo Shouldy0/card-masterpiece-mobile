@@ -536,3 +536,53 @@
   --aura-color: rgba(59, 130, 246, 0.15);
   color: #3b82f6;
 }
+
+/* --- REVERIE: Psychological Ritual Aesthetics --- */
+
+@keyframes ritual-rotate {
+  0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); opacity: 0.05; }
+  50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.1); opacity: 0.1; }
+  100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); opacity: 0.05; }
+}
+
+.ritual-symbol {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L95 95 L5 95 Z' fill='none' stroke='white' stroke-width='0.5'/%3E%3Ccircle cx='50' cy='60' r='30' fill='none' stroke='white' stroke-width='0.5'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+  animation: ritual-rotate 60s infinite linear;
+  pointer-events: none;
+  filter: blur(2px);
+  z-index: 0;
+}
+
+.haunted-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.03;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  mix-blend-mode: overlay;
+}
+
+.vignette-haunted {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.8) 100%);
+}
+
+@keyframes tension-pulse {
+  0% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.02); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 0.4; }
+}
+
+.ritual-tension {
+  animation: tension-pulse 8s infinite ease-in-out;
+}
