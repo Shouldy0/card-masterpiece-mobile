@@ -207,8 +207,15 @@ function Match() {
         </div>
 
         {/* Central Combat Area */}
-        <div className="flex-1 flex gap-3 min-h-0">
-          <div className="flex-1 flex gap-3">
+        <div className="flex-1 flex gap-3 min-h-0 relative">
+          {/* Subconscious Energy Streams */}
+          <div className="energy-stream-layer">
+             <div className="stream-current" />
+             <div className="stream-current" />
+             <div className="stream-current" />
+             <div className="stream-current" />
+          </div>
+          <div className="flex-1 flex gap-3 z-10">
             {TERRITORIES.map((t) => (
               <TerritoryColumn
                 key={t.id}
