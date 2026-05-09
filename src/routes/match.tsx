@@ -46,6 +46,7 @@ function Match() {
 
   // Cinematic Impact State
   const [impacts, setImpacts] = React.useState<Record<string, number>>({});
+  const [globalImpact, setGlobalImpact] = React.useState(0);
 
   const recentLog = useMemo(() => (match?.log ?? []).slice(-3).reverse(), [match?.log]);
 
@@ -87,6 +88,7 @@ function Match() {
     
     // Trigger Impact VFX
     setImpacts(prev => ({ ...prev, [territory]: (prev[territory] || 0) + 1 }));
+    setGlobalImpact(prev => prev + 1);
 
     setTimeout(() => {
       playCard(selected, territory);
@@ -95,6 +97,7 @@ function Match() {
         delete next[territory];
         return next;
       });
+      setGlobalImpact(0);
       setRevealing(null);
       selectCard(null);
     }, 900);
@@ -115,7 +118,10 @@ function Match() {
       </div>
 
       {/* Main Layout */}
-      <div className="relative z-10 flex h-full flex-col px-2 py-3 floating-board">
+      <div className={cn(
+        "relative z-10 flex h-full flex-col px-2 py-3 floating-board",
+        globalImpact > 0 && "impact-shake impact-ripple"
+      )}>
         {/* Minimal Header */}
         <div className="flex justify-between items-center mb-3">
            <div className="flex items-center gap-3">
@@ -443,7 +449,7 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { te
             initial={{ scale: 0.8 }} animate={{ scale: 1 }}
             className={cn(
               "font-display text-xl transition-all drop-shadow-2xl",
-              aiPower > playerPower ? "text-rose font-black scale-110" : "text-white/20"
+              aiPower > playerPower ? "text-rose font-black scale-110 number-pop" : "text-white/20"
             )}
           >
             {aiPower}
@@ -456,7 +462,7 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { te
             initial={{ scale: 0.8 }} animate={{ scale: 1 }}
             className={cn(
               "font-display text-3xl transition-all drop-shadow-2xl",
-              isWinning ? "text-gold font-black scale-125" : "text-white/20"
+              isWinning ? "text-gold font-black scale-125 number-pop" : "text-white/20"
             )}
           >
             {playerPower}
