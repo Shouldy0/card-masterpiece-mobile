@@ -109,6 +109,7 @@ export interface PlayerProgress {
   premiumPass: boolean;
   passClaimed: string[];
   rankRewardsClaimed: string[];
+  ownedCosmetics: string[];
 }
 
 export interface MatchRewards {
@@ -149,6 +150,7 @@ interface AppStore {
   toggleSetting: (k: keyof SettingsState, v: any) => void;
   syncCollection: () => void;
   buyPack: (cost: number, currency: "gold" | "gems") => string[] | null;
+  buyCosmetic: (id: string, cost: number, currency: "gold" | "gems") => boolean;
   addGold: (n: number) => void;
   syncWithCloud: (userId: string) => Promise<void>;
   syncStatus: "idle" | "syncing" | "error" | "saved";
@@ -407,6 +409,7 @@ export const useGame = create<AppStore>()(
           premiumPass: false,
           passClaimed: [],
           rankRewardsClaimed: [],
+          ownedCosmetics: ["default_board"],
         };
       })(),
       onboardingDone: false,
@@ -602,7 +605,24 @@ export const useGame = create<AppStore>()(
         
         return pulled;
       },
+      buyCosmetic: (id, cost, currency) => {
+        const s = get();
+        const balance = currency === "gold" ? s.player.gold : s.player.gems;
+        if (balance < cost) return false;
+        if (s.player.ownedCosmetics.includes(id)) return true;
 
+        set({
+          player: {
+            ...s.player,
+            gold: currency === "gold" ? s.player.gold - cost : s.player.gold,
+            gems: currency === "gems" ? s.player.gems - cost : s.player.gems,
+            ownedCosmetics: [...s.player.ownedCosmetics, id]
+          }
+        });
+
+        if (s.user?.uid) get().syncWithCloud(s.user.uid);
+        return true;
+      },
       addGold: (n) => set((s) => ({ player: { ...s.player, gold: s.player.gold + n } })),
 
       syncWithCloud: async (userId: string) => {
@@ -643,6 +663,7 @@ export const useGame = create<AppStore>()(
             premiumPass: false,
             passClaimed: [],
             rankRewardsClaimed: [],
+            ownedCosmetics: ["default_board"],
           },
           onboardingDone: false,
           onboardingPackOpened: false,
