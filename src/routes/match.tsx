@@ -216,6 +216,9 @@ function Match() {
       </div>
 
       {/* Minimal Bloom/Fog Overlay */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden ritual-tension">
+        <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-mystic/10 to-transparent blur-3xl opacity-30" />
+        <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-gold/5 to-transparent blur-3xl opacity-20" />
       </div>
 
       {/* Tutorial Guidance Overlay */}
