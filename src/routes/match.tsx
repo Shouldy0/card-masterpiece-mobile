@@ -115,9 +115,9 @@ function Match() {
       </div>
 
       {/* Main Layout */}
-      <div className="relative z-10 flex h-full flex-col p-4 floating-board">
+      <div className="relative z-10 flex h-full flex-col px-2 py-3 floating-board">
         {/* Minimal Header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-3">
            <div className="flex items-center gap-3">
              <HexAvatar side="ai" hp={match.hp.ai} name="OMBRA" sub="" />
              <div className="flex gap-1.5 ml-2">
@@ -154,30 +154,25 @@ function Match() {
             ))}
           </div>
 
-          {/* Minimal Sidebar */}
-          <div className="w-16 flex flex-col items-center justify-center gap-10">
+          {/* Minimal Sidebar - Compact */}
+          <div className="w-12 flex flex-col items-center justify-center gap-6">
              <div className="flex flex-col items-center gap-1">
-                <span className="font-display text-xl text-gold">{match.turn}/{match.maxTurns}</span>
-                <div className="flex flex-col gap-1.5 mt-2">
-                  <div className={cn("size-1.5 rounded-full", true ? "bg-gold shadow-[0_0_8px_var(--gold)]" : "bg-white/10")} />
-                  <div className={cn("size-1.5 rounded-full", false ? "bg-gold" : "bg-white/10")} />
-                  <div className={cn("size-1.5 rounded-full", false ? "bg-gold" : "bg-white/10")} />
+                <span className="font-display text-lg text-gold">{match.turn}/{match.maxTurns}</span>
+                <div className="flex flex-col gap-1 mt-1">
+                  <div className={cn("size-1 rounded-full", true ? "bg-gold shadow-[0_0_8px_var(--gold)]" : "bg-white/10")} />
+                  <div className={cn("size-1 rounded-full", false ? "bg-gold" : "bg-white/10")} />
                 </div>
              </div>
 
              <button 
                onClick={handleEndTurn}
-               className="relative group size-16"
+               className="relative group size-12"
              >
                 <div className="absolute inset-0 bg-gold/20 rounded-full blur-xl group-hover:bg-gold/40 transition-all" />
                 <div className="relative size-full rounded-full bg-gradient-to-br from-mystic/40 to-abyss border border-white/10 flex items-center justify-center">
-                   <span className="font-display text-[8px] uppercase tracking-widest text-gold">VAI</span>
+                   <span className="font-display text-[7px] uppercase tracking-widest text-gold">GO</span>
                 </div>
              </button>
-
-             <div className="opacity-40">
-                <Hourglass className="size-4 text-gold/40" />
-             </div>
           </div>
         </div>
 
@@ -437,33 +432,31 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { te
         </div>
       </div>
 
-      {/* Dramatic Power Numbers */}
-      <div className="p-3 bg-gradient-to-t from-black/80 to-transparent relative z-40">
-        <div className="flex justify-between items-center px-2">
-          <motion.div 
-            key={playerPower}
-            initial={{ scale: 0.8 }} animate={{ scale: 1 }}
-            className={cn(
-              "font-display text-3xl transition-all",
-              isWinning ? "text-gold font-black drop-shadow-[0_0_20px_rgba(255,215,0,0.6)] scale-110" : "text-white/20"
-            )}
-          >
-            {playerPower}
-          </motion.div>
-          
-          <div className="w-px h-6 bg-white/5" />
-
+      {/* Dramatic Power Numbers - Integrated for Density */}
+      <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 z-50 pointer-events-none flex flex-col items-center gap-6">
           <motion.div 
             key={aiPower}
             initial={{ scale: 0.8 }} animate={{ scale: 1 }}
             className={cn(
-              "font-display text-2xl transition-all",
-              aiPower > playerPower ? "text-rose font-black drop-shadow-[0_0_15px_rgba(244,63,94,0.4)]" : "text-white/10"
+              "font-display text-xl transition-all drop-shadow-2xl",
+              aiPower > playerPower ? "text-rose font-black scale-110" : "text-white/20"
             )}
           >
             {aiPower}
           </motion.div>
-        </div>
+
+          <div className="h-px w-4 bg-white/10" />
+
+          <motion.div 
+            key={playerPower}
+            initial={{ scale: 0.8 }} animate={{ scale: 1 }}
+            className={cn(
+              "font-display text-3xl transition-all drop-shadow-2xl",
+              isWinning ? "text-gold font-black scale-125" : "text-white/20"
+            )}
+          >
+            {playerPower}
+          </motion.div>
       </div>
     </motion.div>
   );
