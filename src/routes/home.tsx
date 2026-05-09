@@ -17,12 +17,12 @@ function Home() {
   const navigate = useNavigate();
   const { play } = useSound();
 
-  if (!player) return null;
-
   useEffect(() => {
     sounds.startSceneMusic("home");
     return () => {};
   }, []);
+
+  if (!player) return null;
 
   const play_btn = () => { play("whoosh"); startMatch(); navigate({ to: "/vs" }); };
 

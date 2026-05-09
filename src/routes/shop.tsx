@@ -50,12 +50,12 @@ function Shop() {
   const [tab, setTab] = useState<typeof tabs[number]>("Consigliati");
   const { play } = useSound();
 
-  if (!player) return null;
-
   const filteredItems = useMemo(() => {
     if (tab === "Consigliati") return SHOP_ITEMS.filter(i => i.category === "Consigliati" || i.badge);
     return SHOP_ITEMS.filter(i => i.category === tab);
   }, [tab]);
+
+  if (!player) return null;
 
   const handleBuy = (item: ShopItem) => {
     if (item.type === "pack") {
