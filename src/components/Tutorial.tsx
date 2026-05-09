@@ -38,7 +38,8 @@ const STEPS = [
 ];
 
 export function TutorialOverlay() {
-  const { player, setOnboardingDone } = useGame();
+  const { player, setOnboardingDone, startTutorialMatch } = useGame();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
 
   if (player.onboardingDone) return null;
@@ -49,6 +50,8 @@ export function TutorialOverlay() {
   const next = () => {
     if (isLast) {
       setOnboardingDone();
+      startTutorialMatch();
+      navigate({ to: "/match" });
     } else {
       setCurrentStep(s => s + 1);
     }

@@ -9,6 +9,7 @@ import { sounds } from "@/utils/audio";
 import { Hourglass, Settings, Eye, Ghost, Zap, Trophy, Play, CheckCircle2, RefreshCw, Calendar, Users, Loader2, PlayCircle, Skull, ShieldCheck, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSound } from "@/hooks/useSound";
+import { ChevronRight, ArrowUpCircle, Info } from "lucide-react";
 
 export const Route = createFileRoute("/match")({ component: Match });
 
@@ -143,6 +144,47 @@ function Match() {
     }, 900);
   };
 
+  const tutorialStep = useGame(s => s.tutorialStep);
+  const setTutorialStep = useGame(s => s.setTutorialStep);
+
+  const getTutorialContent = () => {
+    switch(tutorialStep) {
+      case 1: return { 
+        title: "Inizia il Rituale", 
+        desc: "Trascina 'Ossessione' nel territorio 'Sogno'. È il tuo primo passo nel subconscio.",
+        target: "Ossessione -> Sogno" 
+      };
+      case 2: return { 
+        title: "Flusso di Energia", 
+        desc: "Ogni carta consuma Focus. Ora tocca il pulsante 'GO' a destra per passare il turno.",
+        target: "Premi GO" 
+      };
+      case 3: return { 
+        title: "Sinergia Territoriale", 
+        desc: "L'avversario ha risposto. Ora gioca 'Bosco Sacro' su 'Memoria' per attivare il suo bonus speciale.",
+        target: "Bosco Sacro -> Memoria" 
+      };
+      case 4: return { 
+        title: "Il Dominio", 
+        desc: "Stai controllando 2 territori. Se resisti fino al turno 6, la vittoria sarà tua. Concludi il turno.",
+        target: "Premi GO" 
+      };
+      default: return null;
+    }
+  };
+
+  const tutorial = getTutorialContent();
+
+  useEffect(() => {
+    if (match.isTutorial) {
+      // Auto-advance tutorial steps based on game state
+      if (tutorialStep === 1 && match.board.sogno.length > 0) setTutorialStep(2);
+      if (tutorialStep === 2 && match.turn === 2) setTutorialStep(3);
+      if (tutorialStep === 3 && match.board.memoria.length > 0) setTutorialStep(4);
+      if (tutorialStep === 4 && match.turn === 3) setTutorialStep(5); // End of tutorial guidance
+    }
+  }, [match, tutorialStep, setTutorialStep]);
+
   // Build Trigger: Final Layout Fix 
   return (
     <div className={cn(
@@ -174,10 +216,33 @@ function Match() {
       </div>
 
       {/* Minimal Bloom/Fog Overlay */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden ritual-tension">
-        <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-mystic/10 to-transparent blur-3xl opacity-30" />
-        <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-gold/5 to-transparent blur-3xl opacity-20" />
       </div>
+
+      {/* Tutorial Guidance Overlay */}
+      <AnimatePresence>
+        {match.isTutorial && tutorial && (
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="fixed bottom-32 inset-x-6 z-[200] pointer-events-none"
+          >
+            <div className="bg-black/60 backdrop-blur-2xl border border-gold/40 rounded-3xl p-6 shadow-[0_0_50px_rgba(255,215,0,0.2)] flex items-start gap-4 ring-1 ring-white/10">
+               <div className="size-10 rounded-full bg-gold/10 flex items-center justify-center shrink-0 border border-gold/20">
+                  <Info className="size-5 text-gold" />
+               </div>
+               <div className="flex-1">
+                  <h4 className="font-display text-xs text-gold tracking-widest uppercase mb-1">{tutorial.title}</h4>
+                  <p className="text-[10px] text-white/70 leading-relaxed font-medium">{tutorial.desc}</p>
+                  <div className="mt-3 flex items-center gap-2">
+                     <ArrowUpCircle className="size-3 text-gold animate-bounce" />
+                     <span className="text-[8px] uppercase tracking-widest text-gold/60 font-black">{tutorial.target}</span>
+                  </div>
+               </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Main Layout */}
       <div className={cn(
