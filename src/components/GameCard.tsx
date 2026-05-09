@@ -203,10 +203,9 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
             className="flex flex-col items-center max-w-sm w-full"
             onClick={e => e.stopPropagation()}
           >
-            {/* Display static XL card without the inspection toggle to avoid recursion */}
-            <div className={cn("relative shrink-0 rounded-[12px] overflow-hidden bg-black shadow-2xl", CARD_SIZES.xl, RARITY_BORDERS[card.rarity])}>
-               <img src={card.art} className="absolute inset-0 h-full w-full object-cover" />
-               <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/95" />
+            {/* Full XL Card View */}
+            <div className="relative">
+              <GameCard card={card} size="xl" />
             </div>
             
             <div className="mt-8 text-center space-y-4">
