@@ -12,6 +12,7 @@ import { cardsById } from "@/game/cards";
 
 export const Route = createFileRoute("/home")({ component: Home });
 
+function Home() {
   const { player, startMatch, onboardingPackOpened, openStarterPack, setOnboardingPackOpened } = useGame();
   if (!player) return null;
   const navigate = useNavigate();
