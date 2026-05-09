@@ -106,6 +106,9 @@ export interface PlayerProgress {
   collection: string[]; // owned card ids
   deck: string[];
   title: string;
+  premiumPass: boolean;
+  passClaimed: string[];
+  rankRewardsClaimed: string[];
 }
 
 export interface MatchRewards {
@@ -153,6 +156,9 @@ interface AppStore {
   user: any | null;
   setUser: (user: any | null) => void;
   resetPlayer: () => void;
+  claimPassReward: (id: string, gold?: number) => void;
+  activatePremiumPass: () => void;
+  claimRankReward: (id: string) => void;
 }
 
 function powerWithRules(state: MatchState, card: CardDef, side: Side, territory: TerritoryId, cardUid?: string): number {
@@ -207,6 +213,18 @@ function powerWithRules(state: MatchState, card: CardDef, side: Side, territory:
     const myCards = state.board[territory].filter(o => o.side === side).length;
     if (myCards <= 1) p += 3; // <= 1 because if it's on board, it counts itself
   }
+
+  // 5. DYNAMIC SYNERGY (Global bonus for each pair of same-type cards in any territory)
+  (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach(t => {
+    const counts: Record<string, number> = {};
+    state.board[t].filter(o => o.side === side).forEach(o => {
+      const type = cardsById[o.cardId]?.type;
+      if (type) counts[type] = (counts[type] || 0) + 1;
+    });
+    Object.values(counts).forEach(count => {
+      if (count >= 2) p += 1;
+    });
+  });
 
   return Math.max(0, p);
 }
@@ -376,7 +394,7 @@ export const useGame = create<AppStore>()(
           level: 1,
           xp: 0,
           xpToNext: 100,
-          gold: 100,
+          gold: 0,
           fragments: 0,
           gems: 0,
           wins: 0,
@@ -386,6 +404,9 @@ export const useGame = create<AppStore>()(
           collection: [], 
           deck: [],
           title: "Sognatore",
+          premiumPass: false,
+          passClaimed: [],
+          rankRewardsClaimed: [],
         };
       })(),
       onboardingDone: false,
@@ -609,7 +630,7 @@ export const useGame = create<AppStore>()(
             level: 1,
             xp: 0,
             xpToNext: 100,
-            gold: 100,
+            gold: 0,
             fragments: 0,
             gems: 0,
             wins: 0,
@@ -619,12 +640,41 @@ export const useGame = create<AppStore>()(
             collection: [...starterDeck],
             deck: [...starterDeck],
             title: "Sognatore",
+            premiumPass: false,
+            passClaimed: [],
+            rankRewardsClaimed: [],
           },
           onboardingDone: false,
           onboardingPackOpened: false,
           match: null
         });
       },
+      claimPassReward: (id, gold) => {
+        set(s => ({
+          player: {
+            ...s.player,
+            gold: s.player.gold + (gold || 0),
+            passClaimed: Array.from(new Set([...s.player.passClaimed, id]))
+          }
+        }));
+        const { user, syncWithCloud } = get();
+        if (user?.uid) syncWithCloud(user.uid);
+      },
+      activatePremiumPass: () => {
+        set(s => ({ player: { ...s.player, premiumPass: true } }));
+        const { user, syncWithCloud } = get();
+        if (user?.uid) syncWithCloud(user.uid);
+      },
+      claimRankReward: (id) => {
+        set(s => ({
+          player: {
+            ...s.player,
+            rankRewardsClaimed: Array.from(new Set([...s.player.rankRewardsClaimed, id]))
+          }
+        }));
+        const { user, syncWithCloud } = get();
+        if (user?.uid) syncWithCloud(user.uid);
+      }
     }),
     { 
       name: "reverie-store-v2",

@@ -17,17 +17,15 @@ const REWARDS = Array.from({ length: 30 }, (_, i) => {
 });
 
 function Pass() {
-  const player = useGame((s) => s.player);
-  const addGold = useGame((s) => s.addGold);
+  const { player, claimPassReward, activatePremiumPass } = useGame();
   const { play } = useSound();
-  const [premium, setPremium] = useState(false);
-  const [claimed, setClaimed] = useState<Set<string>>(new Set());
+  const premium = player.premiumPass;
+  const claimed = new Set(player.passClaimed);
 
   const claim = (key: string, label: string, gold = 0) => {
     if (claimed.has(key)) return;
     play("chime");
-    if (gold) addGold(gold);
-    setClaimed((c) => new Set([...c, key]));
+    claimPassReward(key, gold);
     toast.success(`Ricompensa raccolta: ${label}`);
   };
 
@@ -45,7 +43,7 @@ function Pass() {
             <div className="absolute inset-0 nebula" />
             <p className="relative font-display text-base text-foreground">Stagione 1: Risonanze</p>
             <p className="relative text-[10px] text-muted-foreground">Termina tra: 28g 12h</p>
-            <button onClick={() => { play("record"); setPremium(true); toast.success("Pass Premium attivato"); }} disabled={premium} className="absolute right-3 top-3 rounded-full gold-frame bg-gold/30 px-3 py-1 text-[10px] font-display uppercase disabled:opacity-50">{premium ? "Attivo ✓" : "Acquista Pass"}</button>
+            <button onClick={() => { play("record"); activatePremiumPass(); toast.success("Pass Premium attivato"); }} disabled={premium} className="absolute right-3 top-3 rounded-full gold-frame bg-gold/30 px-3 py-1 text-[10px] font-display uppercase disabled:opacity-50">{premium ? "Attivo ✓" : "Acquista Pass"}</button>
           </div>
         </div>
         <div className="mt-3 flex items-center gap-2">

@@ -7,8 +7,7 @@ import { ArrowLeft, Crown, Package } from "lucide-react";
 export const Route = createFileRoute("/ranked")({ component: Ranked });
 
 function Ranked() {
-  const player = useGame((s) => s.player);
-  const startMatch = useGame((s) => s.startMatch);
+  const { player, startMatch, claimRankReward } = useGame();
   const navigate = useNavigate();
   const nextMilestone = getNextRankMilestone(player.rankPoints);
 
@@ -40,15 +39,26 @@ function Ranked() {
       <div className="mt-6 mx-4">
         <p className="text-[10px] uppercase tracking-widest text-gold">Ricompense Stagionali</p>
         <div className="mt-2 space-y-1.5">
-          {[{ p: 1000, claimed: true }, { p: 1500, claimed: false }, { p: 2000, claimed: false }, { p: 2500, claimed: false }].map((r) => (
-            <div key={r.p} className="flex items-center justify-between rounded-lg gold-frame bg-card/50 px-3 py-2">
-              <div className="flex items-center gap-2">
-                <Package className="h-4 w-4 text-mystic-glow" />
-                <span className="text-xs">{r.p.toLocaleString("it-IT")} pt</span>
+          {[1000, 1500, 2000, 2500].map((pts) => {
+            const id = `rank_${pts}`;
+            const claimed = player.rankRewardsClaimed.includes(id);
+            const canClaim = player.rankPoints >= pts && !claimed;
+            return (
+              <div key={pts} className="flex items-center justify-between rounded-lg gold-frame bg-card/50 px-3 py-2">
+                <div className="flex items-center gap-2">
+                  <Package className="h-4 w-4 text-mystic-glow" />
+                  <span className="text-xs">{pts.toLocaleString("it-IT")} pt</span>
+                </div>
+                <button 
+                  disabled={!canClaim && !claimed}
+                  onClick={() => canClaim && claimRankReward(id)}
+                  className={`text-[10px] uppercase tracking-widest ${claimed ? "text-gold" : canClaim ? "text-mystic-glow animate-pulse" : "text-muted-foreground"}`}
+                >
+                  {claimed ? "Ottenuto" : canClaim ? "Riscatta" : "Bloccato"}
+                </button>
               </div>
-              <span className={`text-[10px] uppercase tracking-widest ${r.claimed ? "text-gold" : "text-muted-foreground"}`}>{r.claimed ? "Ottenuto" : player.rankPoints >= r.p ? "Riscatta" : "Bloccato"}</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

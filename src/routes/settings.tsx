@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { MobileFrame } from "@/components/Common";
 import { useGame } from "@/game/store";
@@ -10,8 +10,16 @@ export const Route = createFileRoute("/settings")({ component: Settings });
 const tabs = ["Gioco", "Audio", "Grafica", "Account"] as const;
 
 function Settings() {
-  const { settings, toggleSetting } = useGame();
+  const { settings, toggleSetting, setUser, resetPlayer } = useGame();
   const [tab, setTab] = useState<typeof tabs[number]>("Gioco");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    sounds.playSfx("whoosh");
+    setUser(null);
+    resetPlayer(); // Optional: clears local state too
+    navigate({ to: "/auth" });
+  };
 
   const handleSoundToggle = (v: boolean) => {
     toggleSetting("soundOn", v);
@@ -77,7 +85,7 @@ function Settings() {
 
       <div className="grid grid-cols-2 gap-2 p-4">
         <button className="rounded-full gold-frame bg-card/60 py-2.5 text-xs uppercase tracking-widest text-muted-foreground">Assistenza</button>
-        <button className="rounded-full gold-frame bg-card/60 py-2.5 text-xs uppercase tracking-widest text-rose">Esci</button>
+        <button onClick={handleLogout} className="rounded-full gold-frame bg-card/60 py-2.5 text-xs uppercase tracking-widest text-rose">Esci</button>
       </div>
     </MobileFrame>
   );

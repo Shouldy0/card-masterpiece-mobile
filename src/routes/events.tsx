@@ -8,16 +8,42 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/events")({ component: Events });
 
-const MISSIONS = [
-  { id: "wins3", name: "Vinci 3 partite", progress: 2, target: 3, reward: 150, icon: Trophy },
-  { id: "play10", name: "Gioca 10 carte Maschera", progress: 7, target: 10, reward: 80, icon: Target },
-  { id: "spend6", name: "Spendi 6 Focus in un turno", progress: 6, target: 6, reward: 200, icon: Sparkles },
+interface Mission {
+  id: string;
+  name: string;
+  progress: number;
+  target: number;
+  reward: number;
+  icon: any;
+  minLevel?: number;
+  maxLevel?: number;
+}
+
+const MISSIONS: Mission[] = [
+  // Livello 1-2
+  { id: "start1", name: "Risveglio: Vinci 1 partita", progress: 0, target: 1, reward: 50, icon: Sparkles, maxLevel: 2 },
+  { id: "play3", name: "Gioca 5 carte", progress: 2, target: 5, reward: 30, icon: Target, maxLevel: 2 },
+  
+  // Livello 3-5
+  { id: "wins3", name: "Vinci 3 partite", progress: 1, target: 3, reward: 150, icon: Trophy, minLevel: 3, maxLevel: 5 },
+  { id: "play10", name: "Gioca 10 carte Maschera", progress: 7, target: 10, reward: 80, icon: Target, minLevel: 3 },
+  
+  // Livello 6+
+  { id: "spend6", name: "Maestro del Focus: Spendi 6 in un turno", progress: 0, target: 1, reward: 250, icon: Zap, minLevel: 6 },
+  { id: "ranked5", name: "Scalata: Vinci 5 partite Ranked", progress: 2, target: 5, reward: 500, icon: Crown, minLevel: 6 },
 ];
 
 function Events() {
-  const addGold = useGame((s) => s.addGold);
+  const { player, addGold } = useGame();
   const { play } = useSound();
-  const claim = (m: typeof MISSIONS[number]) => {
+
+  const filteredMissions = MISSIONS.filter(m => {
+    const minOk = m.minLevel ? player.level >= m.minLevel : true;
+    const maxOk = m.maxLevel ? player.level <= m.maxLevel : true;
+    return minOk && maxOk;
+  });
+
+  const claim = (m: Mission) => {
     if (m.progress < m.target) return;
     play("chime");
     addGold(m.reward);
@@ -57,7 +83,7 @@ function Events() {
       <div className="mt-5 px-4">
         <p className="text-[10px] uppercase tracking-widest text-gold">Sfide Settimanali</p>
         <div className="mt-2 space-y-2">
-          {MISSIONS.map((m) => {
+          {filteredMissions.map((m) => {
             const Icon = m.icon;
             const done = m.progress >= m.target;
             return (

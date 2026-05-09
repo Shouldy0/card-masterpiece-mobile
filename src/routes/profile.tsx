@@ -60,9 +60,16 @@ function Profile() {
       <div className="mx-4 mt-4">
         <p className="text-[10px] uppercase tracking-widest text-gold">Mazzi Preferiti</p>
         <div className="mt-2 flex gap-2 overflow-x-auto scrollbar-hide">
-          {["eco_dimenticato", "maschera_dolore", "sogno_lucido"].map((id) => (
-            <CardFromId key={id} id={id} size="lg" />
-          ))}
+          {player.matches > 0 ? (
+            ["eco_dimenticato", "maschera_dolore", "sogno_lucido"].map((id) => (
+              <CardFromId key={id} id={id} size="lg" />
+            ))
+          ) : (
+            <div className="w-full py-8 rounded-xl border border-dashed border-gold/20 flex flex-col items-center justify-center bg-card/20">
+               <p className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground">Nessuna memoria risvegliata</p>
+               <Link to="/home" className="mt-2 text-[8px] text-gold underline tracking-widest uppercase">Inizia la prima battaglia →</Link>
+            </div>
+          )}
         </div>
       </div>
 

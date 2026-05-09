@@ -111,15 +111,6 @@ function Home() {
             GIOCA BATTAGLIA
           </motion.button>
 
-          <motion.button 
-            whileHover={{ scale: 1.02 }} 
-            whileTap={{ scale: 0.98 }} 
-            onClick={() => navigate({ to: "/combo" })} 
-            className="w-full py-4 rounded-[2rem] bg-gradient-to-r from-abyss/40 via-card/40 to-abyss/40 text-gold font-display text-sm font-bold uppercase tracking-[0.3em] shadow-xl border border-gold/20 backdrop-blur-md"
-          >
-            MODALITÀ SOGNO
-          </motion.button>
-
           <div className="pt-8 text-center">
              <p className="text-[8px] uppercase tracking-[0.5em] text-gold/20">Esplora le profondità del tuo inconscio</p>
           </div>

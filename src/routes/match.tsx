@@ -6,7 +6,7 @@ import { cardsById, TerritoryId } from "@/game/cards";
 import { GameCard, CardBack, CardFromId } from "@/components/GameCard";
 import { FocusGems, Hexagon, MobileFrame } from "@/components/Common";
 import { sounds } from "@/utils/audio";
-import { Hourglass, Settings, Eye, Ghost, Zap, Trophy, Play, CheckCircle2, RefreshCw, Calendar, Users, Loader2, PlayCircle, Skull, ShieldCheck } from "lucide-react";
+import { Hourglass, Settings, Eye, Ghost, Zap, Trophy, Play, CheckCircle2, RefreshCw, Calendar, Users, Loader2, PlayCircle, Skull, ShieldCheck, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSound } from "@/hooks/useSound";
 
@@ -327,6 +327,17 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
   const playerPower = cards.filter((c) => c.side === "player").reduce((s, c) => s + c.power, 0);
   const aiPower = cards.filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
   const isWinning = playerPower > aiPower;
+
+  const playerSynergies = useMemo(() => {
+    const counts: Record<string, number> = {};
+    cards.filter(c => c.side === "player").forEach(c => {
+      const type = cardsById[c.cardId]?.type;
+      if (type) counts[type] = (counts[type] || 0) + 1;
+    });
+    return Object.entries(counts).filter(([_, count]) => count >= 2).map(([type]) => type);
+  }, [cards]);
+
+  const hasSynergy = playerSynergies.length > 0;
   
   return (
     <motion.div 
@@ -365,6 +376,21 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
          >
            {meta.icon}
          </motion.div>
+
+         {/* Synergy Badge */}
+         <AnimatePresence>
+           {hasSynergy && (
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.8, y: 5 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.8 }}
+               className="absolute top-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-2 py-0.5 rounded-full bg-gold/20 border border-gold/40 backdrop-blur-md"
+             >
+               <Sparkles className="size-2 text-gold animate-pulse" />
+               <span className="text-[6px] font-display text-gold uppercase tracking-[0.2em]">Synergy</span>
+             </motion.div>
+           )}
+         </AnimatePresence>
       </div>
 
       {/* Opponent Area */}
