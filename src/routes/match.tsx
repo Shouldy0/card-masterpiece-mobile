@@ -151,17 +151,17 @@ function Match() {
     switch(tutorialStep) {
       case 1: return { 
         title: "Inizia il Rituale", 
-        desc: "Trascina 'Ossessione' nel territorio 'Sogno'. È il tuo primo passo nel subconscio.",
+        desc: "Tocca 'Ossessione' e poi tocca il territorio 'Sogno' per giocarla.",
         target: "Ossessione -> Sogno" 
       };
       case 2: return { 
         title: "Flusso di Energia", 
-        desc: "Ogni carta consuma Focus. Ora tocca il pulsante 'GO' a destra per passare il turno.",
+        desc: "Hai usato Focus. Ora tocca il pulsante 'GO' a destra per passare il turno.",
         target: "Premi GO" 
       };
       case 3: return { 
         title: "Sinergia Territoriale", 
-        desc: "L'avversario ha risposto. Ora gioca 'Bosco Sacro' su 'Memoria' per attivare il suo bonus speciale.",
+        desc: "L'avversario ha risposto. Tocca 'Bosco Sacro' e poi 'Memoria' per il bonus.",
         target: "Bosco Sacro -> Memoria" 
       };
       case 4: return { 
@@ -231,7 +231,7 @@ function Match() {
             className="fixed top-24 inset-x-6 z-[200]"
           >
             <div className="bg-black/80 backdrop-blur-xl border border-gold/40 rounded-2xl p-4 shadow-2xl flex items-start gap-3 ring-1 ring-white/10 relative">
-               <button 
+<button 
                 onClick={() => setTutorialStep(99)} 
                 className="absolute -top-2 -right-2 size-6 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg pointer-events-auto"
                >

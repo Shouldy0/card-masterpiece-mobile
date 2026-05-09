@@ -120,13 +120,21 @@ export function TutorialOverlay() {
           <h2 className="font-display text-2xl text-gold tracking-widest uppercase mb-4">{step.title}</h2>
           <p className="text-sm text-white/80 leading-relaxed font-medium mb-10 px-2">{step.content}</p>
 
-          <button 
-            onClick={next}
-            className="w-full py-4 rounded-2xl bg-gold text-black font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-2 group shadow-[0_0_30px_rgba(255,215,0,0.3)] active:scale-95 transition-all"
-          >
-            {isLast ? "Risveglia la tua Mente" : "Continua il Rituale"}
-            <ChevronRight className="size-4 group-hover:translate-x-1 transition-transform" />
-          </button>
+          <div className="flex flex-col gap-3">
+            <button 
+              onClick={next}
+              className="w-full py-4 rounded-2xl bg-gold text-black font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-2 group shadow-[0_0_30px_rgba(255,215,0,0.3)] active:scale-95 transition-all"
+            >
+              {isLast ? "Risveglia la tua Mente" : "Continua il Rituale"}
+              <ChevronRight className="size-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+            <button 
+              onClick={() => setOnboardingDone()}
+              className="w-full py-3 rounded-xl text-white/20 hover:text-white/40 font-black text-[9px] uppercase tracking-[0.2em] transition-colors"
+            >
+              Salta tutto
+            </button>
+          </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>
