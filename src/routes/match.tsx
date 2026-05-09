@@ -150,8 +150,8 @@ function Match() {
     switch(tutorialStep) {
       case 1: return { 
         title: "Inizia il Rituale", 
-        desc: "Tocca 'Ossessione' e poi tocca il territorio 'Sogno' per giocarla.",
-        target: "Ossessione -> Sogno" 
+        desc: "Tocca 'Ossessione' e poi tocca il territorio 'Sogno Lucido' per giocarla.",
+        target: "Ossessione -> Sogno Lucido" 
       };
       case 2: return { 
         title: "Flusso di Energia", 
@@ -289,7 +289,7 @@ function Match() {
              <div className="stream-current" />
              <div className="stream-current" />
           </div>
-          <div className="flex-1 flex gap-3 z-10">
+          <div className="flex-1 flex gap-2 z-10 px-2 overflow-hidden">
             {TERRITORIES.map((t) => (
               <TerritoryColumn
                 key={t.id}

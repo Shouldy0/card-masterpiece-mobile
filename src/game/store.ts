@@ -78,7 +78,7 @@ export function createInitialMatch(playerDeck: string[]): MatchState {
   return {
     turn: 1,
     maxTurns: 6,
-    focus: { player: 3, ai: 4 },
+    focus: { player: 6, ai: 6 },
     maxFocus: 6,
     hp: { player: 20, ai: 20 },
     hand: { player: pDeck.slice(0, 5), ai: aiDeck.slice(0, 5) },
