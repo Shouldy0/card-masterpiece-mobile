@@ -416,8 +416,8 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { te
         "flex-1 relative flex flex-col rounded-[2.5rem] overflow-hidden border transition-all duration-700 tarot-border rim-light",
         `aura-${territory.id}`,
         "breathing-light",
-        territory.id === "trauma" && "trauma-cracks",
-        territory.id === "sogno" && "dream-distortion",
+        territory.id === "trauma" && "trauma-cracks trauma-vibration",
+        territory.id === "sogno" && "dream-distortion dream-refraction",
         isNeutral && "state-neutral",
         isContested && "state-contested",
         isWinning && "state-dominated-player",
@@ -428,6 +428,9 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { te
       {/* Cinematic Lighting Layers */}
       <div className="volumetric-fog" />
       <div className="living-shadows" />
+
+      {/* Environmental Emotional Overlays */}
+      {territory.id === "memoria" && <div className="memory-sparkles" />}
 
       {/* Impact VFX Layer */}
       <AnimatePresence>
