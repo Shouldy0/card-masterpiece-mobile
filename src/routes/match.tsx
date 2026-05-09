@@ -76,11 +76,10 @@ const territoryMeta: Record<TerritoryId, { color: string; gradient: string; icon
 function Match() {
   const navigate = useNavigate();
   const match = useGame(s => s.match);
-  const selected = useGame(s => s.selectedCard);
-  const revealing = useGame(s => s.revealing);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [revealing, setRevealing] = useState<{ uid: string; territory: TerritoryId } | null>(null);
   const playCard = useGame(s => s.playCard);
   const endTurn = useGame(s => s.endTurn);
-  const selectCard = useGame(s => s.selectCard);
   const startMatch = useGame((s) => s.startMatch);
   const { play } = useSound();
 
@@ -122,7 +121,7 @@ function Match() {
   const handlePlay = (territory: TerritoryId) => {
     if (!selected) return;
     const card = cardsById[selected];
-    if (!card || card.cost > match.focus.player) { selectCard(null); return; }
+    if (!card || card.cost > match.focus.player) { setSelected(null); return; }
     setRevealing({ uid: selected, territory });
     play("card_flip");
     
