@@ -322,7 +322,8 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
       onClick={onDrop}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        "flex-1 relative flex flex-col rounded-[2.5rem] overflow-hidden border transition-all duration-700",
+        "flex-1 relative flex flex-col rounded-[2.5rem] overflow-hidden border transition-all duration-700 tarot-border",
+        `aura-${territory.id}`,
         canPlay ? "border-gold/60 ring-4 ring-gold/10 cursor-pointer scale-[1.02] z-20 shadow-[0_0_50px_rgba(255,215,0,0.2)]" : "border-white/5 bg-card/5 backdrop-blur-2xl",
         isWinning && cards.length > 0 ? "border-gold/40 shadow-[inset_0_0_60px_rgba(255,215,0,0.1)]" : ""
       )}
