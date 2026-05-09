@@ -231,6 +231,7 @@ function Match() {
                     id={id} 
                     size="sm" 
                     selected={selected === id}
+                    noInspect={true}
                     faded={cardsById[id]?.cost > match.focus.player}
                   />
                   {selected === id && (
@@ -375,7 +376,7 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
       <div className="flex-1 p-2 flex flex-col gap-2 items-center justify-start overflow-y-auto pt-4">
          {cards.filter(c => c.side === "ai").map((c, i) => (
            <motion.div key={c.uid} initial={{ scale: 0, y: -40, rotate: -10 }} animate={{ scale: 1, y: 0, rotate: 0 }} transition={{ type: "spring", damping: 15 }}>
-             <CardFromId id={c.cardId} size="xs" />
+             <CardFromId id={c.cardId} size="xs" noInspect={true} />
            </motion.div>
          ))}
       </div>
@@ -407,7 +408,7 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
              transition={{ type: "spring", damping: 12 }}
              className="relative"
            >
-             <CardFromId id={c.cardId} size="xs" glow={isWinning} />
+             <CardFromId id={c.cardId} size="xs" glow={isWinning} noInspect={true} />
              {isWinning && (
                <div className="absolute -inset-1 bg-gold/10 blur-sm rounded-lg -z-10 animate-pulse" />
              )}

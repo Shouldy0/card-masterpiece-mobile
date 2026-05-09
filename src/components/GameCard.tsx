@@ -20,10 +20,11 @@ interface Props {
   glow?: boolean;
   faded?: boolean;
   selected?: boolean;
+  noInspect?: boolean;
   onClick?: () => void;
 }
 
-export const GameCard = React.memo(function GameCard({ card, size = "md", glow, faded, selected, onClick }: Props) {
+export const GameCard = React.memo(function GameCard({ card, size = "md", glow, faded, selected, noInspect, onClick }: Props) {
   const [imgError, setImgError] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
   const [showInspection, setShowInspection] = React.useState(false);
@@ -48,7 +49,7 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
   const accent = getFactionAccent(card.type);
 
   const handleClick = () => {
-    if (size !== "xl") setShowInspection(true);
+    if (size !== "xl" && !noInspect) setShowInspection(true);
     onClick?.();
   };
 
