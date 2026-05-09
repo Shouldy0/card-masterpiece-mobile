@@ -1,14 +1,14 @@
 /**
  * REVERIE Enhanced Sound Engine
- * Combines high-quality MP3 assets with synthesized procedural effects.
+ * Uses local MP3 assets to avoid CORS issues and ensure reliable playback.
  */
 
 const REVERIE_ASSETS = {
-  bgm: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663172862422/GfXFBIxfUzhEXqnG.mp3",
-  click: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663172862422/wZRvtQdggXUqzbVa.mp3",
-  match: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663172862422/cTHWPpSKHBtsDFnp.mp3",
-  error: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663172862422/slYSlpxjllEbxLNc.mp3",
-  victory: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663172862422/ZLDNwNWOXRzfpHTy.mp3"
+  bgm: "/audio/bgm.mp3",
+  click: "/audio/click.mp3",
+  match: "/audio/match.mp3",
+  error: "/audio/error.mp3",
+  victory: "/audio/victory.mp3"
 };
 
 type SceneMusic = "home" | "vs" | "match" | "end" | null;
@@ -20,7 +20,6 @@ class SoundEngine {
   private sfxVol = 0.7;
   private muted = false;
   
-  // High Quality Asset Players
   private audioElements: Record<string, HTMLAudioElement> = {};
   private activeBgm: HTMLAudioElement | null = null;
 
@@ -33,7 +32,6 @@ class SoundEngine {
   private initAssets() {
     Object.entries(REVERIE_ASSETS).forEach(([key, url]) => {
       const audio = new Audio(url);
-      audio.crossOrigin = "anonymous";
       if (key === 'bgm' || key === 'match') {
         audio.loop = true;
       }
@@ -81,7 +79,7 @@ class SoundEngine {
       this.activeBgm = target;
       target.volume = this.musicVol;
       target.currentTime = 0;
-      target.play().catch(e => console.warn("Music blocked:", e));
+      target.play().catch(e => console.warn("Music blocked by browser. Click to start."));
     }
   }
 
@@ -105,7 +103,6 @@ class SoundEngine {
     if (this.muted) return;
     this.initContext();
 
-    // Map internal types to assets if available
     let assetKey: string | null = null;
     if (type === "tick" || type === "click") assetKey = "click";
     if (type === "fail" || type === "error") assetKey = "error";
@@ -118,8 +115,6 @@ class SoundEngine {
       return;
     }
 
-    // Fallback to synthesized sounds if needed (optional, I'll keep the logic simple for now)
-    // For now, if it's not a mapped asset, we can use a generic tick
     if (this.audioElements.click) {
         const el = this.audioElements.click.cloneNode() as HTMLAudioElement;
         el.volume = this.sfxVol * 0.5;
