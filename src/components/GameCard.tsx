@@ -155,15 +155,25 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
       )}>
         <h3 className={cn(
           "font-display uppercase tracking-[0.2em] text-white drop-shadow-lg",
-          isXs ? "text-[6px]" : isSm ? "text-[9px]" : "text-[16px] font-black"
+          isXs ? "text-[6px]" : isSm ? "text-[9px]" : "text-[14px] font-black"
         )}>
           {card.name}
         </h3>
         
+        {/* Card Text (Effect Description) */}
+        {!isXs && !isSm && (
+          <p className={cn(
+            "text-[9px] text-foreground/80 leading-tight mt-1 mb-2 line-clamp-3 px-1",
+            isXl && "text-[11px] px-4"
+          )}>
+            {card.text}
+          </p>
+        )}
+
         {/* Rarity Text for XL */}
         {isXl && (
           <span className={cn(
-            "text-[8px] font-bold uppercase tracking-[0.4em] mt-1",
+            "text-[8px] font-bold uppercase tracking-[0.4em] mb-1",
             card.rarity === "leggendaria" ? "text-gold" : "text-white/60"
           )}>
             {card.rarity}
