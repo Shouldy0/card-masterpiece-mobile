@@ -229,7 +229,7 @@ function Match() {
                 >
                   <CardFromId 
                     id={id} 
-                    size="md" 
+                    size="sm" 
                     selected={selected === id}
                     faded={cardsById[id]?.cost > match.focus.player}
                   />
@@ -363,34 +363,12 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
          />
       </div>
 
-      {/* Territory Label */}
-      <div className={cn("p-4 border-b border-white/5 bg-gradient-to-b relative overflow-hidden", meta.gradient)}>
-         <h4 className={cn("font-display text-[11px] uppercase tracking-[0.4em] text-center font-black", meta.color)}>{territory.name}</h4>
-         <p className="text-[8px] text-white/40 text-center line-clamp-1 mt-1 font-sans">{territory.rule}</p>
-         
-         {/* Animated Icon */}
-         <motion.div 
-           animate={{ y: [0, -4, 0], opacity: [0.2, 0.5, 0.2] }}
-           transition={{ duration: 4, repeat: Infinity }}
-           className="absolute top-2 right-2 text-lg"
-         >
-           {meta.icon}
-         </motion.div>
-
-         {/* Synergy Badge */}
-         <AnimatePresence>
-           {hasSynergy && (
-             <motion.div 
-               initial={{ opacity: 0, scale: 0.8, y: 5 }}
-               animate={{ opacity: 1, scale: 1, y: 0 }}
-               exit={{ opacity: 0, scale: 0.8 }}
-               className="absolute top-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1 px-2 py-0.5 rounded-full bg-gold/20 border border-gold/40 backdrop-blur-md"
-             >
-               <Sparkles className="size-2 text-gold animate-pulse" />
-               <span className="text-[6px] font-display text-gold uppercase tracking-[0.2em]">Synergy</span>
-             </motion.div>
-           )}
-         </AnimatePresence>
+      {/* Territory Header - Simplified */}
+      <div className={cn("p-2 border-b border-white/5 bg-gradient-to-b relative", meta.gradient)}>
+         <div className="flex items-center justify-center gap-2">
+           <span className="text-sm">{meta.icon}</span>
+           <h4 className={cn("font-display text-[9px] uppercase tracking-[0.2em] font-black", meta.color)}>{territory.name}</h4>
+         </div>
       </div>
 
       {/* Opponent Area */}
@@ -402,31 +380,20 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
          ))}
       </div>
 
-      {/* Master Score Display (CCC - Center Combat Component) */}
-      <div className="py-4 flex items-center justify-center gap-6 relative">
-         <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
-         
-         <div className="relative z-10 flex flex-col items-center group">
-            <span className="text-[8px] uppercase text-white/40 tracking-[0.2em] font-black">PLAYER</span>
-            <div className={cn(
-              "font-display text-3xl transition-all duration-500",
-              isWinning ? "text-gold scale-125 drop-shadow-[0_0_15px_rgba(255,215,0,0.6)]" : "text-white/60"
-            )}>
-              {playerPower}
-            </div>
-            {isWinning && cards.length > 0 && (
-              <motion.div layoutId={`win-crown-${territory.id}`} className="absolute -top-1 size-1 bg-gold rounded-full blur-[2px]" />
-            )}
+      {/* Score Display - Simplified */}
+      <div className="py-2 flex items-center justify-center gap-4 border-y border-white/5 bg-black/20">
+         <div className={cn(
+           "font-display text-xl transition-all duration-500",
+           isWinning ? "text-gold scale-110 drop-shadow-[0_0_10px_rgba(255,215,0,0.4)]" : "text-white/40"
+         )}>
+           {playerPower}
          </div>
-
-         <div className="relative z-10 flex flex-col items-center">
-            <span className="text-[8px] uppercase text-white/40 tracking-[0.2em] font-black">ENEMY</span>
-            <div className={cn(
-              "font-display text-2xl transition-all duration-500",
-              aiPower > playerPower ? "text-rose scale-110" : "text-white/30"
-            )}>
-              {aiPower}
-            </div>
+         <div className="text-[10px] text-white/20 font-black">VS</div>
+         <div className={cn(
+           "font-display text-lg transition-all duration-500",
+           aiPower > playerPower ? "text-rose scale-110" : "text-white/20"
+         )}>
+           {aiPower}
          </div>
       </div>
 
