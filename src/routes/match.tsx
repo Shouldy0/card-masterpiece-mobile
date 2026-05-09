@@ -233,6 +233,13 @@ function Match() {
               animate={{ rotateY: 180, scale: 1.2, y: 0 }}
               transition={{ duration: 0.6, type: "spring" }}
               style={{ transformStyle: "preserve-3d" }}
+              className={cn(
+                "relative",
+                cardsById[revealing.uid]?.type === "oblio" && "effect-trauma",
+                cardsById[revealing.uid]?.type === "sogno" && "effect-dream",
+                cardsById[revealing.uid]?.type === "ricordo" && "effect-memory",
+                cardsById[revealing.uid]?.type === "archetipo" && "effect-obsession"
+              )}
             >
               <div style={{ transform: "rotateY(180deg)" }}>
                 <CardFromId id={revealing.uid} size="xl" glow />
