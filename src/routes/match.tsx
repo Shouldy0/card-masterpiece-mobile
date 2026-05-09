@@ -204,7 +204,6 @@ function Match() {
            </div>
         </div>
       </div>
-      </div>
 
       {/* Reveal Animation Overlay */}
       <AnimatePresence>
