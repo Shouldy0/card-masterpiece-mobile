@@ -77,11 +77,11 @@ function Collection() {
         </div>
 
         {/* SCROLLABLE CONTENT */}
-        <div className="flex-1 overflow-y-auto px-6 custom-scrollbar pb-32">
+        <div className="flex-1 overflow-y-auto px-6 no-scrollbar pb-40">
           {activeTab === "CARTE" && (
             <>
               {/* Stats & Search */}
-              <div className="flex items-center justify-between gap-4 mb-6 pt-2">
+              <div className="flex items-center justify-between gap-4 mb-12 pt-2">
                 <div className="flex flex-col px-1">
                   <span className="text-[7px] uppercase tracking-[0.3em] text-gold/40 font-black">Sincronia</span>
                   <span className="font-display text-base text-white">{player.collection.length}<span className="text-gold/40 text-[10px] ml-1">/ {CARDS.length}</span></span>
@@ -107,7 +107,7 @@ function Collection() {
               </div>
 
               {/* Card Grid */}
-              <div className="grid grid-cols-2 gap-y-10 gap-x-6 mb-10">
+              <div className="grid grid-cols-2 gap-y-16 gap-x-12 mb-20">
                 <AnimatePresence mode="popLayout">
                   {filteredCards.map((card, i) => {
                     // FORCE UNLOCK FOR NEW ARCHETYPE CARDS TO SHOW THEM IMMEDIATELY
@@ -128,7 +128,7 @@ function Collection() {
                       >
                         <GameCard 
                           card={card} 
-                          size="lg" 
+                          size="md" 
                           faded={!isOwned} 
                           glow={isOwned && card.rarity === 'leggendaria'}
                           onClick={() => isOwned && setSelectedCard(card)}
