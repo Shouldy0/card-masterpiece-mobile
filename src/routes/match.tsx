@@ -178,12 +178,11 @@ function Match() {
         <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-gold/5 to-transparent blur-3xl opacity-20" />
       </div>
 
-      {/* Main Layout Wrapper - Forces mobile layout on PC */}
-      <MobileFrame className="relative z-10 floating-board">
-        <div className={cn(
-          "flex h-full flex-col px-2 py-3",
-          globalImpact > 0 && "impact-shake impact-ripple"
-        )}>
+      {/* Main Layout */}
+      <div className={cn(
+        "relative z-10 flex h-full flex-col px-2 py-3",
+        globalImpact > 0 && "impact-shake impact-ripple"
+      )}>
         {/* Minimal Header */}
         <div className="flex justify-between items-center mb-3">
            <div className="flex items-center gap-3">
@@ -306,7 +305,6 @@ function Match() {
            </div>
         </div>
       </div>
-    </MobileFrame>
 
       {/* Reveal Animation Overlay */}
       <AnimatePresence>

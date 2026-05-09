@@ -709,6 +709,18 @@
   mask-image: linear-gradient(to right, transparent, black 20%, black 80%, transparent);
 }
 
+.global-mobile-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  margin-left: auto;
+  margin-right: auto;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: var(--color-abyss);
+  box-shadow: 0 0 100px rgba(0,0,0,0.8);
+}
+
 .stream-current {
   position: absolute;
   height: 2px;

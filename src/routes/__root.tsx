@@ -64,8 +64,8 @@ function RootComponent() {
   }, [setUser]);
 
   return (
-    <div className="relative min-h-screen w-full bg-abyss">
-      <main className="relative z-10 w-full min-h-screen">
+    <div className="relative min-h-screen w-full bg-abyss flex flex-col">
+      <main className="global-mobile-wrapper">
         <Outlet />
       </main>
       <Toaster />
