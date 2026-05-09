@@ -133,8 +133,8 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
       
       {/* Cost Gem with Inner Glow */}
       <div className={cn(
-        "absolute left-1.5 top-1.5 z-30 flex items-center justify-center rounded-full border-[1.5px] border-white/20 shadow-xl",
-        isXs ? "size-4 text-[7px]" : isSm ? "size-6 text-[10px]" : "size-11 text-[20px]"
+        "absolute left-1 top-1 z-30 flex items-center justify-center rounded-full border border-white/20 shadow-xl",
+        isXs ? "size-3.5 text-[6px]" : isSm ? "size-5 text-[8px]" : "size-9 text-[16px]"
       )} style={{ background: `radial-gradient(circle at 30% 30%, ${accent.primary}, #000)` }}>
         <span className="font-display font-black text-white drop-shadow-md">{card.cost}</span>
         <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/20 to-white/40 pointer-events-none" />
@@ -148,15 +148,15 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
         <div className="rounded-full" style={{ width: '40%', height: '40%', backgroundColor: accent.primary, boxShadow: `0 0 12px ${accent.primary}` }} />
       </div>
 
-      {/* Bottom Text Area */}
+      {/* Bottom Text Area - Moved UP to avoid overlapping with Power badge */}
       <div className={cn(
-        "absolute bottom-0 inset-x-0 z-30 flex flex-col items-center justify-end px-2 text-center",
-        isXs ? "pb-1 pt-4" : isSm ? "pb-2 pt-6" : "pb-6 pt-16 px-4",
-        "bg-gradient-to-t from-black via-black/90 to-transparent"
+        "absolute bottom-4 inset-x-0 z-30 flex flex-col items-center justify-end px-2 text-center",
+        isXs ? "pb-1 pt-4" : isSm ? "pb-2 pt-6" : "pb-8 pt-16 px-4",
+        "bg-gradient-to-t from-black/80 via-black/40 to-transparent"
       )}>
         <h3 className={cn(
           "font-display uppercase tracking-[0.2em] text-white drop-shadow-lg",
-          isXs ? "text-[6px]" : isSm ? "text-[9px]" : "text-[14px] font-black"
+          isXs ? "text-[6px]" : isSm ? "text-[8px]" : "text-[12px] font-black"
         )}>
           {card.name}
         </h3>
