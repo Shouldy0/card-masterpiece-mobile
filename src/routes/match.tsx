@@ -193,20 +193,37 @@ function Match() {
              </div>
            </div>
 
-           <div className="flex-1 flex justify-center items-end px-8">
-              <div className="flex justify-center -space-x-10">
+           <div className="flex-1 flex justify-center items-end px-8 hand-container">
+              <div className="flex justify-center -space-x-12">
                 {match.hand.player.map((id, i) => {
                   const total = match.hand.player.length;
-                  const rotation = (i - (total-1)/2) * 5;
+                  const index = i - (total - 1) / 2;
+                  const rotation = index * 6; // Curved rotation
+                  const yOffset = Math.abs(index) * 8; // Curved Y
+                  
                   return (
                     <motion.div
                       key={`${id}-${i}`}
-                      whileHover={{ y: -120, scale: 1.6, rotate: 0, zIndex: 100 }}
+                      whileHover={{ 
+                        y: -140, 
+                        scale: 1.8, 
+                        rotate: 0, 
+                        zIndex: 100,
+                        rotateY: index * -10, // 3D Tilt
+                        transition: { type: "spring", stiffness: 300, damping: 20 }
+                      }}
                       onClick={() => handleSelect(id)}
-                      className={cn("relative cursor-pointer transition-all", selected === id && "z-50 -translate-y-16 scale-140")}
-                      style={{ rotate: `${rotation}deg` }}
+                      className={cn(
+                        "relative cursor-pointer transition-all card-shadow-premium", 
+                        selected === id && "z-50 -translate-y-20 scale-150"
+                      )}
+                      style={{ 
+                        rotate: `${rotation}deg`,
+                        y: yOffset
+                      }}
                     >
                       <CardFromId id={id} size="sm" noInspect selected={selected === id} faded={cardsById[id]?.cost > match.focus.player} />
+                      <div className="soft-reflection" />
                     </motion.div>
                   );
                 })}

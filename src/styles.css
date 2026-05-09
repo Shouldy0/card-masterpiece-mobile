@@ -441,3 +441,33 @@
 .effect-obsession {
   animation: aggressive-pulse 0.4s infinite cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* --- REVERIE: Premium Hand Aesthetics --- */
+
+@keyframes hand-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.hand-container {
+  animation: hand-float 6s infinite ease-in-out;
+}
+
+.card-shadow-premium {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8),
+              0 0 20px rgba(168, 85, 247, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.card-shadow-premium:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9),
+              0 0 40px rgba(255, 215, 0, 0.2);
+}
+
+.soft-reflection {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 40%, rgba(255,255,255,0.05) 60%, transparent 100%);
+  pointer-events: none;
+  z-index: 5;
+}
