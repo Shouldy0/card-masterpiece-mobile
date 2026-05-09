@@ -59,7 +59,7 @@ function Shop() {
     if (item.type === "pack") {
       const r = buyPack(item.cost, item.currency);
       if (!r) { play("fail"); toast.error("Risorse insufficienti"); }
-      else { play("success"); toast.success(`${item.title} acquistato!`); navigateToPackOpening(r); }
+      else { play("success"); toast.success(`${item.title} acquistato!`); }
     } else {
       const success = buyCosmetic(item.id, item.cost, item.currency);
       if (!success) { play("fail"); toast.error("Risorse insufficienti o già posseduto"); }
@@ -67,62 +67,60 @@ function Shop() {
     }
   };
 
-  // Mock function for now
-  const navigateToPackOpening = (cards: string[]) => {
-    console.log("Opening cards:", cards);
-  };
-
   return (
     <MobileFrame>
-      <header className="flex items-center justify-between px-4 pt-6">
-        <Link to="/home" className="flex size-9 items-center justify-center rounded-full bg-card/60 ring-1 ring-gold/30"><ArrowLeft className="h-4 w-4 text-gold" /></Link>
-        <h1 className="flex-1 text-center font-display text-lg gold-text tracking-widest">NEGOZIO</h1>
-        <div className="flex flex-col items-end gap-1">
-          <div className="flex items-center gap-1 rounded-full bg-card/60 px-2 py-0.5 ring-1 ring-gold/30 text-[10px]"><Coins className="h-2.5 w-2.5 text-gold" />{player.gold.toLocaleString("it-IT")}</div>
-          <div className="flex items-center gap-1 rounded-full bg-card/60 px-2 py-0.5 ring-1 ring-gold/30 text-[10px]"><Diamond className="h-2.5 w-2.5 text-mystic-glow" />{player.gems}</div>
+      <header className="flex items-center justify-between px-4 pt-4 pb-2">
+        <Link to="/home" className="flex size-8 items-center justify-center rounded-full bg-card/60 ring-1 ring-gold/30"><ArrowLeft className="h-4 w-4 text-gold" /></Link>
+        <h1 className="flex-1 text-center font-display text-base gold-text tracking-[0.2em] uppercase">Negozio</h1>
+        <div className="flex flex-col items-end gap-0.5">
+          <div className="flex items-center gap-1 rounded-full bg-card/60 px-2 py-0.5 ring-1 ring-gold/30 text-[10px] text-gold font-bold"><Coins className="h-2.5 w-2.5" />{player.gold.toLocaleString("it-IT")}</div>
+          <div className="flex items-center gap-1 rounded-full bg-card/60 px-2 py-0.5 ring-1 ring-gold/30 text-[10px] text-mystic-glow font-bold"><Diamond className="h-2.5 w-2.5" />{player.gems}</div>
         </div>
       </header>
 
-      <div className="mt-4 flex gap-2 overflow-x-auto scrollbar-hide px-4">
+      <div className="mt-2 flex gap-2 overflow-x-auto scrollbar-hide px-4 py-2">
         {tabs.map((t) => (
           <button 
             key={t} 
             onClick={() => { setTab(t); play("click"); }} 
-            className={`shrink-0 rounded-full px-5 py-2 text-[10px] uppercase tracking-widest transition-all ${tab === t ? "bg-mystic text-foreground ring-2 ring-gold shadow-[0_0_15px_rgba(255,215,0,0.3)]" : "bg-card/40 text-muted-foreground ring-1 ring-gold/20 hover:bg-card/60"}`}
+            className={`shrink-0 rounded-full px-5 py-2 text-[10px] font-bold uppercase tracking-widest transition-all ${tab === t ? "bg-mystic text-white ring-2 ring-gold shadow-[0_0_20px_rgba(180,80,255,0.4)]" : "bg-card/40 text-muted-foreground ring-1 ring-gold/20"}`}
           >
             {t}
           </button>
         ))}
       </div>
 
-      <div className="mt-6 flex-1 px-4 pb-24 overflow-y-auto custom-scrollbar">
-        <AnimatePresence mode="wait">
-          <motion.div 
-            key={tab}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-4"
-          >
-            {filteredItems.map((item) => (
-              <ShopRow 
-                key={item.id} 
-                item={item} 
-                isOwned={player.ownedCosmetics?.includes(item.id)}
-                onBuy={() => handleBuy(item)} 
-              />
-            ))}
-          </motion.div>
-        </AnimatePresence>
-        
-        {tab === "Consigliati" && (
-          <div className="mt-8 p-4 rounded-2xl bg-gradient-to-br from-mystic/20 to-abyss ring-1 ring-gold/20 text-center">
-            <Sparkles className="mx-auto h-6 w-6 text-gold mb-2" />
-            <h3 className="font-display text-sm text-gold uppercase tracking-widest">Abbonamento Premium</h3>
-            <p className="text-[10px] text-muted-foreground mt-1">Ottieni gemme giornaliere e accesso a card art esclusive.</p>
-            <button className="mt-4 w-full py-2 rounded-full bg-gold text-black font-display text-[10px] uppercase tracking-widest font-black">Scopri di più</button>
-          </div>
-        )}
+      <div className="mt-2 flex-1 px-4 overflow-y-auto scrollbar-hide">
+        <div className="pb-32 pt-2">
+          <AnimatePresence mode="wait">
+            <motion.div 
+              key={tab}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-5"
+            >
+              {filteredItems.map((item) => (
+                <ShopRow 
+                  key={item.id} 
+                  item={item} 
+                  isOwned={player.ownedCosmetics?.includes(item.id)}
+                  onBuy={() => handleBuy(item)} 
+                />
+              ))}
+            </motion.div>
+          </AnimatePresence>
+          
+          {tab === "Consigliati" && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-8 p-5 rounded-3xl bg-gradient-to-br from-mystic/30 to-abyss ring-1 ring-gold/30 text-center relative overflow-hidden">
+              <div className="absolute inset-0 nebula opacity-40" />
+              <Sparkles className="mx-auto h-6 w-6 text-gold mb-3 relative z-10" />
+              <h3 className="font-display text-sm text-gold uppercase tracking-[0.2em] relative z-10">Abbonamento Premium</h3>
+              <p className="text-[11px] text-foreground/80 mt-2 leading-relaxed relative z-10">Ottieni gemme giornaliere e accesso a card art esclusive.</p>
+              <button className="mt-5 w-full py-3 rounded-full bg-gradient-to-r from-gold to-amber-eclipse text-abyss font-display text-[11px] uppercase tracking-widest font-black shadow-lg relative z-10 active:scale-95 transition-transform">Scopri di più</button>
+            </motion.div>
+          )}
+        </div>
       </div>
 
       <BottomNav />
@@ -134,26 +132,26 @@ function ShopRow({ item, isOwned, onBuy }: { item: ShopItem, isOwned: boolean, o
   const Icon = item.icon;
   
   return (
-    <div className={`relative flex items-center gap-4 rounded-2xl p-4 transition-all ${isOwned ? "bg-card/20 opacity-80" : "bg-card/40 ring-1 ring-gold/15 hover:ring-gold/40 hover:bg-card/60"}`}>
+    <div className={`relative flex items-center gap-4 rounded-2xl p-4 transition-all ${isOwned ? "bg-card/20 opacity-80" : "bg-card/60 ring-1 ring-gold/20 hover:ring-gold/40 shadow-xl"}`}>
       {item.badge && (
-        <div className="absolute -top-2 -left-1 rounded-md bg-mystic px-2 py-0.5 text-[7px] font-black uppercase tracking-widest text-foreground ring-1 ring-gold/50 shadow-lg z-10">
+        <div className="absolute -top-2.5 left-3 rounded-md bg-gold px-2.5 py-1 text-[8px] font-black uppercase tracking-widest text-abyss shadow-lg z-10">
           {item.badge}
         </div>
       )}
       
-      <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-mystic/30 to-abyss ring-1 ring-gold/30">
-        <Icon className={`h-6 w-6 ${item.currency === "gems" ? "text-mystic-glow" : "text-gold"}`} />
+      <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-mystic/40 to-abyss ring-1 ring-gold/30">
+        <Icon className={`h-7 w-7 ${item.currency === "gems" ? "text-mystic-glow" : "text-gold"}`} />
       </div>
 
       <div className="flex-1 min-w-0">
-        <h4 className="font-display text-xs text-foreground uppercase tracking-wider">{item.title}</h4>
-        <p className="text-[9px] text-muted-foreground line-clamp-1 mt-0.5">{item.sub}</p>
+        <h4 className="font-display text-[11px] text-foreground uppercase tracking-widest font-bold">{item.title}</h4>
+        <p className="text-[10px] text-muted-foreground mt-1 leading-tight">{item.sub}</p>
       </div>
 
       <button 
         onClick={onBuy}
         disabled={isOwned}
-        className={`flex min-w-[80px] items-center justify-center gap-1.5 rounded-full px-3 py-2 text-[10px] font-bold transition-all ${isOwned ? "bg-emerald-500/20 text-emerald-400 cursor-default" : "bg-mystic/40 text-foreground ring-1 ring-gold/40 hover:bg-mystic/60 active:scale-95"}`}
+        className={`flex min-w-[85px] items-center justify-center gap-1.5 rounded-full px-3 py-2.5 text-[10px] font-black transition-all ${isOwned ? "bg-emerald-500/20 text-emerald-400 cursor-default ring-1 ring-emerald-500/30" : "bg-mystic/40 text-foreground ring-1 ring-gold/40 hover:bg-mystic/60 active:scale-95"}`}
       >
         {isOwned ? (
           "POSSEDUTO"
