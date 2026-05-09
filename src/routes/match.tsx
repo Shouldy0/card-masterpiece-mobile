@@ -330,78 +330,114 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
   const isWinning = playerPower > aiPower;
 
   return (
-    <div 
+    <motion.div 
       onClick={onDrop}
+      whileTap={{ scale: 0.98 }}
       className={cn(
-        "flex-1 relative flex flex-col rounded-[2rem] overflow-hidden border transition-all duration-500",
-        canPlay ? "border-gold/60 ring-2 ring-gold/20 cursor-pointer scale-[1.02] z-20" : "border-white/10 bg-card/5 backdrop-blur-xl",
-        isWinning && cards.length > 0 && "shadow-[0_0_40px_rgba(255,215,0,0.1)]"
+        "flex-1 relative flex flex-col rounded-[2.5rem] overflow-hidden border transition-all duration-700",
+        canPlay ? "border-gold/60 ring-4 ring-gold/10 cursor-pointer scale-[1.02] z-20 shadow-[0_0_50px_rgba(255,215,0,0.2)]" : "border-white/5 bg-card/5 backdrop-blur-2xl",
+        isWinning && cards.length > 0 ? "border-gold/40 shadow-[inset_0_0_60px_rgba(255,215,0,0.1)]" : ""
       )}
     >
-      {/* Background Art - Using the generated/meta images */}
-      <div className="absolute inset-0 -z-10">
-        <div className={cn("absolute inset-0 opacity-40 bg-gradient-to-b from-black/20 via-transparent to-black/80")} />
-        <div className={cn("absolute inset-0 opacity-20 blur-xl", meta.bg)} />
-        {/* Placeholder for generated art if available */}
-        <div className="size-full bg-cover bg-center" style={{ backgroundImage: `url(${territory.id === 'memoria' ? '/territory_memoria_1778320602674.png' : ''})` }} />
-      </div>
+      {/* Background Layer with Parallax & Particles */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        {/* Immersive Gradient Overlay */}
+        <div className={cn("absolute inset-0 z-10 bg-gradient-to-b from-black/40 via-transparent to-black/90")} />
+        
+        {/* Parallax Background Art */}
+        <motion.div 
+          initial={{ scale: 1.1 }}
+          animate={{ scale: 1, x: isWinning ? [-2, 2, -2] : 0 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="size-full bg-cover bg-center grayscale-[0.2]"
+          style={{ backgroundImage: `url(${territory.id === 'memoria' ? '/territory_memoria_1778320602674.png' : ''})` }}
+        />
 
-      {/* Header Info */}
-      <div className="p-4 text-center space-y-1">
-        <div className="flex items-center justify-center gap-2">
-           <span className="text-xl filter drop-shadow-lg">{meta.icon}</span>
-           <h4 className={cn("font-display text-[10px] uppercase tracking-[0.3em] font-black drop-shadow-md", meta.color)}>{territory.name}</h4>
+        {/* Dynamic Particles Layer */}
+        <div className="absolute inset-0 z-20 pointer-events-none opacity-40">
+           {Array.from({ length: 12 }).map((_, i) => (
+             <motion.div
+               key={i}
+               className={cn("absolute size-1 rounded-full blur-[1px]", meta.color.replace("text-", "bg-"))}
+               animate={{ 
+                 y: [-20, 500],
+                 x: [Math.random() * 200, Math.random() * 200],
+                 opacity: [0, 0.8, 0],
+                 scale: [0, 1, 0]
+               }}
+               transition={{ 
+                 duration: 10 + Math.random() * 10,
+                 repeat: Infinity,
+                 delay: Math.random() * 10
+               }}
+               style={{ left: `${Math.random() * 100}%`, top: `-10%` }}
+             />
+           ))}
         </div>
-        <p className="text-[7px] text-white/60 leading-tight px-2 line-clamp-2">{territory.rule}</p>
       </div>
 
-      {/* Battlefield Grid - 2 columns */}
-      <div className="flex-1 flex flex-col px-2 py-4 gap-4 relative">
-        {/* Enemy Side Grid */}
-        <div className="grid grid-cols-2 gap-1.5 place-items-center auto-rows-min h-[40%]">
+      {/* Header Info - Premium Typography */}
+      <div className="p-5 text-center relative z-30">
+        <motion.div 
+          animate={{ y: [0, -2, 0] }}
+          transition={{ duration: 4, repeat: Infinity }}
+          className="flex flex-col items-center gap-1.5"
+        >
+           <span className="text-2xl filter drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]">{meta.icon}</span>
+           <h4 className={cn("font-display text-[11px] uppercase tracking-[0.4em] font-black drop-shadow-2xl", meta.color)}>{territory.name}</h4>
+           <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+           <p className="text-[7px] text-white/50 leading-relaxed font-sans max-w-[80px] mt-1">{territory.rule}</p>
+        </motion.div>
+      </div>
+
+      {/* Battlefield Grid - High-End Slots */}
+      <div className="flex-1 flex flex-col px-2 py-2 gap-4 relative z-30">
+        <div className="grid grid-cols-2 gap-2 place-items-center auto-rows-min h-[42%]">
           {cards.filter(c => c.side === "ai").map((c) => (
-            <motion.div key={c.uid} initial={{ scale: 0, y: -20 }} animate={{ scale: 1, y: 0 }}>
+            <motion.div key={c.uid} layoutId={c.uid} initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
               <CardFromId id={c.cardId} size="xs" noInspect />
             </motion.div>
           ))}
         </div>
 
-        {/* Divider Line */}
-        <div className="absolute top-1/2 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-        {/* Player Side Grid */}
-        <div className="grid grid-cols-2 gap-1.5 place-items-center auto-rows-min h-[40%] mt-auto">
+        <div className="grid grid-cols-2 gap-2 place-items-center auto-rows-min h-[42%] mt-auto">
           {cards.filter(c => c.side === "player").map((c) => (
-            <motion.div key={c.uid} initial={{ scale: 0, y: 20 }} animate={{ scale: 1, y: 0 }}>
+            <motion.div key={c.uid} layoutId={c.uid} initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
               <CardFromId id={c.cardId} size="xs" noInspect glow={isWinning} />
             </motion.div>
           ))}
         </div>
       </div>
 
-      {/* Scores Footer - Concept Style */}
-      <div className="p-3 bg-gradient-to-t from-black/80 to-transparent">
-        <div className="flex justify-between items-end gap-2 px-1">
-          <div className="flex flex-col items-center">
-            <span className={cn("font-display text-lg", isWinning ? "text-gold scale-125 font-black" : "text-white/40")}>{playerPower}</span>
-            <span className="text-[5px] uppercase tracking-tighter text-white/30">Il tuo potere</span>
+      {/* Concept Scores - Enhanced Glassmorphism */}
+      <div className="p-4 bg-gradient-to-t from-black via-black/80 to-transparent relative z-40">
+        <div className="flex justify-around items-end gap-1">
+          <div className="flex flex-col items-center group">
+            <motion.span 
+              key={playerPower}
+              initial={{ scale: 0.8 }} animate={{ scale: 1 }}
+              className={cn("font-display text-2xl drop-shadow-[0_0_15px_rgba(255,215,0,0.3)]", isWinning ? "text-gold font-black scale-110" : "text-white/30")}
+            >
+              {playerPower}
+            </motion.span>
+            <span className="text-[6px] uppercase tracking-[0.2em] text-white/20 mt-1">IL TUO POTERE</span>
           </div>
+          
+          <div className="h-6 w-px bg-white/5 mx-1" />
+
           <div className="flex flex-col items-center">
-            <span className={cn("font-display text-lg", aiPower > playerPower ? "text-rose scale-110 font-black" : "text-white/20")}>{aiPower}</span>
-            <span className="text-[5px] uppercase tracking-tighter text-white/20">Potere avversario</span>
+            <motion.span 
+              key={aiPower}
+              initial={{ scale: 0.8 }} animate={{ scale: 1 }}
+              className={cn("font-display text-xl", aiPower > playerPower ? "text-rose font-black scale-105" : "text-white/20")}
+            >
+              {aiPower}
+            </motion.span>
+            <span className="text-[6px] uppercase tracking-[0.2em] text-white/10 mt-1">AVVERSARIO</span>
           </div>
         </div>
       </div>
-
-      {/* Selection Glow */}
-      {canPlay && (
-        <motion.div 
-          animate={{ opacity: [0.2, 0.4, 0.2] }} 
-          transition={{ duration: 1.5, repeat: Infinity }} 
-          className="absolute inset-0 border-2 border-gold/40 rounded-[2rem] pointer-events-none" 
-        />
-      )}
-    </div>
+    </motion.div>
   );
 }
 
