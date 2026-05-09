@@ -388,7 +388,7 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { te
       whileTap={{ scale: 0.98 }}
       animate={isImpacted ? { scale: [1, 1.05, 1], rotate: [0, 1, -1, 0] } : {}}
       className={cn(
-        "flex-1 relative flex flex-col rounded-[2.5rem] overflow-hidden border transition-all duration-700 tarot-border",
+        "flex-1 relative flex flex-col rounded-[2.5rem] overflow-hidden border transition-all duration-700 tarot-border rim-light",
         `aura-${territory.id}`,
         "breathing-light",
         territory.id === "trauma" && "trauma-cracks",
@@ -400,7 +400,8 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { te
         canPlay ? "border-gold/60 ring-4 ring-gold/10 cursor-pointer scale-[1.02] z-20 shadow-[0_0_50px_rgba(255,215,0,0.2)]" : "border-white/5 bg-card/5 backdrop-blur-2xl"
       )}
     >
-      {/* Living Shadows Layer */}
+      {/* Cinematic Lighting Layers */}
+      <div className="volumetric-fog" />
       <div className="living-shadows" />
 
       {/* Impact VFX Layer */}

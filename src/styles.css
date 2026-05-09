@@ -501,3 +501,38 @@
 .power-glow {
   animation: power-pulse-glow 2s infinite ease-in-out;
 }
+
+/* --- REVERIE: Cinematic Volumetric Lighting --- */
+
+@keyframes fog-drift {
+  0%, 100% { transform: translateX(-10%) translateY(0); opacity: 0.3; }
+  50% { transform: translateX(10%) translateY(-5px); opacity: 0.5; }
+}
+
+.volumetric-fog {
+  position: absolute;
+  inset: -50%;
+  background: radial-gradient(circle at center, currentColor 0%, transparent 60%);
+  filter: blur(60px);
+  animation: fog-drift 15s infinite ease-in-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.rim-light {
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05),
+              inset 0 0 40px rgba(0, 0, 0, 0.5);
+}
+
+.aura-memoria { 
+  --aura-color: rgba(255, 215, 0, 0.15);
+  color: var(--color-gold);
+}
+.aura-trauma { 
+  --aura-color: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
+}
+.aura-sogno { 
+  --aura-color: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
