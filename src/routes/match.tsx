@@ -9,7 +9,7 @@ import { sounds } from "@/utils/audio";
 import { Hourglass, Settings, Eye, Ghost, Zap, Trophy, Play, CheckCircle2, RefreshCw, Calendar, Users, Loader2, PlayCircle, Skull, ShieldCheck, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSound } from "@/hooks/useSound";
-import { ChevronRight, ArrowUpCircle, Info } from "lucide-react";
+import { ChevronRight, ArrowUpCircle, Info, X } from "lucide-react";
 
 export const Route = createFileRoute("/match")({ component: Match });
 
