@@ -115,7 +115,7 @@ function Match() {
       </div>
 
       {/* Main Layout */}
-      <div className="relative z-10 flex h-full flex-col p-4">
+      <div className="relative z-10 flex h-full flex-col p-4 floating-board">
         {/* Minimal Header */}
         <div className="flex justify-between items-center mb-6">
            <div className="flex items-center gap-3">
@@ -402,51 +402,67 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { te
         </motion.div>
       </div>
 
-      {/* Battlefield Grid - High-End Slots */}
-      <div className="flex-1 flex flex-col px-2 py-2 gap-4 relative z-30">
-        <div className="grid grid-cols-2 gap-2 place-items-center auto-rows-min h-[42%]">
-          {cards.filter(c => c.side === "ai").map((c) => (
-            <motion.div key={c.uid} layoutId={c.uid} initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+      {/* Battlefield Grid - High-End Stacked Layout */}
+      <div className="flex-1 flex flex-col px-1 py-1 gap-2 relative z-30 justify-between">
+        {/* Opponent Stack */}
+        <div className="relative h-[40%] flex justify-center items-start pt-2">
+          {cards.filter(c => c.side === "ai").map((c, i) => (
+            <motion.div 
+              key={c.uid} 
+              layoutId={c.uid} 
+              initial={{ scale: 0.5, opacity: 0 }} 
+              animate={{ scale: 1, opacity: 1, x: i * 8, y: i * 4 }}
+              className="absolute first:relative"
+              style={{ zIndex: i }}
+            >
               <CardFromId id={c.cardId} size="xs" noInspect />
             </motion.div>
           ))}
         </div>
 
-        <div className="grid grid-cols-2 gap-2 place-items-center auto-rows-min h-[42%] mt-auto">
-          {cards.filter(c => c.side === "player").map((c) => (
-            <motion.div key={c.uid} layoutId={c.uid} initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+        {/* Player Stack */}
+        <div className="relative h-[40%] flex justify-center items-end pb-2">
+          {cards.filter(c => c.side === "player").map((c, i) => (
+            <motion.div 
+              key={c.uid} 
+              layoutId={c.uid} 
+              initial={{ scale: 0.5, opacity: 0 }} 
+              animate={{ scale: 1, opacity: 1, x: i * 8, y: -i * 4 }}
+              className="absolute first:relative"
+              style={{ zIndex: i }}
+            >
               <CardFromId id={c.cardId} size="xs" noInspect glow={isWinning} />
             </motion.div>
           ))}
         </div>
       </div>
 
-      {/* Concept Scores - Enhanced Glassmorphism */}
-      <div className="p-4 bg-gradient-to-t from-black via-black/80 to-transparent relative z-40">
-        <div className="flex justify-around items-end gap-1">
-          <div className="flex flex-col items-center group">
-            <motion.span 
-              key={playerPower}
-              initial={{ scale: 0.8 }} animate={{ scale: 1 }}
-              className={cn("font-display text-2xl drop-shadow-[0_0_15px_rgba(255,215,0,0.3)]", isWinning ? "text-gold font-black scale-110" : "text-white/30")}
-            >
-              {playerPower}
-            </motion.span>
-            <span className="text-[6px] uppercase tracking-[0.2em] text-white/20 mt-1">IL TUO POTERE</span>
-          </div>
+      {/* Dramatic Power Numbers */}
+      <div className="p-3 bg-gradient-to-t from-black/80 to-transparent relative z-40">
+        <div className="flex justify-between items-center px-2">
+          <motion.div 
+            key={playerPower}
+            initial={{ scale: 0.8 }} animate={{ scale: 1 }}
+            className={cn(
+              "font-display text-3xl transition-all",
+              isWinning ? "text-gold font-black drop-shadow-[0_0_20px_rgba(255,215,0,0.6)] scale-110" : "text-white/20"
+            )}
+          >
+            {playerPower}
+          </motion.div>
           
-          <div className="h-6 w-px bg-white/5 mx-1" />
+          <div className="w-px h-6 bg-white/5" />
 
-          <div className="flex flex-col items-center">
-            <motion.span 
-              key={aiPower}
-              initial={{ scale: 0.8 }} animate={{ scale: 1 }}
-              className={cn("font-display text-xl", aiPower > playerPower ? "text-rose font-black scale-105" : "text-white/20")}
-            >
-              {aiPower}
-            </motion.span>
-            <span className="text-[6px] uppercase tracking-[0.2em] text-white/10 mt-1">AVVERSARIO</span>
-          </div>
+          <motion.div 
+            key={aiPower}
+            initial={{ scale: 0.8 }} animate={{ scale: 1 }}
+            className={cn(
+              "font-display text-2xl transition-all",
+              aiPower > playerPower ? "text-rose font-black drop-shadow-[0_0_15px_rgba(244,63,94,0.4)]" : "text-white/10"
+            )}
+          >
+            {aiPower}
+          </motion.div>
         </div>
       </div>
     </motion.div>
