@@ -240,7 +240,7 @@ export const CARDS: CardDef[] = [
   { id: "e6_quercia", name: "Quercia Antica", type: "eco", cost: 6, power: 10, rarity: "leggendaria", text: "Immortale.", flavor: "Ho visto imperi mentali sorgere e cadere.", effect: { kind: "none" }, unlockLevel: 10, art: "/cards/quercia_antica.png?v=3" },
   { id: "e7_muschio", name: "Muschio Morbido", type: "eco", cost: 2, power: 2, rarity: "comune", text: "Protezione.", flavor: "Il silenzio della natura è una maschera perfetta.", effect: { kind: "none" }, traits: ["protector"], unlockLevel: 1, art: "/cards/muschio_morbido.png?v=3" },
   { id: "e8_vento", name: "Vento del Nord", type: "eco", cost: 3, power: 5, rarity: "rara", text: "Spostamento.", flavor: "Porta via i pensieri pesanti.", effect: { kind: "none" }, unlockLevel: 3, art: "/cards/vento_nord.png?v=3" },
-  { id: "e9_pietra", name: "Pietra Filosofale", type: "eco", cost: 7, power: 12, rarity: "leggendaria", text: "Alchimia.", flavor: "Trasformare il dolore in saggezza pura.", effect: { kind: "none" }, unlockLevel: 10, art: "/cards/pietra_filosofale.png?v=3" },
+  { id: "e9_pietra", name: "Pietra Filiale", type: "eco", cost: 7, power: 12, rarity: "leggendaria", text: "Alchimia.", flavor: "Trasformare il dolore in saggezza pura.", effect: { kind: "none" }, unlockLevel: 10, art: "/cards/pietra_filosofale.png?v=3" },
   { id: "e10_eternita", name: "Eternità", type: "eco", cost: 8, power: 18, rarity: "leggendaria", text: "Fine del tempo.", flavor: "Il momento in cui tutto si ferma e tutto ha senso.", effect: { kind: "none" }, traits: ["growth"], unlockLevel: 10, art: "/cards/eternita_eco.png?v=3" },
 ];
 
