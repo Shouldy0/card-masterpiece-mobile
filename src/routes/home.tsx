@@ -23,7 +23,7 @@ function Home() {
     return () => {};
   }, []);
 
-  const play_btn = () => { play("whoosh"); startMatch(); navigate({ to: "/vs" }); };
+  const play_btn = () => { sounds.play("whoosh"); startMatch(); navigate({ to: "/vs" }); };
 
   return (
     <MobileFrame>

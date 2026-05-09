@@ -1,6 +1,7 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { Home, Library, BookOpen, ShoppingBag, Trophy, Calendar, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { sounds } from "@/utils/audio";
 
 const items = [
   { to: "/home", label: "Home", icon: Home },
@@ -22,6 +23,7 @@ export function BottomNav() {
             <li key={it.to} className="flex-1">
               <Link
                 to={it.to}
+                onClick={() => sounds.play("tick")}
                 className={cn(
                   "flex flex-col items-center gap-0.5 rounded-md px-1 py-1.5 text-[10px] font-medium transition-colors",
                   active ? "text-gold" : "text-muted-foreground hover:text-foreground"

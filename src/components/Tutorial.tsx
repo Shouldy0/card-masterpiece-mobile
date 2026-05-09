@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "@/game/store";
+import { useNavigate } from "@tanstack/react-router";
+import { sounds } from "@/utils/audio";
 import { Sparkles, Brain, BookOpen, Zap, Trophy, ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -49,10 +51,12 @@ export function TutorialOverlay() {
 
   const next = () => {
     if (isLast) {
+      sounds.play("victory");
       setOnboardingDone();
       startTutorialMatch();
       navigate({ to: "/match" });
     } else {
+      sounds.play("chime");
       setCurrentStep(s => s + 1);
     }
   };

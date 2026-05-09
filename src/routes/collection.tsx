@@ -8,6 +8,7 @@ import { CanvasBackground } from "@/components/CanvasBackground";
 import { Search, Filter, ChevronDown, Sparkles, LayoutGrid, Zap, Eye, User, Map, Activity, Shield, Shapes, Brain, X, Info, Layers, Sword, Heart } from "lucide-react";
 import { GameCard } from "@/components/GameCard";
 import { BottomNav } from "@/components/BottomNav";
+import { sounds } from "@/utils/audio";
 
 type CollectionTab = "CARTE" | "BOARD" | "EFFETTI";
 
@@ -62,7 +63,7 @@ function Collection() {
               {(["CARTE", "BOARD", "EFFETTI"] as CollectionTab[]).map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => { setActiveTab(tab); sounds.play("tick"); }}
                   className={`flex-1 py-2 rounded-xl text-[9px] font-black tracking-[0.2em] uppercase transition-all duration-300 ${
                     activeTab === tab 
                       ? "bg-gold/20 text-gold ring-1 ring-gold/40 shadow-[0_0_20px_rgba(255,215,0,0.2)]" 
@@ -131,7 +132,7 @@ function Collection() {
                           size="md" 
                           faded={!isOwned} 
                           glow={isOwned && card.rarity === 'leggendaria'}
-                          onClick={() => isOwned && setSelectedCard(card)}
+                          onClick={() => { if (isOwned) { setSelectedCard(card); sounds.play("card_deal"); } }}
                         />
                       </motion.div>
                     );
@@ -224,7 +225,7 @@ function Collection() {
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
               <motion.div 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                onClick={() => setSelectedCard(null)}
+                onClick={() => { setSelectedCard(null); sounds.play("lock"); }}
                 className="absolute inset-0 bg-black/95 backdrop-blur-xl"
               />
               
