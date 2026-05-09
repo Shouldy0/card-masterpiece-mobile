@@ -14,7 +14,7 @@ import { TutorialOverlay } from "@/components/Tutorial";
 export const Route = createFileRoute("/home")({ component: Home });
 
 function Home() {
-  const { player, startMatch, onboardingPackOpened, openStarterPack, setOnboardingPackOpened } = useGame();
+  const { player, startMatch, startTutorialMatch, onboardingPackOpened, openStarterPack, setOnboardingPackOpened } = useGame();
   const navigate = useNavigate();
   const { play } = useSound();
 
@@ -26,7 +26,7 @@ function Home() {
   const play_btn = () => { 
     sounds.play("whoosh"); 
     if (!player?.onboardingDone) {
-      useGame.getState().startTutorialMatch();
+      startTutorialMatch();
     } else {
       startMatch(); 
     }
