@@ -157,6 +157,7 @@ interface AppStore {
   lastSyncedAt: string | null;
   user: any | null;
   setUser: (user: any | null) => void;
+  setPlayer: (player: PlayerProgress) => void;
   resetPlayer: () => void;
   claimPassReward: (id: string, gold?: number) => void;
   activatePremiumPass: () => void;
@@ -643,6 +644,7 @@ export const useGame = create<AppStore>()(
 
       user: null,
       setUser: (user) => set({ user }),
+      setPlayer: (player) => set({ player }),
       resetPlayer: () => {
         const starterDeck = buildStarterDeck();
         set({
@@ -707,8 +709,9 @@ export const useGame = create<AppStore>()(
       version: 3,
       migrate: (persistedState: any, version: number) => {
         if (version < 3) {
-          // Force reset if too old or missing critical fields
-          return undefined as any; 
+          // Instead of undefined, return a minimal valid state if possible, 
+          // or just let persist handle the reset by returning initial state
+          return {} as any; 
         }
         return persistedState as AppStore;
       },

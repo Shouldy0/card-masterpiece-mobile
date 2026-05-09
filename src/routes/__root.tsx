@@ -36,8 +36,7 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
-  console.log("REVERIE: RootComponent rendering");
-  const setUser = useGame((s) => s.setUser);
+  const { setUser, setPlayer, resetPlayer } = useGame();
 
   useEffect(() => {
     let unsub: any = null;
@@ -52,9 +51,9 @@ function RootComponent() {
             const { loadPlayerFromCloud } = await import("@/game/persistence");
             const cloudData = await loadPlayerFromCloud(user.uid);
             if (cloudData) {
-              useGame.setState({ player: cloudData });
+              setPlayer(cloudData);
             } else {
-              useGame.getState().resetPlayer();
+              resetPlayer();
             }
           }
         });

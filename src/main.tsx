@@ -24,9 +24,7 @@ const router = createRouter({
         <p className="text-[10px] text-muted-foreground mb-2 uppercase tracking-widest">Dettaglio Tecnico:</p>
         <div className="bg-card/40 p-3 rounded-xl border border-gold/20 mb-6 max-h-60 overflow-auto">
           <p className="text-[8px] text-rose font-mono break-all text-left uppercase whitespace-pre-wrap">
-            {error?.message || "Errore sconosciuto."}
-            {"\n\nSTACK:\n"}
-            {error?.stack?.slice(0, 500) || "Stack non disponibile."}
+            {typeof error === 'object' ? JSON.stringify(error, null, 2) : String(error)}
           </p>
         </div>
         <button 
@@ -41,8 +39,6 @@ const router = createRouter({
 })
 
 const rootElement = document.getElementById('root')!;
-if (!rootElement.innerHTML) {
-  ReactDOM.createRoot(rootElement).render(
-    <RouterProvider router={router} />
-  )
-}
+ReactDOM.createRoot(rootElement).render(
+  <RouterProvider router={router} />
+)
