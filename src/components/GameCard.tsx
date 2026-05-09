@@ -184,7 +184,7 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
       {/* Power Value (Floating Hexagon) - Moved to Bottom Right to avoid overlapping text */}
       <div className={cn(
         "absolute z-40 flex items-center justify-center shadow-2xl transition-all duration-300",
-        isXs ? "bottom-0 right-0 w-7 h-4" : isSm ? "bottom-0 right-0 w-9 h-5" : "bottom-2 right-2 w-16 h-9",
+        isXs ? "bottom-0 right-0 w-7 h-4" : isSm ? "bottom-0 right-0 w-9 h-5" : "bottom-3 right-3 w-16 h-9",
         isHovered && "scale-110 -translate-y-1"
       )} 
       style={{ 
