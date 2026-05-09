@@ -30,11 +30,7 @@ export const Route = createRootRoute({
       { title: "Reverie" },
       { name: "theme-color", content: "#0B0D17" },
     ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-    ],
   }),
-  shellComponent: ({ children }) => children,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });

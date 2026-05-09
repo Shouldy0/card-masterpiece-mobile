@@ -13,29 +13,47 @@ export const Route = createFileRoute("/")({
 function Loading() {
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
-  const onboardingDone = useGame((s) => s.onboardingDone);
   const { play } = useSound();
 
-  useEffect(() => { play("signature"); }, [play]);
+  useEffect(() => {
+    // Attempt to play signature sound, ignore if blocked
+    try { play("signature"); } catch (e) {}
+  }, [play]);
 
   useEffect(() => {
-    const id = setInterval(() => setProgress((p) => {
-      const n = Math.min(100, p + 4);
-      if (n !== p && n % 20 === 0) play("tick");
-      return n;
-    }), 60);
+    const id = setInterval(() => {
+      setProgress((p) => {
+        const n = Math.min(100, p + 2);
+        if (n !== p && n % 20 === 0) {
+          try { play("tick"); } catch (e) {}
+        }
+        return n;
+      });
+    }, 50);
     return () => clearInterval(id);
   }, [play]);
 
   useEffect(() => {
     if (progress >= 100) {
       const check = async () => {
-        const { getFirebase } = await import("@/lib/firebase");
-        const { auth } = await getFirebase();
-        if (!auth) return navigate({ to: "/auth" });
-        
-        const user = auth.currentUser;
-        navigate({ to: user ? "/home" : "/auth" });
+        try {
+          const { getFirebase } = await import("@/lib/firebase");
+          const { auth } = await getFirebase();
+          
+          if (!auth) {
+            console.warn("Auth not initialized, redirecting to login");
+            return navigate({ to: "/auth" });
+          }
+          
+          // Wait a bit for auth state to stabilize
+          setTimeout(() => {
+            const user = auth.currentUser;
+            navigate({ to: user ? "/home" : "/auth" });
+          }, 500);
+        } catch (err) {
+          console.error("Critical error during initialization:", err);
+          navigate({ to: "/auth" }); // Fallback to auth
+        }
       };
       check();
     }
