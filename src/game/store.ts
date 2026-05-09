@@ -700,17 +700,15 @@ export const useGame = create<AppStore>()(
       }
     }),
     { 
-      name: "reverie-store-v3", // Force clean v3
+      name: "reverie-store-v4", // Force clean v4
       storage: createJSONStorage(() => (typeof window !== "undefined" ? localStorage : {
         getItem: () => null,
         setItem: () => {},
         removeItem: () => {},
       } as any)),
-      version: 3,
+      version: 4,
       migrate: (persistedState: any, version: number) => {
-        if (version < 3) {
-          // Instead of undefined, return a minimal valid state if possible, 
-          // or just let persist handle the reset by returning initial state
+        if (version < 4) {
           return {} as any; 
         }
         return persistedState as AppStore;
