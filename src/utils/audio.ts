@@ -1,10 +1,16 @@
 /**
  * REVERIE Cinematic Sound Engine
- * Generates an evolving, dark-elegant ambient soundtrack procedurally.
- * Uses advanced Web Audio API nodes for a professional "background" feel.
+ * Robust implementation to prevent overlapping and ensure smooth transitions.
  */
 
 type SceneMusic = "home" | "match" | "none";
+
+interface BgmSession {
+  oscillators: OscillatorNode[];
+  gains: GainNode[];
+  filters: BiquadFilterNode[];
+  interval: any;
+}
 
 class SoundEngine {
   private ctx: AudioContext | null = null;
@@ -13,12 +19,9 @@ class SoundEngine {
   private sfxVol = 0.6;
   private muted = false;
 
-  // Synthesis Nodes
   private masterGain: GainNode | null = null;
-  private bgmNodes: { oscillators: OscillatorNode[], gains: GainNode[], filters: BiquadFilterNode[] } = { oscillators: [], gains: [], filters: [] };
-  private generativeInterval: any = null;
+  private activeSession: BgmSession | null = null;
 
-  // Asset Audio (keeping for SFX only)
   private sfxElements: Record<string, HTMLAudioElement> = {};
 
   constructor() {
@@ -44,20 +47,15 @@ class SoundEngine {
     this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
     this.masterGain = this.ctx.createGain();
     this.masterGain.connect(this.ctx.destination);
-    this.updateVolumes();
-  }
-
-  private updateVolumes() {
-    if (this.masterGain) {
-      this.masterGain.gain.setTargetAtTime(this.muted ? 0 : 1, this.ctx!.currentTime, 0.1);
-    }
   }
 
   setVolumes(music: number, sfx: number, muted: boolean) {
     this.musicVol = music;
     this.sfxVol = sfx;
     this.muted = muted;
-    this.updateVolumes();
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setTargetAtTime(muted ? 0 : 1, this.ctx.currentTime, 0.1);
+    }
   }
 
   startAmbient() { this.startSceneMusic("home"); }
@@ -65,14 +63,21 @@ class SoundEngine {
 
   startSceneMusic(scene: SceneMusic) {
     this.init();
-    if (!this.ctx || this.currentScene === scene || this.muted) return;
+    if (!this.ctx || this.muted) return;
+    if (this.currentScene === scene) return;
     
-    this.stopSceneMusic();
+    // Immediately clear current scene state to prevent rapid overlapping
+    const prevScene = this.currentScene;
     this.currentScene = scene;
+    
+    this.stopSceneMusic(prevScene !== "none"); // Fade if transitioning, else hard stop
 
+    if (scene === "none") return;
+
+    const session: BgmSession = { oscillators: [], gains: [], filters: [], interval: null };
     const now = this.ctx.currentTime;
     
-    // 1. DEEP DRONE LAYER (The Subconscious)
+    // 1. DEEP DRONE LAYER
     const droneFreqs = scene === "home" ? [55, 110, 82.41] : [41.20, 82.41, 61.74];
     droneFreqs.forEach((freq, i) => {
       const osc = this.ctx!.createOscillator();
@@ -82,7 +87,6 @@ class SoundEngine {
       osc.type = "sine";
       osc.frequency.setValueAtTime(freq, now);
       
-      // Slow LFO for frequency modulation
       const lfo = this.ctx!.createOscillator();
       const lfoGain = this.ctx!.createGain();
       lfo.frequency.setValueAtTime(0.1 + i * 0.05, now);
@@ -102,16 +106,18 @@ class SoundEngine {
       gain.connect(this.masterGain!);
       
       osc.start(now);
-      this.bgmNodes.oscillators.push(osc, lfo);
-      this.bgmNodes.gains.push(gain);
+      session.oscillators.push(osc, lfo);
+      session.gains.push(gain);
     });
 
-    // 2. GENERATIVE MELODY (The Memories)
+    // 2. GENERATIVE MELODY
     const scale = scene === "home" ? [220, 261.63, 329.63, 392, 440] : [196, 233.08, 293.66, 349.23];
-    this.generativeInterval = setInterval(() => {
-      if (!this.ctx || this.muted) return;
+    session.interval = setInterval(() => {
+      if (!this.ctx || this.muted || this.currentScene !== scene) return;
       this.playGhostNote(scale[Math.floor(Math.random() * scale.length)]);
     }, scene === "home" ? 5000 : 3000);
+
+    this.activeSession = session;
   }
 
   private playGhostNote(freq: number) {
@@ -124,21 +130,18 @@ class SoundEngine {
     const delay = this.ctx.createDelay();
     const feedback = this.ctx.createGain();
 
-    osc.type = "triangle";
+    osc.type = "sine"; // Simpler sine for less overlap clutter
     osc.frequency.setValueAtTime(freq, now);
-    osc.frequency.exponentialRampToValueAtTime(freq * 1.01, now + 5);
 
     filter.type = "lowpass";
-    filter.frequency.setValueAtTime(800, now);
-    filter.Q.setValueAtTime(5, now);
+    filter.frequency.setValueAtTime(600, now);
 
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(this.musicVol * 0.1, now + 2);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 8);
+    gain.gain.linearRampToValueAtTime(this.musicVol * 0.1, now + 1.5);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 6);
 
-    // Ethereal Echo
-    delay.delayTime.setValueAtTime(0.5, now);
-    feedback.gain.setValueAtTime(0.4, now);
+    delay.delayTime.setValueAtTime(0.4, now);
+    feedback.gain.setValueAtTime(0.3, now);
 
     osc.connect(filter);
     filter.connect(gain);
@@ -149,22 +152,29 @@ class SoundEngine {
     gain.connect(this.masterGain);
 
     osc.start(now);
-    osc.stop(now + 8);
+    osc.stop(now + 6);
   }
 
-  stopSceneMusic() {
-    if (this.generativeInterval) {
-      clearInterval(this.generativeInterval);
-      this.generativeInterval = null;
-    }
+  stopSceneMusic(fade = true) {
+    if (!this.activeSession) return;
+    
+    const session = this.activeSession;
+    this.activeSession = null;
+
+    if (session.interval) clearInterval(session.interval);
+    
     const now = this.ctx?.currentTime || 0;
-    this.bgmNodes.gains.forEach(g => g.gain.exponentialRampToValueAtTime(0.001, now + 2));
+    const fadeTime = fade ? 1.5 : 0.1;
+
+    session.gains.forEach(g => {
+      g.gain.cancelScheduledValues(now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + fadeTime);
+    });
+
     setTimeout(() => {
-      this.bgmNodes.oscillators.forEach(o => { try { o.stop(); o.disconnect(); } catch(e){} });
-      this.bgmNodes.gains.forEach(g => g.disconnect());
-      this.bgmNodes = { oscillators: [], gains: [], filters: [] };
-    }, 2000);
-    this.currentScene = "none";
+      session.oscillators.forEach(o => { try { o.stop(); o.disconnect(); } catch(e){} });
+      session.gains.forEach(g => g.disconnect());
+    }, fadeTime * 1000 + 100);
   }
 
   play(type: string) {
@@ -183,20 +193,19 @@ class SoundEngine {
       return;
     }
 
-    // Synthesized SFX Fallback
     if (this.ctx) {
       const now = this.ctx.currentTime;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = "sine";
       osc.frequency.setValueAtTime(880, now);
-      osc.frequency.exponentialRampToValueAtTime(440, now + 0.1);
-      gain.gain.setValueAtTime(0.05, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+      osc.frequency.exponentialRampToValueAtTime(440, now + 0.05);
+      gain.gain.setValueAtTime(0.04, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
       osc.connect(gain);
       gain.connect(this.masterGain!);
       osc.start(now);
-      osc.stop(now + 0.1);
+      osc.stop(now + 0.05);
     }
   }
 }
