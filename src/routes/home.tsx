@@ -12,8 +12,8 @@ import { cardsById } from "@/game/cards";
 
 export const Route = createFileRoute("/home")({ component: Home });
 
-function Home() {
   const { player, startMatch, onboardingPackOpened, openStarterPack, setOnboardingPackOpened } = useGame();
+  if (!player) return null;
   const navigate = useNavigate();
   const { play } = useSound();
 
@@ -120,14 +120,12 @@ function Home() {
       <BottomNav />
 
       {/* STARTER PACK OPENING OVERLAY */}
-      <AnimatePresence>
-        {!onboardingPackOpened && (
-          <StarterPackOpening 
-            onOpen={openStarterPack} 
-            onComplete={() => setOnboardingPackOpened(true)} 
-          />
-        )}
-      </AnimatePresence>
+      {!onboardingPackOpened && (
+        <StarterPackOpening 
+          onOpen={openStarterPack} 
+          onComplete={() => setOnboardingPackOpened(true)} 
+        />
+      )}
     </MobileFrame>
   );
 }
@@ -343,20 +341,18 @@ function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], on
               Risveglia Tutto
             </motion.button>
 
-            <AnimatePresence>
-              {stage === "done" && (
-                <motion.button 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={onComplete} 
-                  className="px-16 py-5 rounded-full bg-gradient-to-r from-gold via-mystic-glow to-gold text-black font-display font-black text-xs tracking-[0.3em] uppercase shadow-[0_0_50px_rgba(255,215,0,0.4)]"
-                >
-                  INIZIA IL VIAGGIO
-                </motion.button>
-              )}
-            </AnimatePresence>
+            {stage === "done" && (
+              <motion.button 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onComplete} 
+                className="px-16 py-5 rounded-full bg-gradient-to-r from-gold via-mystic-glow to-gold text-black font-display font-black text-xs tracking-[0.3em] uppercase shadow-[0_0_50px_rgba(255,215,0,0.4)]"
+              >
+                INIZIA IL VIAGGIO
+              </motion.button>
+            )}
           </div>
         </div>
       )}

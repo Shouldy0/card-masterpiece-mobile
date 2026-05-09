@@ -7,6 +7,7 @@ export function MusicProvider() {
 
   // Keep engine volumes in sync with settings
   useEffect(() => {
+    if (typeof soundOn !== 'boolean' || musicVolume === undefined || sfxVolume === undefined) return;
     sounds.setVolumes(musicVolume, sfxVolume, !soundOn);
   }, [soundOn, musicVolume, sfxVolume]);
 

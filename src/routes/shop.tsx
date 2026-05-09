@@ -47,6 +47,7 @@ const SHOP_ITEMS: ShopItem[] = [
 
 function Shop() {
   const { player, buyPack, buyCosmetic } = useGame();
+  if (!player) return null;
   const [tab, setTab] = useState<typeof tabs[number]>("Consigliati");
   const { play } = useSound();
 
@@ -92,24 +93,21 @@ function Shop() {
 
       <div className="mt-2 flex-1 px-4 overflow-y-auto scrollbar-hide">
         <div className="pb-32 pt-2">
-          <AnimatePresence mode="wait">
-            <motion.div 
-              key={tab}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="space-y-5"
-            >
-              {filteredItems.map((item) => (
-                <ShopRow 
-                  key={item.id} 
-                  item={item} 
-                  isOwned={player.ownedCosmetics?.includes(item.id)}
-                  onBuy={() => handleBuy(item)} 
-                />
-              ))}
-            </motion.div>
-          </AnimatePresence>
+          <motion.div 
+            key={tab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-5"
+          >
+            {filteredItems.map((item) => (
+              <ShopRow 
+                key={item.id} 
+                item={item} 
+                isOwned={player.ownedCosmetics?.includes(item.id)}
+                onBuy={() => handleBuy(item)} 
+              />
+            ))}
+          </motion.div>
           
           {tab === "Consigliati" && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-8 p-5 rounded-3xl bg-gradient-to-br from-mystic/30 to-abyss ring-1 ring-gold/30 text-center relative overflow-hidden">
