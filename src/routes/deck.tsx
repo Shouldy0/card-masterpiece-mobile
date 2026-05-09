@@ -93,28 +93,28 @@ function Deck() {
         </div>
 
         {/* SCROLLABLE CONTENT */}
-        <div className="flex-1 overflow-y-auto px-6 custom-scrollbar pb-32">
+        <div className="flex-1 overflow-y-auto px-6 no-scrollbar pb-40 pt-6">
           {/* Deck Preview Row */}
-          <div className="mb-12 px-1">
+          <div className="mb-16 px-1">
              <div className="flex items-center justify-between mb-4">
-                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gold/60">Mazzo Selezionato</span>
-                <button onClick={save} className="text-[8px] font-black uppercase tracking-[0.2em] text-gold underline">Salva Modifiche</button>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gold/60">Mazzo Selezionato</span>
+                <button onClick={save} className="text-[10px] font-black uppercase tracking-[0.3em] text-gold underline active:opacity-50 transition-opacity">Salva Modifiche</button>
              </div>
-             <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+             <div className="flex gap-4 overflow-x-auto pb-6 no-scrollbar min-h-[160px] items-center">
                 {deck.map((id) => {
                   const card = CARDS.find(c => c.id === id);
                   if (!card) return null;
                   return (
-                    <div key={id} className="shrink-0 transition-transform active:scale-95" onClick={() => remove(id)}>
-                      <GameCard card={card} size="xs" />
+                    <div key={id} className="shrink-0 transition-all hover:-translate-y-2 active:scale-95" onClick={() => remove(id)}>
+                      <GameCard card={card} size="sm" />
                     </div>
                   );
                 })}
-                {deck.length === 0 && <div className="text-[10px] text-white/20 italic py-4">Seleziona memorie sotto...</div>}
+                {deck.length === 0 && <div className="text-[10px] text-white/20 italic py-8 px-4">Seleziona memorie sotto...</div>}
              </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-y-12 gap-x-8 pt-10 mb-10 border-t border-white/5">
+          <div className="grid grid-cols-2 gap-y-16 gap-x-6 pt-12 mb-20 border-t border-white/10">
             {myCards.map((c) => {
               const isOwned = player.collection.includes(c.id);
               const inDeck = deck.includes(c.id);
@@ -122,7 +122,7 @@ function Deck() {
                 <div key={c.id} className="flex flex-col items-center">
                   <GameCard 
                     card={c} 
-                    size="lg" 
+                    size="md" 
                     faded={!isOwned || inDeck} 
                     glow={inDeck}
                     onClick={() => add(c.id)} 
