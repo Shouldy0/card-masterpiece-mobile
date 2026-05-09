@@ -207,7 +207,7 @@ function Match() {
         </div>
 
         {/* Central Combat Area */}
-        <div className="flex-1 flex gap-3 min-h-0 relative">
+        <div className="flex-1 flex gap-3 min-h-0 relative pb-12">
           {/* Subconscious Energy Streams */}
           <div className="energy-stream-layer">
              <div className="stream-current" />
@@ -251,7 +251,7 @@ function Match() {
         </div>
 
         {/* Footer */}
-        <div className="mt-12 flex items-end justify-between">
+        <div className="mt-24 flex items-end justify-between">
            <div className="flex items-center gap-3">
              <HexAvatar side="player" hp={match.hp.player} name="YOU" sub="" />
              <div className="flex gap-1.5 ml-2">
