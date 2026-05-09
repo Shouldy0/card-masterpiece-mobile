@@ -110,6 +110,7 @@ export interface PlayerProgress {
   passClaimed: string[];
   rankRewardsClaimed: string[];
   ownedCosmetics: string[];
+  onboardingDone: boolean;
 }
 
 export interface MatchRewards {
@@ -135,7 +136,6 @@ interface AppStore {
   player: PlayerProgress;
   settings: SettingsState;
   match: MatchState | null;
-  onboardingDone: boolean;
   onboardingPackOpened: boolean;
 
   // actions
@@ -411,9 +411,9 @@ export const useGame = create<AppStore>()(
           passClaimed: [],
           rankRewardsClaimed: [],
           ownedCosmetics: ["default_board"],
+          onboardingDone: false,
         };
       })(),
-      onboardingDone: false,
       onboardingPackOpened: false,
       syncCollection: () => {
         const { player, match } = get();
@@ -455,7 +455,7 @@ export const useGame = create<AppStore>()(
       syncStatus: "idle",
       lastSyncedAt: null,
 
-      setOnboardingDone: () => set({ onboardingDone: true }),
+      setOnboardingDone: () => set((s) => ({ player: { ...s.player, onboardingDone: true } })),
       setOnboardingPackOpened: (v) => set({ onboardingPackOpened: v }),
 
       startMatch: () => set({ match: createInitialMatch(get().player.deck) }),
@@ -665,8 +665,8 @@ export const useGame = create<AppStore>()(
             passClaimed: [],
             rankRewardsClaimed: [],
             ownedCosmetics: ["default_board"],
+            onboardingDone: false,
           },
-          onboardingDone: false,
           onboardingPackOpened: false,
           match: null
         });

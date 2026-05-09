@@ -9,6 +9,7 @@ import { Coins, Diamond, Plus, Library, BookOpen, ShoppingBag, Sparkles, Crown, 
 import { useSound } from "@/hooks/useSound";
 import { GameCard } from "@/components/GameCard";
 import { cardsById } from "@/game/cards";
+import { TutorialOverlay } from "@/components/Tutorial";
 
 export const Route = createFileRoute("/home")({ component: Home });
 
@@ -26,6 +27,7 @@ function Home() {
 
   return (
     <MobileFrame>
+      <TutorialOverlay />
       {!player ? (
         <div className="flex-1 flex items-center justify-center">
           <div className="size-10 rounded-full border-2 border-gold/20 border-t-gold animate-spin" />
