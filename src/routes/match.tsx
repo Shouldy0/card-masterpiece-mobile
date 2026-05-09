@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, animate } from "framer-motion";
 import React, { useEffect, useState, useMemo } from "react";
 import { useGame, TERRITORIES } from "@/game/store";
 import { cardsById, TerritoryId } from "@/game/cards";
@@ -11,6 +11,45 @@ import { cn } from "@/lib/utils";
 import { useSound } from "@/hooks/useSound";
 
 export const Route = createFileRoute("/match")({ component: Match });
+
+function PowerCounter({ value, isWinning, isAIPower = false }: { value: number; isWinning: boolean; isAIPower?: boolean }) {
+  const [displayValue, setDisplayValue] = useState(value);
+  const [bursting, setBursting] = useState(0);
+
+  useEffect(() => {
+    if (value > displayValue) {
+      setBursting(prev => prev + 1);
+      setTimeout(() => setBursting(0), 800);
+    }
+    const controls = animate(displayValue, value, {
+      duration: 0.8,
+      onUpdate: (v) => setDisplayValue(Math.floor(v))
+    });
+    return controls.stop;
+  }, [value, displayValue]);
+
+  return (
+    <div className="relative flex flex-col items-center">
+       <AnimatePresence>
+         {bursting > 0 && <div className="energy-burst" />}
+       </AnimatePresence>
+       
+       <motion.div 
+         key={displayValue}
+         initial={{ scale: 0.8, opacity: 0.5 }}
+         animate={{ scale: isWinning ? 1.2 : 1, opacity: 1 }}
+         className={cn(
+           "font-display transition-all drop-shadow-2xl relative z-10",
+           isAIPower 
+             ? (isWinning ? "text-rose font-black text-2xl drop-shadow-[0_0_15px_rgba(244,63,94,0.4)]" : "text-white/20 text-xl")
+             : (isWinning ? "text-gold font-black text-4xl drop-shadow-[0_0_25px_rgba(255,215,0,0.6)] power-glow" : "text-white/20 text-2xl")
+         )}
+       >
+         {displayValue}
+       </motion.div>
+    </div>
+  );
+}
 
 const territoryMeta: Record<TerritoryId, { color: string; gradient: string; icon: string; bg: string }> = {
   memoria: { 
@@ -468,29 +507,9 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { te
 
       {/* Dramatic Power Numbers - Integrated for Density */}
       <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 z-50 pointer-events-none flex flex-col items-center gap-6">
-          <motion.div 
-            key={aiPower}
-            initial={{ scale: 0.8 }} animate={{ scale: 1 }}
-            className={cn(
-              "font-display text-xl transition-all drop-shadow-2xl",
-              aiPower > playerPower ? "text-rose font-black scale-110 number-pop" : "text-white/20"
-            )}
-          >
-            {aiPower}
-          </motion.div>
-
+          <PowerCounter value={aiPower} isWinning={aiPower > playerPower} isAIPower />
           <div className="h-px w-4 bg-white/10" />
-
-          <motion.div 
-            key={playerPower}
-            initial={{ scale: 0.8 }} animate={{ scale: 1 }}
-            className={cn(
-              "font-display text-3xl transition-all drop-shadow-2xl",
-              isWinning ? "text-gold font-black scale-125 number-pop" : "text-white/20"
-            )}
-          >
-            {playerPower}
-          </motion.div>
+          <PowerCounter value={playerPower} isWinning={isWinning} />
       </div>
     </motion.div>
   );
