@@ -12,16 +12,24 @@ const firebaseConfig = {
 };
 
 let app: any = null;
+let auth: any = null;
+let db: any = null;
+
 try {
   if (typeof window !== "undefined") {
-    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+    if (firebaseConfig.apiKey) {
+      app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+      auth = getAuth(app);
+      db = getFirestore(app);
+    } else {
+      console.warn("Firebase API Key missing. App running in restricted mode.");
+    }
   }
 } catch (error) {
   console.error("Firebase initialization failed:", error);
 }
 
-export const auth = app ? getAuth(app) : null;
-export const db = app ? getFirestore(app) : null;
+export { auth, db };
 
 export async function getFirebase() {
   return { db, auth };
