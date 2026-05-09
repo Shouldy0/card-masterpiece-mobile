@@ -4,6 +4,8 @@ import { MobileFrame } from "@/components/Common";
 import { useGame } from "@/game/store";
 import { sounds } from "@/utils/audio";
 import { ArrowLeft } from "lucide-react";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
 
 export const Route = createFileRoute("/settings")({ component: Settings });
 
@@ -15,15 +17,18 @@ function Settings() {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    sounds.playSfx("whoosh");
-    const { auth } = await import("@/lib/firebase");
-    const { signOut } = await import("firebase/auth");
-    if (auth) {
-      await signOut(auth);
+    try {
+      sounds.playSfx("whoosh");
+      if (auth) {
+        await signOut(auth);
+      }
+      setUser(null);
+      resetPlayer();
+      window.location.href = "/auth";
+    } catch (err) {
+      console.error(err);
+      navigate({ to: "/auth" });
     }
-    setUser(null);
-    resetPlayer();
-    navigate({ to: "/auth" });
   };
 
   const handleSoundToggle = (v: boolean) => {
