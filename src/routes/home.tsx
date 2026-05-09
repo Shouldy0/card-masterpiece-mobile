@@ -13,28 +13,83 @@ import { cardsById } from "@/game/cards";
 export const Route = createFileRoute("/home")({ component: Home });
 
 function Home() {
-  const { player, startMatch } = useGame();
+  const { player, startMatch, onboardingPackOpened, openStarterPack, setOnboardingPackOpened } = useGame();
   const navigate = useNavigate();
+  const { play } = useSound();
+
+  useEffect(() => {
+    sounds.startSceneMusic("home");
+    return () => {};
+  }, []);
+
+  const play_btn = () => { play("whoosh"); startMatch(); navigate({ to: "/vs" }); };
 
   return (
-    <MobileFrame className="items-center justify-center">
-      <h1 className="text-4xl gold-text">REVERIE</h1>
-      <p className="text-muted-foreground mt-4 uppercase tracking-widest text-[10px]">Accesso Effettuato</p>
-      
+    <MobileFrame>
       {!player ? (
-        <div className="mt-8 size-8 border-2 border-gold/20 border-t-gold animate-spin rounded-full" />
-      ) : (
-        <div className="flex flex-col items-center gap-6 mt-12">
-          <p className="text-gold font-display">Livello {player.level}</p>
-          <button 
-            onClick={() => { startMatch(); navigate({ to: "/vs" }); }}
-            className="px-12 py-4 rounded-full bg-mystic text-white font-display text-xs uppercase tracking-widest ring-1 ring-gold/40"
-          >
-            INIZIA BATTAGLIA
-          </button>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="size-10 rounded-full border-2 border-gold/20 border-t-gold animate-spin" />
         </div>
+      ) : (
+        <>
+          {/* top bar */}
+          <header className="flex items-center justify-between px-4 pt-6">
+            <Link to="/profile" className="flex items-center gap-2">
+              <div className="size-10 rounded-full ring-2 ring-gold/60 bg-gradient-to-br from-mystic to-abyss flex items-center justify-center">
+                <Eye className="h-4 w-4 text-gold" />
+              </div>
+              <div>
+                <p className="font-display text-sm text-foreground leading-none">Dreamer</p>
+                <p className="text-[10px] text-muted-foreground">Livello {player.level}</p>
+              </div>
+            </Link>
+            <div className="flex items-center gap-2">
+              <ResourcePill icon={Coins} value={player.gold} color="text-gold" />
+              <ResourcePill icon={Diamond} value={player.gems} color="text-mystic-glow" />
+              <button className="size-7 rounded-full bg-mystic/30 ring-1 ring-gold/40 flex items-center justify-center text-gold">
+                <Plus className="h-3 w-3" />
+              </button>
+            </div>
+          </header>
+
+          {/* HERO SECTION */}
+          <div className="relative mt-4 flex flex-1 flex-col items-center justify-center px-6 pb-12">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1.5 }}
+              className="relative mb-8"
+            >
+              <div className="absolute -inset-16 rounded-full bg-mystic/20 blur-3xl" />
+              <div className="relative flex flex-col items-center">
+                <motion.h1
+                  initial={{ opacity: 0, letterSpacing: "0.5em" }}
+                  animate={{ opacity: 1, letterSpacing: "0.4em" }}
+                  className="font-display text-5xl gold-text text-center"
+                >
+                  REVERIE
+                </motion.h1>
+                <p className="mt-2 text-[10px] uppercase tracking-[0.4em] text-gold/40 pl-[0.4em] text-center">
+                  Sintonizza la tua coscienza
+                </p>
+              </div>
+            </motion.div>
+
+            {/* PRIMARY ACTIONS */}
+            <div className="w-full max-w-xs space-y-4">
+              <motion.button 
+                whileHover={{ scale: 1.02 }} 
+                whileTap={{ scale: 0.98 }} 
+                onClick={play_btn} 
+                className="w-full py-5 rounded-[2.5rem] bg-gradient-to-br from-mystic via-mystic-glow to-mystic text-foreground font-display text-lg font-bold uppercase tracking-[0.3em] shadow-[0_10px_40px_rgba(150,100,255,0.3)] border border-gold/20"
+              >
+                GIOCA BATTAGLIA
+              </motion.button>
+            </div>
+          </div>
+        </>
       )}
-      
+
       <BottomNav />
     </MobileFrame>
   );
