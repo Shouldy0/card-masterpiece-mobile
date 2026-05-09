@@ -14,10 +14,15 @@ function Settings() {
   const [tab, setTab] = useState<typeof tabs[number]>("Gioco");
   const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     sounds.playSfx("whoosh");
+    const { auth } = await import("@/lib/firebase");
+    const { signOut } = await import("firebase/auth");
+    if (auth) {
+      await signOut(auth);
+    }
     setUser(null);
-    resetPlayer(); // Optional: clears local state too
+    resetPlayer();
     navigate({ to: "/auth" });
   };
 
