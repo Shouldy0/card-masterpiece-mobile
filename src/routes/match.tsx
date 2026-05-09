@@ -261,13 +261,10 @@ function Match() {
              </div>
            </div>
 
-            <div className="flex-1 flex justify-center items-end px-2 hand-container overflow-x-auto no-scrollbar">
-               <div className="flex justify-center gap-1.5">
+            <div className="flex-1 flex justify-center items-end px-4 hand-container overflow-x-auto no-scrollbar">
+               <div className="flex justify-center gap-4 py-4">
                 {match.hand.player.map((id, i) => {
-                  const total = match.hand.player.length;
-                  const index = i - (total - 1) / 2;
-                  const rotation = index * 6; // Curved rotation
-                  const yOffset = Math.abs(index) * 8; // Curved Y
+                  const index = i - (match.hand.player.length - 1) / 2;
                   
                   return (
                     <motion.div
@@ -285,10 +282,6 @@ function Match() {
                         "relative cursor-pointer transition-all card-shadow-premium", 
                         selected === id && "z-50 -translate-y-20 scale-150"
                       )}
-                      style={{ 
-                        rotate: `${rotation}deg`,
-                        y: yOffset
-                      }}
                     >
                       <CardFromId id={id} size="sm" noInspect selected={selected === id} faded={cardsById[id]?.cost > match.focus.player} />
                       <div className="soft-reflection" />
