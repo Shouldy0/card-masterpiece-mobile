@@ -330,78 +330,77 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
   const isWinning = playerPower > aiPower;
 
   return (
-    <div className="flex-1 flex flex-col items-center gap-1 h-full">
-      {/* Enemy Side Cards */}
-      <div className="flex-1 w-full flex flex-col items-center justify-end gap-1 pb-2">
-        {cards.filter(c => c.side === "ai").map((c) => (
-          <motion.div key={c.uid} initial={{ scale: 0 }} animate={{ scale: 1 }}>
-            <CardFromId id={c.cardId} size="xs" noInspect />
-          </motion.div>
-        ))}
+    <div 
+      onClick={onDrop}
+      className={cn(
+        "flex-1 relative flex flex-col rounded-[2rem] overflow-hidden border transition-all duration-500",
+        canPlay ? "border-gold/60 ring-2 ring-gold/20 cursor-pointer scale-[1.02] z-20" : "border-white/10 bg-card/5 backdrop-blur-xl",
+        isWinning && cards.length > 0 && "shadow-[0_0_40px_rgba(255,215,0,0.1)]"
+      )}
+    >
+      {/* Background Art - Using the generated/meta images */}
+      <div className="absolute inset-0 -z-10">
+        <div className={cn("absolute inset-0 opacity-40 bg-gradient-to-b from-black/20 via-transparent to-black/80")} />
+        <div className={cn("absolute inset-0 opacity-20 blur-xl", meta.bg)} />
+        {/* Placeholder for generated art if available */}
+        <div className="size-full bg-cover bg-center" style={{ backgroundImage: `url(${territory.id === 'memoria' ? '/territory_memoria_1778320602674.png' : ''})` }} />
       </div>
 
-      {/* The Central Hub (Taking inspiration from the user's reference) */}
-      <motion.div 
-        whileHover={canPlay ? { scale: 1.05 } : {}}
-        onClick={onDrop}
-        className={cn(
-          "relative size-20 shrink-0 transition-all duration-300",
-          canPlay ? "cursor-pointer" : ""
-        )}
-      >
-        {/* Score Top (AI) */}
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
-          <div className={cn(
-            "size-7 rounded-lg rotate-45 border flex items-center justify-center bg-abyss shadow-lg transition-colors",
-            aiPower > playerPower ? "border-rose text-rose" : "border-white/10 text-white/40"
-          )}>
-            <span className="-rotate-45 font-display text-xs font-black">{aiPower}</span>
-          </div>
+      {/* Header Info */}
+      <div className="p-4 text-center space-y-1">
+        <div className="flex items-center justify-center gap-2">
+           <span className="text-xl filter drop-shadow-lg">{meta.icon}</span>
+           <h4 className={cn("font-display text-[10px] uppercase tracking-[0.3em] font-black drop-shadow-md", meta.color)}>{territory.name}</h4>
+        </div>
+        <p className="text-[7px] text-white/60 leading-tight px-2 line-clamp-2">{territory.rule}</p>
+      </div>
+
+      {/* Battlefield Grid - 2 columns */}
+      <div className="flex-1 flex flex-col px-2 py-4 gap-4 relative">
+        {/* Enemy Side Grid */}
+        <div className="grid grid-cols-2 gap-1.5 place-items-center auto-rows-min h-[40%]">
+          {cards.filter(c => c.side === "ai").map((c) => (
+            <motion.div key={c.uid} initial={{ scale: 0, y: -20 }} animate={{ scale: 1, y: 0 }}>
+              <CardFromId id={c.cardId} size="xs" noInspect />
+            </motion.div>
+          ))}
         </div>
 
-        {/* Central Hexagon */}
-        <div 
-          className={cn(
-            "absolute inset-0 z-10 flex items-center justify-center border-2 transition-all duration-500",
-            canPlay ? "border-gold/60 bg-gold/5 shadow-[0_0_20px_rgba(255,215,0,0.3)]" : "border-white/10 bg-card/20 backdrop-blur-md"
-          )}
-          style={{ clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' }}
-        >
+        {/* Divider Line */}
+        <div className="absolute top-1/2 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+        {/* Player Side Grid */}
+        <div className="grid grid-cols-2 gap-1.5 place-items-center auto-rows-min h-[40%] mt-auto">
+          {cards.filter(c => c.side === "player").map((c) => (
+            <motion.div key={c.uid} initial={{ scale: 0, y: 20 }} animate={{ scale: 1, y: 0 }}>
+              <CardFromId id={c.cardId} size="xs" noInspect glow={isWinning} />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Scores Footer - Concept Style */}
+      <div className="p-3 bg-gradient-to-t from-black/80 to-transparent">
+        <div className="flex justify-between items-end gap-2 px-1">
           <div className="flex flex-col items-center">
-            <span className="text-lg">{meta.icon}</span>
-            <span className={cn("text-[7px] uppercase tracking-widest font-black text-center px-2", meta.color)}>{territory.name}</span>
+            <span className={cn("font-display text-lg", isWinning ? "text-gold scale-125 font-black" : "text-white/40")}>{playerPower}</span>
+            <span className="text-[5px] uppercase tracking-tighter text-white/30">Il tuo potere</span>
           </div>
-          {/* Inner Glow */}
-          <div className={cn("absolute inset-0 opacity-20", meta.bg)} style={{ backgroundColor: meta.bg }} />
-        </div>
-
-        {/* Score Bottom (Player) */}
-        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-20">
-          <div className={cn(
-            "size-8 rounded-lg rotate-45 border-2 flex items-center justify-center bg-abyss shadow-xl transition-all",
-            isWinning ? "border-gold text-gold scale-110 shadow-[0_0_15px_rgba(255,215,0,0.4)]" : "border-white/20 text-white/40"
-          )}>
-            <span className="-rotate-45 font-display text-sm font-black">{playerPower}</span>
+          <div className="flex flex-col items-center">
+            <span className={cn("font-display text-lg", aiPower > playerPower ? "text-rose scale-110 font-black" : "text-white/20")}>{aiPower}</span>
+            <span className="text-[5px] uppercase tracking-tighter text-white/20">Potere avversario</span>
           </div>
         </div>
-
-        {/* Play Indicator */}
-        {canPlay && (
-          <motion.div animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }} className="absolute -inset-2 border-2 border-gold/40 rounded-3xl blur-md" />
-        )}
-      </motion.div>
-
-      {/* Player Side Cards */}
-      <div className="flex-1 w-full flex flex-col gap-1 pt-4 items-center justify-start">
-        {cards.filter(c => c.side === "player").map((c) => (
-          <motion.div key={c.uid} initial={{ scale: 0, y: 20 }} animate={{ scale: 1, y: 0 }} className="relative">
-            <CardFromId id={c.cardId} size="xs" noInspect glow={isWinning} />
-            {isWinning && (
-              <div className="absolute -inset-1 bg-gold/10 blur-sm rounded-lg -z-10 animate-pulse" />
-            )}
-          </motion.div>
-        ))}
       </div>
+
+      {/* Selection Glow */}
+      {canPlay && (
+        <motion.div 
+          animate={{ opacity: [0.2, 0.4, 0.2] }} 
+          transition={{ duration: 1.5, repeat: Infinity }} 
+          className="absolute inset-0 border-2 border-gold/40 rounded-[2rem] pointer-events-none" 
+        />
+      )}
     </div>
   );
 }
