@@ -329,106 +329,80 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
   const aiPower = cards.filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
   const isWinning = playerPower > aiPower;
 
-  const playerSynergies = useMemo(() => {
-    const counts: Record<string, number> = {};
-    cards.filter(c => c.side === "player").forEach(c => {
-      const type = cardsById[c.cardId]?.type;
-      if (type) counts[type] = (counts[type] || 0) + 1;
-    });
-    return Object.entries(counts).filter(([_, count]) => count >= 2).map(([type]) => type);
-  }, [cards]);
-
-  const hasSynergy = playerSynergies.length > 0;
-  
   return (
-    <motion.div 
-      whileHover={canPlay ? { scale: 1.02 } : {}}
-      className={cn(
-        "flex-1 flex flex-col rounded-3xl relative overflow-hidden border transition-all duration-500",
-        canPlay ? "border-gold/60 shadow-[0_0_30px_rgba(255,215,0,0.2)] cursor-pointer" : "border-white/10 bg-card/10 backdrop-blur-md",
-        isWinning && cards.length > 0 && "shadow-[inset_0_0_40px_rgba(255,215,0,0.05)]"
-      )}
-      onClick={onDrop}
-    >
-      {/* Dynamic Background Fog/Particles */}
-      <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
-         <div className="absolute inset-0 opacity-20" style={{ backgroundColor: meta.bg }} />
-         <motion.div 
-           animate={{ 
-             opacity: [0.1, 0.3, 0.1],
-             scale: [1, 1.2, 1],
-             rotate: [0, 90, 0]
-           }}
-           transition={{ duration: 15, repeat: Infinity }}
-           className={cn("absolute -top-1/2 -left-1/2 size-full blur-[80px]", meta.color.replace("text-", "bg-"))}
-         />
-      </div>
-
-      {/* Territory Header - Simplified */}
-      <div className={cn("p-2 border-b border-white/5 bg-gradient-to-b relative", meta.gradient)}>
-         <div className="flex items-center justify-center gap-2">
-           <span className="text-sm">{meta.icon}</span>
-           <h4 className={cn("font-display text-[9px] uppercase tracking-[0.2em] font-black", meta.color)}>{territory.name}</h4>
-         </div>
-      </div>
-
-      {/* Opponent Area */}
-      <div className="flex-1 p-2 flex flex-col gap-2 items-center justify-start overflow-y-auto pt-4">
-         {cards.filter(c => c.side === "ai").map((c, i) => (
-           <motion.div key={c.uid} initial={{ scale: 0, y: -40, rotate: -10 }} animate={{ scale: 1, y: 0, rotate: 0 }} transition={{ type: "spring", damping: 15 }}>
-             <CardFromId id={c.cardId} size="xs" noInspect={true} />
-           </motion.div>
-         ))}
-      </div>
-
-      {/* Score Display - Simplified */}
-      <div className="py-2 flex items-center justify-center gap-4 border-y border-white/5 bg-black/20">
-         <div className={cn(
-           "font-display text-xl transition-all duration-500",
-           isWinning ? "text-gold scale-110 drop-shadow-[0_0_10px_rgba(255,215,0,0.4)]" : "text-white/40"
-         )}>
-           {playerPower}
-         </div>
-         <div className="text-[10px] text-white/20 font-black">VS</div>
-         <div className={cn(
-           "font-display text-lg transition-all duration-500",
-           aiPower > playerPower ? "text-rose scale-110" : "text-white/20"
-         )}>
-           {aiPower}
-         </div>
-      </div>
-
-      {/* Player Area */}
-      <div className="flex-1 p-2 flex flex-col-reverse gap-2 items-center justify-start overflow-y-auto pb-4">
-         {cards.filter(c => c.side === "player").map((c, i) => (
-           <motion.div 
-             key={c.uid} 
-             initial={{ scale: 0, y: 40, rotate: 10 }} 
-             animate={{ scale: 1, y: 0, rotate: 0 }} 
-             transition={{ type: "spring", damping: 12 }}
-             className="relative"
-           >
-             <CardFromId id={c.cardId} size="xs" glow={isWinning} noInspect={true} />
-             {isWinning && (
-               <div className="absolute -inset-1 bg-gold/10 blur-sm rounded-lg -z-10 animate-pulse" />
-             )}
-           </motion.div>
-         ))}
-      </div>
-      
-      {/* Play Indicator Overlay */}
-      {canPlay && (
-        <div className="absolute inset-0 bg-gold/5 flex items-center justify-center pointer-events-none">
-          <motion.div 
-            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="size-20 rounded-full border-2 border-gold/40 flex items-center justify-center"
-          >
-            <Zap className="text-gold size-8 fill-gold/20" />
+    <div className="flex-1 flex flex-col items-center gap-1 h-full">
+      {/* Enemy Side Cards */}
+      <div className="flex-1 w-full flex flex-col items-center justify-end gap-1 pb-2">
+        {cards.filter(c => c.side === "ai").map((c) => (
+          <motion.div key={c.uid} initial={{ scale: 0 }} animate={{ scale: 1 }}>
+            <CardFromId id={c.cardId} size="xs" noInspect />
           </motion.div>
+        ))}
+      </div>
+
+      {/* The Central Hub (Taking inspiration from the user's reference) */}
+      <motion.div 
+        whileHover={canPlay ? { scale: 1.05 } : {}}
+        onClick={onDrop}
+        className={cn(
+          "relative size-20 shrink-0 transition-all duration-300",
+          canPlay ? "cursor-pointer" : ""
+        )}
+      >
+        {/* Score Top (AI) */}
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+          <div className={cn(
+            "size-7 rounded-lg rotate-45 border flex items-center justify-center bg-abyss shadow-lg transition-colors",
+            aiPower > playerPower ? "border-rose text-rose" : "border-white/10 text-white/40"
+          )}>
+            <span className="-rotate-45 font-display text-xs font-black">{aiPower}</span>
+          </div>
         </div>
-      )}
-    </motion.div>
+
+        {/* Central Hexagon */}
+        <div 
+          className={cn(
+            "absolute inset-0 z-10 flex items-center justify-center border-2 transition-all duration-500",
+            canPlay ? "border-gold/60 bg-gold/5 shadow-[0_0_20px_rgba(255,215,0,0.3)]" : "border-white/10 bg-card/20 backdrop-blur-md"
+          )}
+          style={{ clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' }}
+        >
+          <div className="flex flex-col items-center">
+            <span className="text-lg">{meta.icon}</span>
+            <span className={cn("text-[7px] uppercase tracking-widest font-black text-center px-2", meta.color)}>{territory.name}</span>
+          </div>
+          {/* Inner Glow */}
+          <div className={cn("absolute inset-0 opacity-20", meta.bg)} style={{ backgroundColor: meta.bg }} />
+        </div>
+
+        {/* Score Bottom (Player) */}
+        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-20">
+          <div className={cn(
+            "size-8 rounded-lg rotate-45 border-2 flex items-center justify-center bg-abyss shadow-xl transition-all",
+            isWinning ? "border-gold text-gold scale-110 shadow-[0_0_15px_rgba(255,215,0,0.4)]" : "border-white/20 text-white/40"
+          )}>
+            <span className="-rotate-45 font-display text-sm font-black">{playerPower}</span>
+          </div>
+        </div>
+
+        {/* Play Indicator */}
+        {canPlay && (
+          <motion.div animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }} className="absolute -inset-2 border-2 border-gold/40 rounded-3xl blur-md" />
+        )}
+      </motion.div>
+
+      {/* Player Side Cards */}
+      <div className="flex-1 w-full flex flex-col gap-1 pt-4 items-center justify-start">
+        {cards.filter(c => c.side === "player").map((c) => (
+          <motion.div key={c.uid} initial={{ scale: 0, y: 20 }} animate={{ scale: 1, y: 0 }} className="relative">
+            <CardFromId id={c.cardId} size="xs" noInspect glow={isWinning} />
+            {isWinning && (
+              <div className="absolute -inset-1 bg-gold/10 blur-sm rounded-lg -z-10 animate-pulse" />
+            )}
+          </motion.div>
+        ))}
+      </div>
+    </div>
   );
 }
 
