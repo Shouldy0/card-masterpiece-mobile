@@ -24,7 +24,7 @@ const router = createRouter({
         <p className="text-[10px] text-muted-foreground mb-2 uppercase tracking-widest">Dettaglio Tecnico:</p>
         <div className="bg-card/40 p-3 rounded-xl border border-gold/20 mb-6 max-h-60 overflow-auto">
           <p className="text-[8px] text-rose font-mono break-all text-left uppercase whitespace-pre-wrap">
-            {typeof error === 'object' ? JSON.stringify(error, null, 2) : String(error)}
+            {error instanceof Error ? `${error.message}\n\nSTACK:\n${error.stack}` : JSON.stringify(error, null, 2)}
           </p>
         </div>
         <button 
