@@ -218,21 +218,10 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
               <GameCard card={card} size="xl" />
             </div>
             
-            <div className="mt-8 text-center space-y-4">
-              <div className="inline-block px-4 py-1 rounded-full border border-gold/30 bg-gold/5">
-                <span className="text-[10px] uppercase tracking-[0.4em] text-gold font-bold">{card.type}</span>
-              </div>
-              <h2 className="text-2xl font-display gold-text uppercase tracking-widest">{card.name}</h2>
-              <p className="text-sm text-foreground/80 leading-relaxed px-4">{card.text}</p>
-              {card.flavor && (
-                <p className="text-xs italic text-gold/60 font-serif pt-4 border-t border-gold/10 italic">
-                  "{card.flavor}"
-                </p>
-              )}
-              
+            <div className="mt-8 text-center">
               <button 
                 onClick={() => setShowInspection(false)}
-                className="mt-8 px-10 py-3 rounded-full border border-gold/20 hover:bg-gold/10 transition-all text-[10px] uppercase tracking-widest text-gold"
+                className="px-10 py-3 rounded-full border border-gold/20 hover:bg-gold/10 transition-all text-[10px] uppercase tracking-widest text-gold font-bold"
               >
                 CHIUDI MEMORIA
               </button>
