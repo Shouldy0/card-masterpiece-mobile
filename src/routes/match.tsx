@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useGame, TERRITORIES } from "@/game/store";
 import { cardsById, TerritoryId } from "@/game/cards";
 import { GameCard, CardBack, CardFromId } from "@/components/GameCard";
@@ -34,14 +34,19 @@ const territoryMeta: Record<TerritoryId, { color: string; gradient: string; icon
 };
 
 function Match() {
-  const match = useGame((s) => s.match);
-  const playCard = useGame((s) => s.playCard);
-  const endTurn = useGame((s) => s.endTurn);
-  const startMatch = useGame((s) => s.startMatch);
   const navigate = useNavigate();
-  const [selected, setSelected] = useState<string | null>(null);
-  const [revealing, setRevealing] = useState<{ uid: string; territory: TerritoryId } | null>(null);
+  const match = useGame(s => s.match);
+  const selected = useGame(s => s.selectedCard);
+  const revealing = useGame(s => s.revealing);
+  const playCard = useGame(s => s.playCard);
+  const endTurn = useGame(s => s.endTurn);
+  const selectCard = useGame(s => s.selectCard);
+  const startMatch = useGame((s) => s.startMatch);
   const { play } = useSound();
+
+  // Cinematic Impact State
+  const [impacts, setImpacts] = React.useState<Record<string, number>>({});
+
   const recentLog = useMemo(() => (match?.log ?? []).slice(-3).reverse(), [match?.log]);
 
   useEffect(() => {
@@ -76,13 +81,22 @@ function Match() {
   const handlePlay = (territory: TerritoryId) => {
     if (!selected) return;
     const card = cardsById[selected];
-    if (!card || card.cost > match.focus.player) { setSelected(null); return; }
+    if (!card || card.cost > match.focus.player) { selectCard(null); return; }
     setRevealing({ uid: selected, territory });
     play("card_flip");
+    
+    // Trigger Impact VFX
+    setImpacts(prev => ({ ...prev, [territory]: (prev[territory] || 0) + 1 }));
+
     setTimeout(() => {
       playCard(selected, territory);
+      setImpacts(prev => {
+        const next = { ...prev };
+        delete next[territory];
+        return next;
+      });
       setRevealing(null);
-      setSelected(null);
+      selectCard(null);
     }, 900);
   };
 
@@ -135,6 +149,7 @@ function Match() {
                 cards={match.board[t.id]}
                 onDrop={() => handlePlay(t.id)}
                 canPlay={!!selected}
+                isImpacted={!!impacts[t.id]}
               />
             ))}
           </div>
@@ -294,7 +309,7 @@ function PhaseIndicator({ active, label }: { active: boolean; label: string }) {
   );
 }
 
-function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typeof TERRITORIES[number]; cards: any[]; onDrop: () => void; canPlay: boolean }) {
+function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { territory: typeof TERRITORIES[number]; cards: any[]; onDrop: () => void; canPlay: boolean; isImpacted?: boolean }) {
   const meta = territoryMeta[territory.id];
   const playerPower = cards.filter((c) => c.side === "player").reduce((s, c) => s + c.power, 0);
   const aiPower = cards.filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
@@ -307,6 +322,7 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
     <motion.div 
       onClick={onDrop}
       whileTap={{ scale: 0.98 }}
+      animate={isImpacted ? { scale: [1, 1.05, 1], rotate: [0, 1, -1, 0] } : {}}
       className={cn(
         "flex-1 relative flex flex-col rounded-[2.5rem] overflow-hidden border transition-all duration-700 tarot-border",
         `aura-${territory.id}`,
@@ -319,6 +335,17 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay }: { territory: typ
         canPlay ? "border-gold/60 ring-4 ring-gold/10 cursor-pointer scale-[1.02] z-20 shadow-[0_0_50px_rgba(255,215,0,0.2)]" : "border-white/5 bg-card/5 backdrop-blur-2xl"
       )}
     >
+      {/* Impact VFX Layer */}
+      <AnimatePresence>
+        {isImpacted && (
+          <>
+            <div className="impact-shockwave" />
+            <div className="impact-smoke" />
+            <div className="impact-symbol left-1/4 top-1/3">👁️</div>
+            <div className="impact-symbol right-1/4 bottom-1/3">✨</div>
+          </>
+        )}
+      </AnimatePresence>
       {/* Environmental Transformation Layer */}
       <div className={cn(
         "absolute inset-0 z-0 transition-opacity duration-1000",
