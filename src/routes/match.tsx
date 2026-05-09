@@ -129,6 +129,7 @@ function Match() {
     setImpacts(prev => ({ ...prev, [territory]: (prev[territory] || 0) + 1 }));
     setGlobalImpact(prev => prev + 1);
 
+    // AAA Hit Stop Logic
     setTimeout(() => {
       playCard(selected, territory);
       setImpacts(prev => {
@@ -143,7 +144,14 @@ function Match() {
   };
 
   return (
-    <div className="relative h-[100dvh] w-screen overflow-hidden bg-abyss text-foreground font-serif">
+    <div className={cn(
+      "relative h-[100dvh] w-screen overflow-hidden bg-abyss text-foreground font-serif",
+      globalImpact > 0 && "impact-hitstop"
+    )}>
+      {/* AAA Impact Flash */}
+      <AnimatePresence>
+        {globalImpact > 0 && <motion.div className="impact-flash" />}
+      </AnimatePresence>
       {/* Ritual Background Layers */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="ritual-symbol" />

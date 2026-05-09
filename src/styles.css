@@ -586,3 +586,39 @@
 .ritual-tension {
   animation: tension-pulse 8s infinite ease-in-out;
 }
+
+/* --- REVERIE: AAA Polish & Hit Stop --- */
+
+@keyframes chromatic-aberration {
+  0% { text-shadow: 0 0 0 transparent; filter: none; }
+  20% { text-shadow: 2px 0 #ff0000, -2px 0 #00ff00; filter: contrast(1.5) brightness(1.5); }
+  100% { text-shadow: 0 0 0 transparent; filter: none; }
+}
+
+.impact-hitstop {
+  animation: chromatic-aberration 0.3s ease-out;
+}
+
+@keyframes flash-white {
+  0% { opacity: 0; }
+  10% { opacity: 0.6; background: white; }
+  100% { opacity: 0; background: transparent; }
+}
+
+.impact-flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2000;
+  animation: flash-white 0.4s ease-out forwards;
+}
+
+.card-kickback {
+  animation: card-kick 0.3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+
+@keyframes card-kick {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.9) translateY(10px); }
+  100% { transform: scale(1); }
+}
