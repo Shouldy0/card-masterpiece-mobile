@@ -148,11 +148,17 @@ function Match() {
       "relative h-[100dvh] w-screen overflow-hidden bg-abyss text-foreground font-serif",
       globalImpact > 0 && "impact-hitstop"
     )}>
+      {/* Deep Background Layer */}
+      <div className="deep-abyss" />
+      
       {/* AAA Impact Flash */}
       <AnimatePresence>
         {globalImpact > 0 && <motion.div className="impact-flash" />}
       </AnimatePresence>
+
       {/* Ritual Background Layers */}
+      {/* Foreground Depth Particles */}
+      <div className="foreground-dust" />
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="ritual-symbol" />
         <div className="haunted-grain" />
@@ -320,6 +326,9 @@ function Match() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Foreground Depth Particles */}
+      <div className="foreground-dust" />
     </div>
   );
 }
