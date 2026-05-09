@@ -22,9 +22,11 @@ const router = createRouter({
       <div className="max-w-xs">
         <h1 className="text-2xl mb-4 gold-text">ERRORE DI SINCRONIZZAZIONE</h1>
         <p className="text-[10px] text-muted-foreground mb-2 uppercase tracking-widest">Dettaglio Tecnico:</p>
-        <div className="bg-card/40 p-3 rounded-xl border border-gold/20 mb-6 max-h-40 overflow-auto">
-          <p className="text-[8px] text-rose font-mono break-all text-left uppercase">
-            {error?.message || "Errore sconosciuto durante il caricamento della coscienza."}
+        <div className="bg-card/40 p-3 rounded-xl border border-gold/20 mb-6 max-h-60 overflow-auto">
+          <p className="text-[8px] text-rose font-mono break-all text-left uppercase whitespace-pre-wrap">
+            {error?.message || "Errore sconosciuto."}
+            {"\n\nSTACK:\n"}
+            {error?.stack?.slice(0, 500) || "Stack non disponibile."}
           </p>
         </div>
         <button 

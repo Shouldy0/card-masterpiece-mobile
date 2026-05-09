@@ -698,19 +698,17 @@ export const useGame = create<AppStore>()(
       }
     }),
     { 
-      name: "reverie-store-v2",
+      name: "reverie-store-v3", // Force clean v3
       storage: createJSONStorage(() => (typeof window !== "undefined" ? localStorage : {
         getItem: () => null,
         setItem: () => {},
         removeItem: () => {},
       } as any)),
-      version: 2,
+      version: 3,
       migrate: (persistedState: any, version: number) => {
-        if (version < 2) {
-          // Migration from v1 to v2: ensure ownedCosmetics exists
-          if (persistedState && persistedState.player) {
-            persistedState.player.ownedCosmetics = persistedState.player.ownedCosmetics || ["default_board"];
-          }
+        if (version < 3) {
+          // Force reset if too old or missing critical fields
+          return undefined as any; 
         }
         return persistedState as AppStore;
       },
