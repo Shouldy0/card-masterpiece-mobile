@@ -23,7 +23,15 @@ function Home() {
     return () => {};
   }, []);
 
-  const play_btn = () => { sounds.play("whoosh"); startMatch(); navigate({ to: "/vs" }); };
+  const play_btn = () => { 
+    sounds.play("whoosh"); 
+    if (!player?.onboardingDone) {
+      useGame.getState().startTutorialMatch();
+    } else {
+      startMatch(); 
+    }
+    navigate({ to: "/vs" }); 
+  };
 
   return (
     <MobileFrame>
