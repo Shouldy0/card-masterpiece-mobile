@@ -321,6 +321,7 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { te
       className={cn(
         "flex-1 relative flex flex-col rounded-[2.5rem] overflow-hidden border transition-all duration-700 tarot-border",
         `aura-${territory.id}`,
+        "breathing-light",
         territory.id === "trauma" && "trauma-cracks",
         territory.id === "sogno" && "dream-distortion",
         isNeutral && "state-neutral",
@@ -330,6 +331,9 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { te
         canPlay ? "border-gold/60 ring-4 ring-gold/10 cursor-pointer scale-[1.02] z-20 shadow-[0_0_50px_rgba(255,215,0,0.2)]" : "border-white/5 bg-card/5 backdrop-blur-2xl"
       )}
     >
+      {/* Living Shadows Layer */}
+      <div className="living-shadows" />
+
       {/* Impact VFX Layer */}
       <AnimatePresence>
         {isImpacted && (

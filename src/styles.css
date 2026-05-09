@@ -231,6 +231,44 @@
   animation: board-float 12s infinite ease-in-out;
 }
 
+/* --- REVERIE: Haunted Subconscious Effects --- */
+
+@keyframes breathing-light {
+  0%, 100% { filter: brightness(0.8) contrast(1); opacity: 0.7; }
+  50% { filter: brightness(1.3) contrast(1.1); opacity: 1; }
+}
+
+.breathing-light {
+  animation: breathing-light 6s infinite ease-in-out;
+}
+
+@keyframes shadow-drift {
+  0% { transform: translate(-10%, -10%) scale(1); opacity: 0.1; }
+  50% { transform: translate(10%, 15%) scale(1.2); opacity: 0.2; }
+  100% { transform: translate(-10%, -10%) scale(1); opacity: 0.1; }
+}
+
+.living-shadows {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(circle at 30% 40%, rgba(0, 0, 0, 0.6), transparent 40%),
+              radial-gradient(circle at 70% 60%, rgba(0, 0, 0, 0.4), transparent 30%);
+  filter: blur(40px);
+  animation: shadow-drift 20s infinite ease-in-out;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes energy-pulse {
+  0% { box-shadow: 0 0 10px rgba(168, 85, 247, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(168, 85, 247, 0.5); }
+  100% { box-shadow: 0 0 10px rgba(168, 85, 247, 0.2); }
+}
+
+.emotional-pulse {
+  animation: energy-pulse 4s infinite ease-in-out;
+}
+
 /* --- REVERIE: Territory Evolution States --- */
 
 @keyframes neutral-aura {
