@@ -360,6 +360,26 @@
 }
 
 .impact-smoke {
+  /* existing */
+}
+
+/* Energy wave effect - radiating pulse when a card impacts a territory */
+@keyframes energy-wave {
+  0% { transform: scale(0.8); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 0.3; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.energy-wave {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255,215,0,0.4), transparent);
+  border-radius: inherit;
+  pointer-events: none;
+  animation: energy-wave 0.8s ease-out forwards;
+  z-index: 30;
+}
+
   position: absolute;
   inset: 0;
   background: radial-gradient(circle, rgba(168, 85, 247, 0.2), transparent);

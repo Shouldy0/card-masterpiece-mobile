@@ -511,6 +511,7 @@ function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { te
           <>
             <div className="impact-shockwave" />
             <div className="impact-smoke" />
+            <div className="energy-wave" />
             <div className="impact-symbol left-1/4 top-1/3">👁️</div>
             <div className="impact-symbol right-1/4 bottom-1/3">✨</div>
           </>
