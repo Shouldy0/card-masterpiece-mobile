@@ -1,16 +1,10 @@
-@import "tailwindcss" source(none);
+@import "tailwindcss";
 @source "../src";
-@import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
-
-@theme inline {
+@theme {
   --font-display: "Cinzel", serif;
   --font-body: "Montserrat", sans-serif;
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -30,6 +24,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
   --color-gold: var(--gold);
   --color-gold-dim: var(--gold-dim);
   --color-mystic: var(--mystic);
@@ -377,13 +372,6 @@
   border-radius: inherit;
   pointer-events: none;
   animation: energy-wave 0.8s ease-out forwards;
-  z-index: 30;
-}
-
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.2), transparent);
-  animation: smoke-cloud 2s ease-out forwards;
 }
 
 /* --- REVERIE: Cinematic Feedback & Rituals --- */
