@@ -1,9 +1,9 @@
 export const CARD_SIZES = {
-  xs: "w-16 h-24",
-  sm: "w-24 h-36",
-  md: "w-40 h-60",
-  lg: "w-56 h-80",
-  xl: "w-80 h-[500px]",
+  xs: "w-[114px] h-[150px]",
+  sm: "w-[100px] h-[130px]",
+  md: "w-[150px] h-[200px]",
+  lg: "w-[180px] h-[240px]",
+  xl: "w-[220px] h-[290px]",
 };
 
 export const RARITY_BORDERS = {

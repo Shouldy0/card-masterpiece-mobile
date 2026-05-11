@@ -1,93 +1,42 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { motion, AnimatePresence, animate } from "framer-motion";
-import React, { useEffect, useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useGame, TERRITORIES } from "@/game/store";
 import { cardsById, TerritoryId } from "@/game/cards";
-import { GameCard, CardBack, CardFromId } from "@/components/GameCard";
-import { FocusGems, Hexagon, MobileFrame } from "@/components/Common";
+import { CardFromId } from "@/components/GameCard";
 import { sounds } from "@/utils/audio";
-import { Hourglass, Settings, Eye, Ghost, Zap, Trophy, Play, CheckCircle2, RefreshCw, Calendar, Users, Loader2, PlayCircle, Skull, ShieldCheck, Sparkles } from "lucide-react";
+import { Info, X, ArrowUpCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSound } from "@/hooks/useSound";
-import { ChevronRight, ArrowUpCircle, Info, X } from "lucide-react";
+import { EnemyTopBar, BattleRow, PlayerHand, ActionButton } from "@/components/battlefield";
 
 export const Route = createFileRoute("/match")({ component: Match });
 
-function PowerCounter({ value, isWinning, isAIPower = false }: { value: number; isWinning: boolean; isAIPower?: boolean }) {
-  const [displayValue, setDisplayValue] = useState(value);
-  const [bursting, setBursting] = useState(0);
-
-  useEffect(() => {
-    if (value > displayValue) {
-      setBursting(prev => prev + 1);
-      setTimeout(() => setBursting(0), 800);
-    }
-    const controls = animate(displayValue, value, {
-      duration: 0.8,
-      onUpdate: (v) => setDisplayValue(Math.floor(v))
-    });
-    return controls.stop;
-  }, [value, displayValue]);
-
-  return (
-    <div className="relative flex flex-col items-center">
-       <AnimatePresence>
-         {bursting > 0 && <div className="energy-burst" />}
-       </AnimatePresence>
-       
-       <motion.div 
-         key={displayValue}
-         initial={{ scale: 0.8, opacity: 0.5 }}
-         animate={{ scale: isWinning ? 1.2 : 1, opacity: 1 }}
-         className={cn(
-           "font-display transition-all drop-shadow-2xl relative z-10",
-           isAIPower 
-             ? (isWinning ? "text-rose font-black text-2xl drop-shadow-[0_0_15px_rgba(244,63,94,0.4)]" : "text-white/20 text-xl")
-             : (isWinning ? "text-gold font-black text-4xl drop-shadow-[0_0_25px_rgba(255,215,0,0.6)] power-glow" : "text-white/20 text-2xl")
-         )}
-       >
-         {displayValue}
-       </motion.div>
-    </div>
-  );
-}
-
-const territoryMeta: Record<TerritoryId, { color: string; gradient: string; icon: string; bg: string }> = {
-  memoria: { 
-    color: "text-gold", 
-    gradient: "from-gold/20 via-gold/5", 
-    icon: "🌳",
-    bg: "rgba(255, 215, 0, 0.03)"
-  },
-  trauma: { 
-    color: "text-rose", 
-    gradient: "from-rose/20 via-rose/5", 
-    icon: "🖤",
-    bg: "rgba(225, 29, 72, 0.03)"
-  },
-  sogno: { 
-    color: "text-azure", 
-    gradient: "from-azure/20 via-azure/5", 
-    icon: "🌙",
-    bg: "rgba(59, 130, 246, 0.03)"
-  },
+const territoryMeta: Record<TerritoryId, { color: string; icon: string }> = {
+  memoria: { color: "text-gold", icon: "🌳" },
+  trauma:  { color: "text-rose", icon: "🖤" },
+  sogno:   { color: "text-azure", icon: "🌙" },
 };
+
+const territoryList = TERRITORIES.map((t) => ({
+  id: t.id as TerritoryId,
+  name: t.name,
+  icon: territoryMeta[t.id as TerritoryId].icon,
+  color: territoryMeta[t.id as TerritoryId].color,
+}));
 
 function Match() {
   const navigate = useNavigate();
-  const match = useGame(s => s.match);
+  const match = useGame((s) => s.match);
   const [selected, setSelected] = useState<string | null>(null);
   const [revealing, setRevealing] = useState<{ uid: string; territory: TerritoryId } | null>(null);
-  const playCard = useGame(s => s.playCard);
-  const endTurn = useGame(s => s.endTurn);
+  const playCard = useGame((s) => s.playCard);
+  const endTurn = useGame((s) => s.endTurn);
   const startMatch = useGame((s) => s.startMatch);
   const { play } = useSound();
 
-  // Cinematic Impact State
-  const [impacts, setImpacts] = React.useState<Record<string, number>>({});
-  const [globalImpact, setGlobalImpact] = React.useState(0);
-
-  const recentLog = useMemo(() => (match?.log ?? []).slice(-3).reverse(), [match?.log]);
+  const [impacts, setImpacts] = useState<Record<string, number>>({});
+  const [globalImpact, setGlobalImpact] = useState(0);
 
   useEffect(() => {
     sounds.startSceneMusic("match");
@@ -124,50 +73,43 @@ function Match() {
     if (!card || card.cost > match.focus.player) { setSelected(null); return; }
     setRevealing({ uid: selected, territory });
     play("card_flip");
-    
-    // Trigger Impact VFX
-    setImpacts(prev => ({ ...prev, [territory]: (prev[territory] || 0) + 1 }));
-    setGlobalImpact(prev => prev + 1);
-
-    // AAA Hit Stop Logic
+    setImpacts((prev) => ({ ...prev, [territory]: (prev[territory] || 0) + 1 }));
+    setGlobalImpact((prev) => prev + 1);
     setTimeout(() => {
       playCard(selected, territory);
-      setImpacts(prev => {
-        const next = { ...prev };
-        delete next[territory];
-        return next;
-      });
+      setImpacts((prev) => { const n = { ...prev }; delete n[territory]; return n; });
       setGlobalImpact(0);
       setRevealing(null);
-      selectCard(null);
-    }, 900);
+      setSelected(null);
+    }, 600);
   };
 
-  const tutorialStep = useGame(s => s.tutorialStep);
-  const setTutorialStep = useGame(s => s.setTutorialStep);
+  const handleDragPlayCard = (cardId: string) => {
+    const card = cardsById[cardId];
+    if (!card || card.cost > match.focus.player) return;
+    const territory: TerritoryId = card.type === "ricordo" ? "memoria" : "sogno";
+    setRevealing({ uid: cardId, territory });
+    play("card_flip");
+    setImpacts((prev) => ({ ...prev, [territory]: (prev[territory] || 0) + 1 }));
+    setGlobalImpact((prev) => prev + 1);
+    setTimeout(() => {
+      playCard(cardId, territory);
+      setImpacts((prev) => { const n = { ...prev }; delete n[territory]; return n; });
+      setGlobalImpact(0);
+      setRevealing(null);
+      setSelected(null);
+    }, 600);
+  };
+
+  const tutorialStep = useGame((s) => s.tutorialStep);
+  const setTutorialStep = useGame((s) => s.setTutorialStep);
 
   const getTutorialContent = () => {
-    switch(tutorialStep) {
-      case 1: return { 
-        title: "Inizia il Rituale", 
-        desc: "Tocca 'Ossessione' e poi tocca il territorio 'Sogno Lucido' per giocarla.",
-        target: "Ossessione -> Sogno Lucido" 
-      };
-      case 2: return { 
-        title: "Flusso di Energia", 
-        desc: "Hai usato Focus. Ora tocca il pulsante 'GO' a destra per passare il turno.",
-        target: "Premi GO" 
-      };
-      case 3: return { 
-        title: "Sinergia Territoriale", 
-        desc: "L'avversario ha risposto. Tocca 'Bosco Sacro' e poi 'Memoria' per il bonus.",
-        target: "Bosco Sacro -> Memoria" 
-      };
-      case 4: return { 
-        title: "Il Dominio", 
-        desc: "Stai controllando 2 territori. Se resisti fino al turno 6, la vittoria sarà tua. Concludi il turno.",
-        target: "Premi GO" 
-      };
+    switch (tutorialStep) {
+      case 1: return { title: "Inizia il Rituale", desc: "Tocca 'Ossessione' e poi tocca il territorio 'Sogno Lucido' per giocarla.", target: "Ossessione -> Sogno Lucido" };
+      case 2: return { title: "Flusso di Energia", desc: "Hai usato Focus. Ora tocca 'END TURN' per passare il turno.", target: "Premi END TURN" };
+      case 3: return { title: "Sinergia Territoriale", desc: "L'avversario ha risposto. Tocca 'Bosco Sacro' e poi 'Memoria' per il bonus.", target: "Bosco Sacro -> Memoria" };
+      case 4: return { title: "Il Dominio", desc: "Stai controllando 2 territori. Concludi il turno.", target: "Premi END TURN" };
       default: return null;
     }
   };
@@ -176,444 +118,184 @@ function Match() {
 
   useEffect(() => {
     if (match.isTutorial) {
-      // Auto-advance tutorial steps based on game state
       if (tutorialStep === 1 && match.board.sogno.length > 0) setTutorialStep(2);
       if (tutorialStep === 2 && match.turn === 2) setTutorialStep(3);
       if (tutorialStep === 3 && match.board.memoria.length > 0) setTutorialStep(4);
-      if (tutorialStep === 4 && match.turn === 3) setTutorialStep(5); // End of tutorial guidance
     }
   }, [match, tutorialStep, setTutorialStep]);
 
-  // Build Trigger: Final Layout Fix 
+  const actionLabel = match.isTutorial && tutorialStep === 1 ? "CONFERMA"
+    : selected ? "ATTACCA"
+    : "FINE TURNO";
+
   return (
     <div className={cn(
-      "relative h-[100dvh] w-screen overflow-hidden bg-abyss text-foreground font-serif",
+      "relative h-[100dvh] w-screen overflow-hidden bg-abyss text-foreground",
       globalImpact > 0 && "impact-hitstop"
     )}>
-      {/* Deep Background Layer */}
-      <div className="deep-abyss" />
-      
-      {/* AAA Impact Flash */}
+      {/* Subtle background atmosphere */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-mystic/5 via-transparent to-abyss/80" />
+        <div className="absolute top-0 -left-1/4 size-[600px] bg-mystic/5 blur-[100px]" />
+        <div className="absolute bottom-0 -right-1/4 size-[600px] bg-rose/5 blur-[100px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,transparent_40%,rgba(0,0,0,0.6)_100%)] pointer-events-none z-[1]" />
+      </div>
+
+      {/* Impact flash */}
       <AnimatePresence>
-        {globalImpact > 0 && <motion.div className="impact-flash" />}
+        {globalImpact > 0 && (
+          <motion.div
+            initial={{ opacity: 0.6 }}
+            animate={{ opacity: 0 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-white/5 pointer-events-none z-50"
+          />
+        )}
       </AnimatePresence>
 
-      {/* Ritual Background Layers */}
-      {/* Foreground Depth Particles */}
-      <div className="foreground-dust" />
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="ritual-symbol" />
-        <div className="haunted-grain" />
-        <div className="vignette-haunted" />
-        <div className="absolute inset-0 bg-mystic/20 mix-blend-color" />
-      </div>
-
-      {/* Background Nebula */}
-      <div className="fixed inset-0 pointer-events-none opacity-40">
-        <div className="absolute top-0 -left-1/4 size-[800px] bg-mystic-glow/20 blur-[120px] animate-pulse" />
-        <div className="absolute bottom-0 -right-1/4 size-[800px] bg-rose/10 blur-[120px] animate-pulse" style={{ animationDelay: "2s" }} />
-      </div>
-
-      {/* Minimal Bloom/Fog Overlay */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden ritual-tension">
-        <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-mystic/10 to-transparent blur-3xl opacity-30" />
-        <div className="absolute bottom-0 inset-x-0 h-64 bg-gradient-to-t from-gold/5 to-transparent blur-3xl opacity-20" />
-      </div>
-
-      {/* Tutorial Guidance Overlay */}
+      {/* Tutorial overlay */}
       <AnimatePresence>
         {match.isTutorial && tutorial && (
-          <motion.div 
-            initial={{ opacity: 0, y: -50 }}
+          <motion.div
+            initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed top-24 inset-x-6 z-[200]"
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="fixed top-16 inset-x-4 z-[200]"
           >
-            <div className="bg-black/80 backdrop-blur-xl border border-gold/40 rounded-2xl p-4 shadow-2xl flex items-start gap-3 ring-1 ring-white/10 relative">
-<button 
-                onClick={() => setTutorialStep(99)} 
-                className="absolute -top-2 -right-2 size-6 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg pointer-events-auto"
-               >
-                 <X className="size-3" />
-               </button>
-               <div className="size-8 rounded-full bg-gold/10 flex items-center justify-center shrink-0 border border-gold/20">
-                  <Info className="size-4 text-gold" />
-               </div>
-               <div className="flex-1">
-                  <h4 className="font-display text-[10px] text-gold tracking-widest uppercase mb-0.5">{tutorial.title}</h4>
-                  <p className="text-[9px] text-white/70 leading-tight font-medium">{tutorial.desc}</p>
-                  <div className="mt-2 flex items-center gap-2">
-                     <ArrowUpCircle className="size-2.5 text-gold animate-bounce" />
-                     <span className="text-[7px] uppercase tracking-widest text-gold/60 font-black">{tutorial.target}</span>
-                  </div>
-               </div>
+            <div className="bg-black/80 backdrop-blur-xl border border-gold/30 rounded-xl p-3 shadow-2xl flex items-start gap-2.5 ring-1 ring-white/5">
+              <button onClick={() => setTutorialStep(99)} className="absolute -top-1.5 -right-1.5 size-5 rounded-full bg-red-500/80 text-white flex items-center justify-center shadow-lg pointer-events-auto">
+                <X className="size-2.5" />
+              </button>
+              <div className="size-7 rounded-full bg-gold/10 flex items-center justify-center shrink-0 border border-gold/20">
+                <Info className="size-3 text-gold" />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-display text-[9px] text-gold tracking-widest uppercase mb-0.5">{tutorial.title}</h4>
+                <p className="text-[8px] text-white/70 leading-tight">{tutorial.desc}</p>
+                <div className="mt-1.5 flex items-center gap-1.5">
+                  <ArrowUpCircle className="size-2 text-gold animate-bounce" />
+                  <span className="text-[6px] uppercase tracking-widest text-gold/60 font-bold">{tutorial.target}</span>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Main Layout */}
-      <div className={cn(
-        "relative z-10 flex h-full flex-col px-2 py-3",
-        globalImpact > 0 && "impact-shake impact-ripple"
-      )}>
-        {/* Minimal Header */}
-        <div className="flex justify-between items-center mb-3">
-           <div className="flex items-center gap-3">
-             <HexAvatar side="ai" hp={match.hp.ai} name="OMBRA" sub="" />
-             <div className="flex gap-1.5 ml-2">
-               {Array.from({ length: match.maxFocus }).map((_, i) => (
-                 <FocusDiamond key={i} active={i < match.focus.ai} />
-               ))}
-             </div>
-           </div>
+      {/* Main layout */}
+      <div className={cn("relative z-10 flex flex-col h-full", globalImpact > 0 && "impact-shake")}>
+        {/* TOP: Enemy info */}
+        <EnemyTopBar
+          hp={match.hp.ai}
+          maxHp={20}
+          focus={match.focus.ai}
+          maxFocus={match.maxFocus}
+          turn={match.turn}
+          maxTurns={match.maxTurns}
+          name="OMBRA"
+        />
 
-           <div className="flex gap-3">
-             <div className="flex items-center gap-1.5 rounded-full bg-card/20 px-3 py-1.5 ring-1 ring-white/5 backdrop-blur-xl">
-               <Skull className="size-3 text-rose" />
-               <span className="font-display text-xs text-gold">2</span>
-             </div>
-             <div className="flex items-center gap-1.5 rounded-full bg-card/20 px-3 py-1.5 ring-1 ring-white/5 backdrop-blur-xl">
-               <ShieldCheck className="size-3 text-azure" />
-               <span className="font-display text-xs text-gold">15</span>
-             </div>
-           </div>
-        </div>
+        {/* Separator */}
+        <div className="mx-3 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
 
-        {/* Central Combat Area */}
-        <div className="flex-1 flex gap-3 min-h-0 relative pb-12">
-          {/* Subconscious Energy Streams */}
-          <div className="energy-stream-layer">
-             <div className="stream-current" />
-             <div className="stream-current" />
-             <div className="stream-current" />
-             <div className="stream-current" />
+        {/* CENTER: Battlefield slots */}
+        <BattleRow
+          territories={territoryList}
+          board={match.board}
+          selected={selected}
+          impacts={impacts}
+          onPlay={handlePlay}
+        />
+
+        {/* BOTTOM: Hand + Player info + Action */}
+        <div className="relative">
+          {/* Player info bar */}
+          <div className="flex items-center justify-between px-3 py-1.5">
+            <div className="flex items-center gap-2">
+              <div className="size-8 rounded-full border-2 border-gold/30 bg-abyss overflow-hidden shadow-lg shrink-0">
+                <img
+                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=Dreamer&backgroundColor=030617&mouth=smile"
+                  alt="Player"
+                  className="size-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              </div>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="font-display text-[9px] uppercase tracking-wider text-white/60">TU</span>
+                  <span className="font-display text-[10px] font-bold text-gold">{match.hp.player}</span>
+                </div>
+                <div className="w-16 h-1 rounded-full bg-white/10 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-gold to-yellow-400 transition-all"
+                    style={{ width: `${(match.hp.player / 20) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Focus gems */}
+              <div className="flex items-center gap-0.5">
+                {Array.from({ length: match.maxFocus }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      "size-1.5 rounded-sm transition-all duration-300",
+                      i < match.focus.player ? "bg-gold shadow-[0_0_6px_rgba(255,215,0,0.5)]" : "bg-white/10"
+                    )}
+                  />
+                ))}
+              </div>
+              {/* Deck count */}
+              <div className="flex items-center gap-1 rounded-full bg-white/5 px-2 py-0.5 border border-white/5">
+                <span className="font-display text-[9px] text-white/40">Mazzo</span>
+                <span className="font-display text-[10px] font-bold text-white/80">{match.deck.player.length}</span>
+              </div>
+            </div>
           </div>
-          <div className="flex-1 flex gap-2 z-10 px-2 overflow-hidden">
-            {TERRITORIES.map((t) => (
-              <TerritoryColumn
-                key={t.id}
-                territory={t}
-                cards={match.board[t.id]}
-                onDrop={() => handlePlay(t.id)}
-                canPlay={!!selected}
-                isImpacted={!!impacts[t.id]}
+
+          {/* Hand + Action button */}
+          <div className="relative flex items-end">
+            <div className="flex-1">
+              <PlayerHand
+                cards={match.hand.player}
+                selected={selected}
+                playerFocus={match.focus.player}
+                onSelect={handleSelect}
+                onDragToPlay={handleDragPlayCard}
               />
-            ))}
+            </div>
+            {/* Action button - bottom right */}
+            <div className="absolute bottom-3 right-3 z-30">
+              <ActionButton
+                label={actionLabel}
+                onClick={handleEndTurn}
+                sublabel={selected ? undefined : `Turno ${match.turn}`}
+              />
+            </div>
           </div>
-
-          {/* Minimal Sidebar - Compact */}
-          <div className="w-12 flex flex-col items-center justify-center gap-6">
-             <div className="flex flex-col items-center gap-1">
-                <span className="font-display text-lg text-gold">{match.turn}/{match.maxTurns}</span>
-                <div className="flex flex-col gap-1 mt-1">
-                  <div className={cn("size-1 rounded-full", true ? "bg-gold shadow-[0_0_8px_var(--gold)]" : "bg-white/10")} />
-                  <div className={cn("size-1 rounded-full", false ? "bg-gold" : "bg-white/10")} />
-                </div>
-             </div>
-
-             <button 
-               onClick={handleEndTurn}
-               className="relative group size-12"
-             >
-                <div className="absolute inset-0 bg-gold/20 rounded-full blur-xl group-hover:bg-gold/40 transition-all" />
-                <div className="relative size-full rounded-full bg-gradient-to-br from-mystic/40 to-abyss border border-white/10 flex items-center justify-center">
-                   <span className="font-display text-[7px] uppercase tracking-widest text-gold">GO</span>
-                </div>
-             </button>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-24 flex items-end justify-between">
-           <div className="flex items-center gap-3">
-             <HexAvatar side="player" hp={match.hp.player} name="YOU" sub="" />
-             <div className="flex gap-1.5 ml-2">
-               {Array.from({ length: match.maxFocus }).map((_, i) => (
-                 <FocusDiamond key={i} active={i < match.focus.player} />
-               ))}
-             </div>
-           </div>
-
-            <div className="flex-1 flex justify-center items-end px-4 hand-container overflow-x-auto no-scrollbar">
-               <div className="flex justify-center gap-4 py-4">
-                {match.hand.player.map((id, i) => {
-                  const index = i - (match.hand.player.length - 1) / 2;
-                  
-                  return (
-                    <motion.div
-                      key={`${id}-${i}`}
-                      whileHover={{ 
-                        y: -140, 
-                        scale: 1.8, 
-                        rotate: 0, 
-                        zIndex: 100,
-                        rotateY: index * -10, // 3D Tilt
-                        transition: { type: "spring", stiffness: 300, damping: 20 }
-                      }}
-                      onClick={() => handleSelect(id)}
-                      className={cn(
-                        "relative cursor-pointer transition-all card-shadow-premium", 
-                        selected === id && "z-50 -translate-y-20 scale-150"
-                      )}
-                    >
-                      <CardFromId id={id} size="sm" noInspect selected={selected === id} faded={cardsById[id]?.cost > match.focus.player} />
-                      <div className="soft-reflection" />
-                    </motion.div>
-                  );
-                })}
-              </div>
-           </div>
-
-           <div className="flex flex-col items-end gap-2">
-              <div className="relative bg-card/20 backdrop-blur-2xl rounded-full size-12 flex items-center justify-center ring-1 ring-white/5">
-                 <span className="font-display text-lg text-gold">{match.deck.player.length}</span>
-              </div>
-           </div>
         </div>
       </div>
 
-      {/* Reveal Animation Overlay */}
+      {/* Reveal animation overlay */}
       <AnimatePresence>
         {revealing && (
           <motion.div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-abyss/80 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-abyss/80 backdrop-blur-sm"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           >
             <motion.div
-              initial={{ rotateY: 0, scale: 0.5, y: 100 }}
-              animate={{ rotateY: 180, scale: 1.2, y: 0 }}
-              transition={{ duration: 0.6, type: "spring" }}
-              style={{ transformStyle: "preserve-3d" }}
-              className={cn(
-                "relative",
-                cardsById[revealing.uid]?.type === "oblio" && "effect-trauma",
-                cardsById[revealing.uid]?.type === "sogno" && "effect-dream",
-                cardsById[revealing.uid]?.type === "ricordo" && "effect-memory",
-                cardsById[revealing.uid]?.type === "archetipo" && "effect-obsession"
-              )}
+              className="relative"
+              initial={{ scale: 0.6, y: 60, opacity: 0 }}
+              animate={{ scale: 1.1, y: 0, opacity: 1 }}
+              transition={{ duration: 0.4, type: "spring", stiffness: 200, damping: 20 }}
             >
-              <div style={{ transform: "rotateY(180deg)" }}>
-                <CardFromId id={revealing.uid} size="xl" glow />
-              </div>
+              <CardFromId id={revealing.uid} size="xl" glow />
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-      {/* Foreground Depth Particles */}
-      <div className="foreground-dust" />
     </div>
-  );
-}
-
-function HexAvatar({ side, hp, name, sub }: { side: "player" | "ai"; hp: number; name: string; sub: string }) {
-  return (
-    <div className="relative group">
-       {/* Animated Border */}
-       <div className={cn(
-         "absolute -inset-1 rounded-lg rotate-45 border-2 blur-[2px] animate-pulse opacity-50",
-         side === "player" ? "border-gold" : "border-rose"
-       )} />
-       
-       <div className="relative size-14 bg-abyss ring-2 ring-white/10 rounded-lg rotate-45 overflow-hidden flex items-center justify-center shadow-2xl">
-          <img 
-            src={side === "player" ? "https://api.dicebear.com/7.x/avataaars/svg?seed=Dreamer&backgroundColor=030617&mouth=smile" : "https://api.dicebear.com/7.x/avataaars/svg?seed=Shadow&backgroundColor=030617&eyes=closed"} 
-            alt="Avatar"
-            className="size-full object-cover -rotate-45 scale-125"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-       </div>
-
-       {/* HP Badge */}
-       <div className="absolute -top-1 -right-1 z-20">
-          <div className={cn(
-            "size-7 rounded-lg rotate-45 border-2 flex items-center justify-center bg-abyss shadow-xl",
-            side === "player" ? "border-gold text-gold" : "border-rose text-rose"
-          )}>
-             <span className="-rotate-45 font-display text-xs font-black">{hp}</span>
-          </div>
-       </div>
-
-       {/* Labels */}
-       <div className={cn(
-         "absolute top-0 left-16 whitespace-nowrap pt-0.5",
-         side === "ai" && "left-auto right-16 text-right"
-       )}>
-          <h3 className="font-display text-[9px] tracking-[0.2em] text-white uppercase">{name}</h3>
-          <p className="text-[5px] text-white/40 uppercase tracking-[0.3em] font-sans mt-0.5">{sub}</p>
-       </div>
-    </div>
-  );
-}
-
-function FocusDiamond({ active }: { active: boolean }) {
-  return (
-    <motion.div 
-      initial={false}
-      animate={{ 
-        scale: active ? [1, 1.2, 1] : 1,
-        opacity: active ? 1 : 0.2 
-      }}
-      className={cn(
-        "size-2 rotate-45 border shadow-lg transition-colors",
-        active ? "bg-mystic border-mystic shadow-mystic/40" : "bg-white/5 border-white/10"
-      )}
-    />
-  );
-}
-
-function PhaseIndicator({ active, label }: { active: boolean; label: string }) {
-  return (
-    <div className={cn("flex items-center gap-2 transition-opacity", !active && "opacity-20")}>
-       <div className={cn("size-1 rounded-full", active ? "bg-gold shadow-[0_0_8px_var(--gold)]" : "bg-white/40")} />
-       <span className="text-[6px] uppercase tracking-[0.1em] text-white/60 font-black whitespace-nowrap">{label}</span>
-    </div>
-  );
-}
-
-function TerritoryColumn({ territory, cards, onDrop, canPlay, isImpacted }: { territory: typeof TERRITORIES[number]; cards: any[]; onDrop: () => void; canPlay: boolean; isImpacted?: boolean }) {
-  const meta = territoryMeta[territory.id];
-  const playerPower = cards.filter((c) => c.side === "player").reduce((s, c) => s + c.power, 0);
-  const aiPower = cards.filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
-  const isWinning = playerPower > aiPower;
-  const isLosing = aiPower > playerPower;
-  const isContested = playerPower === aiPower && cards.length > 0;
-  const isNeutral = cards.length === 0;
-
-  return (
-    <motion.div 
-      onClick={onDrop}
-      whileTap={{ scale: 0.98 }}
-      animate={isImpacted ? { scale: [1, 1.05, 1], rotate: [0, 1, -1, 0] } : {}}
-      className={cn(
-        "flex-1 relative flex flex-col rounded-[2.5rem] overflow-hidden border transition-all duration-700 tarot-border rim-light",
-        `aura-${territory.id}`,
-        "breathing-light",
-        territory.id === "trauma" && "trauma-cracks trauma-vibration",
-        territory.id === "sogno" && "dream-distortion dream-refraction",
-        isNeutral && "state-neutral",
-        isContested && "state-contested",
-        isWinning && "state-dominated-player",
-        isLosing && "state-dominated-ai",
-        canPlay ? "border-gold/60 ring-4 ring-gold/10 cursor-pointer scale-[1.02] z-20 shadow-[0_0_50px_rgba(255,215,0,0.2)]" : "border-white/5 bg-card/5 backdrop-blur-2xl"
-      )}
-    >
-      {/* Cinematic Lighting Layers */}
-      <div className="volumetric-fog" />
-      <div className="living-shadows" />
-
-      {/* Environmental Emotional Overlays */}
-      {territory.id === "memoria" && <div className="memory-sparkles" />}
-
-      {/* Impact VFX Layer */}
-      <AnimatePresence>
-        {isImpacted && (
-          <>
-            <div className="impact-shockwave" />
-            <div className="impact-smoke" />
-            <div className="energy-wave" />
-            <div className="impact-symbol left-1/4 top-1/3">👁️</div>
-            <div className="impact-symbol right-1/4 bottom-1/3">✨</div>
-          </>
-        )}
-      </AnimatePresence>
-      {/* Environmental Transformation Layer */}
-      <div className={cn(
-        "absolute inset-0 z-0 transition-opacity duration-1000",
-        isWinning ? "env-transform-gold opacity-100" : isLosing ? "env-transform-blood opacity-100" : "opacity-0"
-      )} />
-      {/* Background Layer with Parallax & Particles */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        {/* Immersive Gradient Overlay */}
-        <div className={cn("absolute inset-0 z-10 bg-gradient-to-b from-black/40 via-transparent to-black/90")} />
-        
-        {/* Parallax Background Art */}
-        <motion.div 
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1, x: isWinning ? [-2, 2, -2] : 0 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="size-full bg-cover bg-center grayscale-[0.2]"
-          style={{ backgroundImage: `url(${territory.id === 'memoria' ? '/territory_memoria_1778320602674.png' : ''})` }}
-        />
-
-        {/* Dynamic Particles Layer */}
-        <div className="absolute inset-0 z-20 pointer-events-none opacity-40">
-           {Array.from({ length: 12 }).map((_, i) => (
-             <motion.div
-               key={i}
-               className={cn("absolute size-1 rounded-full blur-[1px]", meta.color.replace("text-", "bg-"))}
-               animate={{ 
-                 y: [-20, 500],
-                 x: [Math.random() * 200, Math.random() * 200],
-                 opacity: [0, 0.8, 0],
-                 scale: [0, 1, 0]
-               }}
-               transition={{ 
-                 duration: 10 + Math.random() * 10,
-                 repeat: Infinity,
-                 delay: Math.random() * 10
-               }}
-               style={{ left: `${Math.random() * 100}%`, top: `-10%` }}
-             />
-           ))}
-        </div>
-      </div>
-
-      {/* Header Info - Premium Typography */}
-      <div className="p-5 text-center relative z-30">
-        <motion.div 
-          animate={{ y: [0, -2, 0] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="flex flex-col items-center gap-1.5"
-        >
-           <span className="text-2xl filter drop-shadow-[0_0_12px_rgba(255,255,255,0.4)]">{meta.icon}</span>
-           <h4 className={cn("font-display text-[11px] uppercase tracking-[0.4em] font-black drop-shadow-2xl", meta.color)}>{territory.name}</h4>
-           <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-           <p className="text-[7px] text-white/50 leading-relaxed font-sans max-w-[80px] mt-1">{territory.rule}</p>
-        </motion.div>
-      </div>
-
-      {/* Battlefield Grid - High-End Stacked Layout */}
-      <div className="flex-1 flex flex-col px-1 py-1 gap-2 relative z-30 justify-between">
-        {/* Opponent Stack */}
-        <div className="relative h-[40%] flex justify-center items-start pt-2">
-          {cards.filter(c => c.side === "ai").map((c, i) => (
-            <motion.div 
-              key={c.uid} 
-              layoutId={c.uid} 
-              initial={{ scale: 0.5, opacity: 0 }} 
-              animate={{ scale: 1, opacity: 1, x: i * 8, y: i * 4 }}
-              className="absolute first:relative"
-              style={{ zIndex: i }}
-            >
-              <CardFromId id={c.cardId} size="xs" noInspect />
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Player Stack */}
-        <div className="relative h-[40%] flex justify-center items-end pb-2">
-          {cards.filter(c => c.side === "player").map((c, i) => (
-            <motion.div 
-              key={c.uid} 
-              layoutId={c.uid} 
-              initial={{ scale: 0.5, opacity: 0 }} 
-              animate={{ scale: 1, opacity: 1, x: i * 8, y: -i * 4 }}
-              className="absolute first:relative"
-              style={{ zIndex: i }}
-            >
-              <CardFromId id={c.cardId} size="xs" noInspect glow={isWinning} />
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Dramatic Power Numbers - Integrated for Density */}
-      <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 z-50 pointer-events-none flex flex-col items-center gap-6">
-          <PowerCounter value={aiPower} isWinning={aiPower > playerPower} isAIPower />
-          <div className="h-px w-4 bg-white/10" />
-          <PowerCounter value={playerPower} isWinning={isWinning} />
-      </div>
-    </motion.div>
   );
 }
