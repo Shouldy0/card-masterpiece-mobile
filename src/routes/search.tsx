@@ -13,9 +13,14 @@ function Search() {
   const navigate = useNavigate();
   const startMatch = useGame((s) => s.startMatch);
   const { play } = useSound();
-  useEffect(() => { startMatch(); }, [startMatch]);
   useEffect(() => {
-    if (t <= 0) { navigate({ to: "/vs" }); return; }
+    startMatch();
+  }, [startMatch]);
+  useEffect(() => {
+    if (t <= 0) {
+      navigate({ to: "/vs" });
+      return;
+    }
     play("tick");
     const id = setTimeout(() => setT(t - 1), 1000);
     return () => clearTimeout(id);
@@ -35,7 +40,12 @@ function Search() {
       </motion.div>
       <p className="font-display text-2xl gold-text">Ricerca avversario…</p>
       <p className="mt-2 font-display text-3xl text-foreground">00:{String(t).padStart(2, "0")}</p>
-      <button onClick={() => navigate({ to: "/home" })} className="mt-10 rounded-full px-8 py-2.5 text-sm gold-frame bg-card/60 text-muted-foreground">Annulla</button>
+      <button
+        onClick={() => navigate({ to: "/home" })}
+        className="mt-10 rounded-full px-8 py-2.5 text-sm gold-frame bg-card/60 text-muted-foreground"
+      >
+        Annulla
+      </button>
     </MobileFrame>
   );
 }

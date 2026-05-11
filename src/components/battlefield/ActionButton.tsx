@@ -19,13 +19,15 @@ export function ActionButton({ label, onClick, disabled, sublabel }: Props) {
         "border transition-all duration-200",
         disabled
           ? "border-white/5 text-white/20 cursor-not-allowed"
-          : "border-gold/40 text-gold cursor-pointer"
+          : "border-gold/40 text-gold cursor-pointer",
       )}
     >
-      <span className={cn(
-        "font-display text-[11px] font-bold tracking-[0.15em]",
-        disabled ? "text-white/20" : "text-gold"
-      )}>
+      <span
+        className={cn(
+          "font-display text-[11px] font-bold tracking-[0.15em]",
+          disabled ? "text-white/20" : "text-gold",
+        )}
+      >
         {label}
       </span>
       {sublabel && !disabled && (

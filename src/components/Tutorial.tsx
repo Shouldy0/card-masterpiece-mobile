@@ -9,34 +9,39 @@ import { cn } from "@/lib/utils";
 const STEPS = [
   {
     title: "Benvenuto nella Reverie",
-    content: "Il campo di battaglia è un mondo subconscio vivente. Qui, i tuoi ricordi e i tuoi traumi prendono forma.",
+    content:
+      "Il campo di battaglia è un mondo subconscio vivente. Qui, i tuoi ricordi e i tuoi traumi prendono forma.",
     icon: <Sparkles className="size-12 text-gold" />,
-    color: "gold"
+    color: "gold",
   },
   {
     title: "I Tre Territori",
-    content: "Il match si svolge su tre zone emotive: Memoria, Trauma e Sogno. Ogni zona ha regole uniche che influenzano le tue carte.",
+    content:
+      "Il match si svolge su tre zone emotive: Memoria, Trauma e Sogno. Ogni zona ha regole uniche che influenzano le tue carte.",
     icon: <Brain className="size-12 text-blue-400" />,
-    color: "blue"
+    color: "blue",
   },
   {
     title: "Memorie e Archetipi",
-    content: "Gioca le tue carte nei territori. Ogni carta ha un valore di POTERE. A fine partita, chi ha più potere in un territorio lo controlla.",
+    content:
+      "Gioca le tue carte nei territori. Ogni carta ha un valore di POTERE. A fine partita, chi ha più potere in un territorio lo controlla.",
     icon: <BookOpen className="size-12 text-purple-400" />,
-    color: "purple"
+    color: "purple",
   },
   {
     title: "Il Focus (Energia)",
-    content: "Ogni turno ricevi Focus. Usalo per evocare le tue memorie. Gestisci saggiamente la tua energia mentale.",
+    content:
+      "Ogni turno ricevi Focus. Usalo per evocare le tue memorie. Gestisci saggiamente la tua energia mentale.",
     icon: <Zap className="size-12 text-emerald-400" />,
-    color: "emerald"
+    color: "emerald",
   },
   {
     title: "Vittoria Finale",
-    content: "Per vincere la battaglia psicologica, devi controllare almeno 2 territori su 3 alla fine del sesto turno.",
+    content:
+      "Per vincere la battaglia psicologica, devi controllare almeno 2 territori su 3 alla fine del sesto turno.",
     icon: <Trophy className="size-12 text-gold" />,
-    color: "gold"
-  }
+    color: "gold",
+  },
 ];
 
 export function TutorialOverlay() {
@@ -57,13 +62,13 @@ export function TutorialOverlay() {
       navigate({ to: "/match" });
     } else {
       sounds.play("chime");
-      setCurrentStep(s => s + 1);
+      setCurrentStep((s) => s + 1);
     }
   };
 
   return (
     <AnimatePresence>
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -71,14 +76,14 @@ export function TutorialOverlay() {
       >
         {/* Background Ritual Symbol */}
         <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-          <motion.div 
+          <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
             className="size-[150%] border border-gold/40 rounded-full border-dashed"
           />
         </div>
 
-        <motion.div 
+        <motion.div
           key={currentStep}
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -88,17 +93,17 @@ export function TutorialOverlay() {
           {/* Progress dots */}
           <div className="absolute top-6 inset-x-0 flex justify-center gap-1.5">
             {STEPS.map((_, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className={cn(
                   "h-1 rounded-full transition-all duration-500",
-                  i === currentStep ? "w-8 bg-gold" : "w-2 bg-white/10"
-                )} 
+                  i === currentStep ? "w-8 bg-gold" : "w-2 bg-white/10",
+                )}
               />
             ))}
           </div>
 
-          <button 
+          <button
             onClick={() => setOnboardingDone()}
             className="absolute top-6 right-6 text-white/20 hover:text-white/60 transition-colors"
           >
@@ -106,29 +111,42 @@ export function TutorialOverlay() {
           </button>
 
           <div className="mb-8 flex justify-center">
-             <div className="p-6 rounded-full bg-white/5 ring-1 ring-white/10 shadow-2xl relative">
-                {step.icon}
-                <motion.div 
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.5, 0.2] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                  className="absolute inset-0 rounded-full bg-current blur-2xl"
-                  style={{ color: step.color === 'gold' ? '#FFD700' : step.color === 'blue' ? '#3B82F6' : step.color === 'purple' ? '#A855F7' : '#10B981' }}
-                />
-             </div>
+            <div className="p-6 rounded-full bg-white/5 ring-1 ring-white/10 shadow-2xl relative">
+              {step.icon}
+              <motion.div
+                animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.5, 0.2] }}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="absolute inset-0 rounded-full bg-current blur-2xl"
+                style={{
+                  color:
+                    step.color === "gold"
+                      ? "#FFD700"
+                      : step.color === "blue"
+                        ? "#3B82F6"
+                        : step.color === "purple"
+                          ? "#A855F7"
+                          : "#10B981",
+                }}
+              />
+            </div>
           </div>
 
-          <h2 className="font-display text-2xl text-gold tracking-widest uppercase mb-4">{step.title}</h2>
-          <p className="text-sm text-white/80 leading-relaxed font-medium mb-10 px-2">{step.content}</p>
+          <h2 className="font-display text-2xl text-gold tracking-widest uppercase mb-4">
+            {step.title}
+          </h2>
+          <p className="text-sm text-white/80 leading-relaxed font-medium mb-10 px-2">
+            {step.content}
+          </p>
 
           <div className="flex flex-col gap-3">
-            <button 
+            <button
               onClick={next}
               className="w-full py-4 rounded-2xl bg-gold text-black font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-2 group shadow-[0_0_30px_rgba(255,215,0,0.3)] active:scale-95 transition-all"
             >
               {isLast ? "Risveglia la tua Mente" : "Continua il Rituale"}
               <ChevronRight className="size-4 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button 
+            <button
               onClick={() => setOnboardingDone()}
               className="w-full py-3 rounded-xl text-white/20 hover:text-white/40 font-black text-[9px] uppercase tracking-[0.2em] transition-colors"
             >

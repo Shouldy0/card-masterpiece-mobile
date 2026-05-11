@@ -14,8 +14,8 @@ export const Route = createFileRoute("/match")({ component: Match });
 
 const territoryMeta: Record<TerritoryId, { color: string; icon: string }> = {
   memoria: { color: "text-gold", icon: "🌳" },
-  trauma:  { color: "text-rose", icon: "🖤" },
-  sogno:   { color: "text-azure", icon: "🌙" },
+  trauma: { color: "text-rose", icon: "🖤" },
+  sogno: { color: "text-azure", icon: "🌙" },
 };
 
 const territoryList = TERRITORIES.map((t) => ({
@@ -70,14 +70,21 @@ function Match() {
   const handlePlay = (territory: TerritoryId) => {
     if (!selected) return;
     const card = cardsById[selected];
-    if (!card || card.cost > match.focus.player) { setSelected(null); return; }
+    if (!card || card.cost > match.focus.player) {
+      setSelected(null);
+      return;
+    }
     setRevealing({ uid: selected, territory });
     play("card_flip");
     setImpacts((prev) => ({ ...prev, [territory]: (prev[territory] || 0) + 1 }));
     setGlobalImpact((prev) => prev + 1);
     setTimeout(() => {
       playCard(selected, territory);
-      setImpacts((prev) => { const n = { ...prev }; delete n[territory]; return n; });
+      setImpacts((prev) => {
+        const n = { ...prev };
+        delete n[territory];
+        return n;
+      });
       setGlobalImpact(0);
       setRevealing(null);
       setSelected(null);
@@ -94,7 +101,11 @@ function Match() {
     setGlobalImpact((prev) => prev + 1);
     setTimeout(() => {
       playCard(cardId, territory);
-      setImpacts((prev) => { const n = { ...prev }; delete n[territory]; return n; });
+      setImpacts((prev) => {
+        const n = { ...prev };
+        delete n[territory];
+        return n;
+      });
       setGlobalImpact(0);
       setRevealing(null);
       setSelected(null);
@@ -106,11 +117,32 @@ function Match() {
 
   const getTutorialContent = () => {
     switch (tutorialStep) {
-      case 1: return { title: "Inizia il Rituale", desc: "Tocca 'Ossessione' e poi tocca il territorio 'Sogno Lucido' per giocarla.", target: "Ossessione -> Sogno Lucido" };
-      case 2: return { title: "Flusso di Energia", desc: "Hai usato Focus. Ora tocca 'END TURN' per passare il turno.", target: "Premi END TURN" };
-      case 3: return { title: "Sinergia Territoriale", desc: "L'avversario ha risposto. Tocca 'Bosco Sacro' e poi 'Memoria' per il bonus.", target: "Bosco Sacro -> Memoria" };
-      case 4: return { title: "Il Dominio", desc: "Stai controllando 2 territori. Concludi il turno.", target: "Premi END TURN" };
-      default: return null;
+      case 1:
+        return {
+          title: "Inizia il Rituale",
+          desc: "Tocca 'Ossessione' e poi tocca il territorio 'Sogno Lucido' per giocarla.",
+          target: "Ossessione -> Sogno Lucido",
+        };
+      case 2:
+        return {
+          title: "Flusso di Energia",
+          desc: "Hai usato Focus. Ora tocca 'END TURN' per passare il turno.",
+          target: "Premi END TURN",
+        };
+      case 3:
+        return {
+          title: "Sinergia Territoriale",
+          desc: "L'avversario ha risposto. Tocca 'Bosco Sacro' e poi 'Memoria' per il bonus.",
+          target: "Bosco Sacro -> Memoria",
+        };
+      case 4:
+        return {
+          title: "Il Dominio",
+          desc: "Stai controllando 2 territori. Concludi il turno.",
+          target: "Premi END TURN",
+        };
+      default:
+        return null;
     }
   };
 
@@ -124,15 +156,16 @@ function Match() {
     }
   }, [match, tutorialStep, setTutorialStep]);
 
-  const actionLabel = match.isTutorial && tutorialStep === 1 ? "CONFERMA"
-    : selected ? "ATTACCA"
-    : "FINE TURNO";
+  const actionLabel =
+    match.isTutorial && tutorialStep === 1 ? "CONFERMA" : selected ? "ATTACCA" : "FINE TURNO";
 
   return (
-    <div className={cn(
-      "relative h-[100dvh] w-screen overflow-hidden bg-abyss text-foreground",
-      globalImpact > 0 && "impact-hitstop"
-    )}>
+    <div
+      className={cn(
+        "relative h-[100dvh] w-screen overflow-hidden bg-abyss text-foreground",
+        globalImpact > 0 && "impact-hitstop",
+      )}
+    >
       {/* Subtle background atmosphere */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-mystic/5 via-transparent to-abyss/80" />
@@ -163,18 +196,25 @@ function Match() {
             className="fixed top-16 inset-x-4 z-[200]"
           >
             <div className="bg-black/80 backdrop-blur-xl border border-gold/30 rounded-xl p-3 shadow-2xl flex items-start gap-2.5 ring-1 ring-white/5">
-              <button onClick={() => setTutorialStep(99)} className="absolute -top-1.5 -right-1.5 size-5 rounded-full bg-red-500/80 text-white flex items-center justify-center shadow-lg pointer-events-auto">
+              <button
+                onClick={() => setTutorialStep(99)}
+                className="absolute -top-1.5 -right-1.5 size-5 rounded-full bg-red-500/80 text-white flex items-center justify-center shadow-lg pointer-events-auto"
+              >
                 <X className="size-2.5" />
               </button>
               <div className="size-7 rounded-full bg-gold/10 flex items-center justify-center shrink-0 border border-gold/20">
                 <Info className="size-3 text-gold" />
               </div>
               <div className="flex-1">
-                <h4 className="font-display text-[9px] text-gold tracking-widest uppercase mb-0.5">{tutorial.title}</h4>
+                <h4 className="font-display text-[9px] text-gold tracking-widest uppercase mb-0.5">
+                  {tutorial.title}
+                </h4>
                 <p className="text-[8px] text-white/70 leading-tight">{tutorial.desc}</p>
                 <div className="mt-1.5 flex items-center gap-1.5">
                   <ArrowUpCircle className="size-2 text-gold animate-bounce" />
-                  <span className="text-[6px] uppercase tracking-widest text-gold/60 font-bold">{tutorial.target}</span>
+                  <span className="text-[6px] uppercase tracking-widest text-gold/60 font-bold">
+                    {tutorial.target}
+                  </span>
                 </div>
               </div>
             </div>
@@ -222,8 +262,12 @@ function Match() {
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <span className="font-display text-[9px] uppercase tracking-wider text-white/60">TU</span>
-                  <span className="font-display text-[10px] font-bold text-gold">{match.hp.player}</span>
+                  <span className="font-display text-[9px] uppercase tracking-wider text-white/60">
+                    TU
+                  </span>
+                  <span className="font-display text-[10px] font-bold text-gold">
+                    {match.hp.player}
+                  </span>
                 </div>
                 <div className="w-16 h-1 rounded-full bg-white/10 overflow-hidden">
                   <div
@@ -242,7 +286,9 @@ function Match() {
                     key={i}
                     className={cn(
                       "size-1.5 rounded-sm transition-all duration-300",
-                      i < match.focus.player ? "bg-gold shadow-[0_0_6px_rgba(255,215,0,0.5)]" : "bg-white/10"
+                      i < match.focus.player
+                        ? "bg-gold shadow-[0_0_6px_rgba(255,215,0,0.5)]"
+                        : "bg-white/10",
                     )}
                   />
                 ))}
@@ -250,7 +296,9 @@ function Match() {
               {/* Deck count */}
               <div className="flex items-center gap-1 rounded-full bg-white/5 px-2 py-0.5 border border-white/5">
                 <span className="font-display text-[9px] text-white/40">Mazzo</span>
-                <span className="font-display text-[10px] font-bold text-white/80">{match.deck.player.length}</span>
+                <span className="font-display text-[10px] font-bold text-white/80">
+                  {match.deck.player.length}
+                </span>
               </div>
             </div>
           </div>
@@ -283,7 +331,9 @@ function Match() {
         {revealing && (
           <motion.div
             className="fixed inset-0 z-[100] flex items-center justify-center bg-abyss/80 backdrop-blur-sm"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
             <motion.div
               className="relative"

@@ -5,14 +5,22 @@ export type RiskLevel = "Low" | "Medium" | "High";
 /**
  * Calculates the risk of rerolling based on the current evaluation
  */
-export function calculateRisk(result: EvaluationResult): { level: RiskLevel; color: string; description: string } {
+export function calculateRisk(result: EvaluationResult): {
+  level: RiskLevel;
+  color: string;
+  description: string;
+} {
   const { stars, score } = result;
-  
+
   if (stars >= 4 || score >= 150) {
     return { level: "High", color: "text-rose", description: "Difficile ottenere di meglio" };
   }
   if (stars === 3 || score >= 70) {
-    return { level: "Medium", color: "text-amber-eclipse", description: "Combo solida, potresti rischiare" };
+    return {
+      level: "Medium",
+      color: "text-amber-eclipse",
+      description: "Combo solida, potresti rischiare",
+    };
   }
   return { level: "Low", color: "text-emerald", description: "Vale la pena provare un reroll" };
 }

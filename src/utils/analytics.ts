@@ -22,7 +22,7 @@ const INITIAL_DATA: AnalyticsData = {
   totalRerolls: 0,
   cardUsage: {},
   lastEvent: "",
-  dropOffPoints: {}
+  dropOffPoints: {},
 };
 
 class AnalyticsManager {
@@ -62,13 +62,14 @@ class AnalyticsManager {
         break;
       case "drop_off":
         if (metadata?.phase) {
-          this.data.dropOffPoints[metadata.phase] = (this.data.dropOffPoints[metadata.phase] ?? 0) + 1;
+          this.data.dropOffPoints[metadata.phase] =
+            (this.data.dropOffPoints[metadata.phase] ?? 0) + 1;
         }
         break;
     }
 
     this.save();
-    
+
     // Future: Integration with external analytics (Firebase, Mixpanel, etc.)
     // if (EXTERNAL_ENABLED) external.push(event, metadata);
   }
@@ -79,8 +80,14 @@ class AnalyticsManager {
   getMetrics() {
     return {
       ...this.data,
-      averageScore: this.data.gamesCompleted > 0 ? Math.round(this.data.totalScore / this.data.gamesCompleted) : 0,
-      rerollFrequency: this.data.gamesCompleted > 0 ? (this.data.totalRerolls / this.data.gamesCompleted).toFixed(2) : 0,
+      averageScore:
+        this.data.gamesCompleted > 0
+          ? Math.round(this.data.totalScore / this.data.gamesCompleted)
+          : 0,
+      rerollFrequency:
+        this.data.gamesCompleted > 0
+          ? (this.data.totalRerolls / this.data.gamesCompleted).toFixed(2)
+          : 0,
     };
   }
 

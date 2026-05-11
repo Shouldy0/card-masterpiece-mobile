@@ -43,8 +43,15 @@ function News() {
   return (
     <MobileFrame>
       <header className="flex items-center gap-2 px-4 pt-6">
-        <Link to="/events" className="flex size-9 items-center justify-center rounded-full bg-card/60 ring-1 ring-gold/30"><ArrowLeft className="h-4 w-4 text-gold" /></Link>
-        <h1 className="flex-1 text-center font-display text-lg gold-text tracking-widest">NOTIZIE</h1>
+        <Link
+          to="/events"
+          className="flex size-9 items-center justify-center rounded-full bg-card/60 ring-1 ring-gold/30"
+        >
+          <ArrowLeft className="h-4 w-4 text-gold" />
+        </Link>
+        <h1 className="flex-1 text-center font-display text-lg gold-text tracking-widest">
+          NOTIZIE
+        </h1>
         <span className="size-9" />
       </header>
 
@@ -64,7 +71,9 @@ function News() {
                 <p className="font-display text-sm text-foreground">{n.title}</p>
                 <p className="mt-1 text-[10px] text-muted-foreground">{n.date}</p>
                 <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{n.body}</p>
-                <button className="mt-3 text-[10px] uppercase tracking-widest text-gold">Leggi tutto →</button>
+                <button className="mt-3 text-[10px] uppercase tracking-widest text-gold">
+                  Leggi tutto →
+                </button>
               </div>
             </article>
           );

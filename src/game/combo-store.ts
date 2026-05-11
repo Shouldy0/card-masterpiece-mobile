@@ -1,28 +1,70 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Card, EvaluationResult, GameEvent, GameEventType, Achievement, GameVariant } from "./engine/types";
+import {
+  Card,
+  EvaluationResult,
+  GameEvent,
+  GameEventType,
+  Achievement,
+  GameVariant,
+} from "./engine/types";
 import { DeckEngine } from "./engine/deck-engine";
 import { CARD_POOL } from "./engine/card-pool";
 import { analytics } from "@/utils/analytics";
 import { REVERIE_VARIANT } from "./variants";
 
 const ACHIEVEMENTS: Achievement[] = [
-  { id: "perfect_combo", label: "Combo Perfetta", description: "Ottieni 5 stelle in una combo.", icon: "⭐" },
-  { id: "chaos_master", label: "Maestro del Caos", description: "Completa un round durante l'evento Caos.", icon: "🌀" },
-  { id: "synergy_expert", label: "Esperto Sinergie", description: "Raggiungi il 100% di sinergia.", icon: "🧬" },
+  {
+    id: "perfect_combo",
+    label: "Combo Perfetta",
+    description: "Ottieni 5 stelle in una combo.",
+    icon: "⭐",
+  },
+  {
+    id: "chaos_master",
+    label: "Maestro del Caos",
+    description: "Completa un round durante l'evento Caos.",
+    icon: "🌀",
+  },
+  {
+    id: "synergy_expert",
+    label: "Esperto Sinergie",
+    description: "Raggiungi il 100% di sinergia.",
+    icon: "🧬",
+  },
   { id: "collector", label: "Collezionista", description: "Gioca 10 partite totali.", icon: "📚" },
 ];
 
 // ── Constants ────────────────────────────────────────────────
-const DRAW_DELAY = 400; 
-const XP_PER_SCORE = 0.5; 
+const DRAW_DELAY = 400;
+const XP_PER_SCORE = 0.5;
 
 const GAME_EVENTS: Record<GameEventType, GameEvent> = {
   none: { type: "none", label: "", description: "", color: "" },
-  double_points: { type: "double_points", label: "✨ RADDOPPIO", description: "Tutti i punti sono raddoppiati!", color: "text-gold" },
-  chaos: { type: "chaos", label: "🌀 CAOS", description: "Le sinergie sono invertite!", color: "text-mystic-glow" },
-  rare_boost: { type: "rare_boost", label: "💎 RAREZZA+", description: "Probabilità carte Rare aumentata!", color: "text-azure" },
-  time_pressure: { type: "time_pressure", label: "⏳ PRESSIONE", description: "Scegli in fretta per XP extra!", color: "text-rose" },
+  double_points: {
+    type: "double_points",
+    label: "✨ RADDOPPIO",
+    description: "Tutti i punti sono raddoppiati!",
+    color: "text-gold",
+  },
+  chaos: {
+    type: "chaos",
+    label: "🌀 CAOS",
+    description: "Le sinergie sono invertite!",
+    color: "text-mystic-glow",
+  },
+  rare_boost: {
+    type: "rare_boost",
+    label: "💎 RAREZZA+",
+    description: "Probabilità carte Rare aumentata!",
+    color: "text-azure",
+  },
+  time_pressure: {
+    type: "time_pressure",
+    label: "⏳ PRESSIONE",
+    description: "Scegli in fretta per XP extra!",
+    color: "text-rose",
+  },
 };
 
 export type ComboPhase = "idle" | "drawing" | "decision" | "result";
@@ -40,18 +82,18 @@ interface ComboState {
   phase: ComboPhase;
   drawnCards: [Card, Card, Card] | null;
   currentResult: EvaluationResult | null;
-  
+
   // Game State
   rerollsLeft: number;
   totalRerolls: number;
   isDailyMode: boolean;
-  
+
   // Progression
   level: number;
   xp: number;
   streak: number;
   totalGames: number;
-  
+
   // History/Best
   lastResult: GameResult | null;
   highScore: number;
@@ -118,16 +160,16 @@ export const useComboGame = create<ComboState>()(
       phase: "idle",
       drawnCards: null,
       currentResult: null,
-      
+
       rerollsLeft: 3,
       totalRerolls: 3,
       isDailyMode: false,
-      
+
       level: 1,
       xp: 0,
       streak: 0,
       totalGames: 0,
-      
+
       lastResult: null,
       highScore: 0,
       dailyHighScore: 0,
@@ -143,7 +185,7 @@ export const useComboGame = create<ComboState>()(
       startGame: (daily = false) => {
         const todayStr = new Date().toISOString().split("T")[0];
         const state = get();
-        
+
         if (state.lastDailyDate !== todayStr) {
           set({ dailyHighScore: 0, dailyBestCombo: null, lastDailyDate: todayStr });
         }
@@ -166,7 +208,7 @@ export const useComboGame = create<ComboState>()(
         let char, sett, act;
 
         if (isDailyMode) {
-          const availableCards = activeVariant.cards.filter(c => {
+          const availableCards = activeVariant.cards.filter((c) => {
             if (c.rarity === "legendary") return level >= 2;
             return true;
           });
@@ -174,7 +216,8 @@ export const useComboGame = create<ComboState>()(
           const settings = availableCards.filter((c) => c.type === "setting");
           const actions = availableCards.filter((c) => c.type === "action");
           const today = new Date();
-          const dateSeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+          const dateSeed =
+            today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
           char = pickSeeded(characters, 1, dateSeed)[0];
           sett = pickSeeded(settings, 1, dateSeed + 1)[0];
           act = pickSeeded(actions, 1, dateSeed + 2)[0];
@@ -185,38 +228,39 @@ export const useComboGame = create<ComboState>()(
         // Randomly trigger event (25% chance)
         let event: GameEvent | null = null;
         if (Math.random() < 0.25) {
-          const keys = Object.keys(GAME_EVENTS).filter(k => k !== "none") as GameEventType[];
+          const keys = Object.keys(GAME_EVENTS).filter((k) => k !== "none") as GameEventType[];
           event = GAME_EVENTS[keys[Math.floor(Math.random() * keys.length)]];
         }
 
         setTimeout(() => {
           let scored = DeckEngine.evaluate([char, sett, act], activeVariant);
-          
+
           // Apply event modifiers to score
           if (event?.type === "double_points") scored.score *= 2;
           if (event?.type === "chaos") {
             // Swap bonus and penalties (mock logic for score impact)
-            scored.score = Math.max(0, scored.score - (scored.synergyLevel * 0.5));
+            scored.score = Math.max(0, scored.score - scored.synergyLevel * 0.5);
           }
 
-          set({ 
-            phase: "decision", 
+          set({
+            phase: "decision",
             drawnCards: [char, sett, act],
             currentResult: scored,
-            activeEvent: event
+            activeEvent: event,
           });
         }, DRAW_DELAY);
       },
 
       reroll: () => {
-        const { rerollsLeft, phase, isDailyMode, totalRerolls, level, streak, activeVariant } = get();
+        const { rerollsLeft, phase, isDailyMode, totalRerolls, level, streak, activeVariant } =
+          get();
         if (rerollsLeft <= 0 || phase !== "decision") return;
 
         set({ phase: "drawing", drawnCards: null, currentResult: null });
 
         let char, sett, act;
         if (isDailyMode) {
-          const availableCards = activeVariant.cards.filter(c => {
+          const availableCards = activeVariant.cards.filter((c) => {
             if (c.rarity === "legendary") return level >= 2;
             return true;
           });
@@ -224,7 +268,8 @@ export const useComboGame = create<ComboState>()(
           const settings = availableCards.filter((c) => c.type === "setting");
           const actions = availableCards.filter((c) => c.type === "action");
           const today = new Date();
-          const dateSeed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+          const dateSeed =
+            today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
           const rerollSeed = dateSeed + (totalRerolls - rerollsLeft + 1) * 10;
           char = pickSeeded(characters, 1, rerollSeed)[0];
           sett = pickSeeded(settings, 1, rerollSeed + 1)[0];
@@ -236,29 +281,42 @@ export const useComboGame = create<ComboState>()(
         // Keep event if exists or 15% chance to trigger new one on reroll
         let event = get().activeEvent;
         if (!event && Math.random() < 0.15) {
-          const keys = Object.keys(GAME_EVENTS).filter(k => k !== "none") as GameEventType[];
+          const keys = Object.keys(GAME_EVENTS).filter((k) => k !== "none") as GameEventType[];
           event = GAME_EVENTS[keys[Math.floor(Math.random() * keys.length)]];
         }
 
         setTimeout(() => {
           let scored = DeckEngine.evaluate([char, sett, act], activeVariant);
-          
-          if (event?.type === "double_points") scored.score *= 2;
-          if (event?.type === "chaos") scored.score = Math.max(0, scored.score - (scored.synergyLevel * 0.5));
 
-          set({ 
-            phase: "decision", 
+          if (event?.type === "double_points") scored.score *= 2;
+          if (event?.type === "chaos")
+            scored.score = Math.max(0, scored.score - scored.synergyLevel * 0.5);
+
+          set({
+            phase: "decision",
             drawnCards: [char, sett, act],
             currentResult: scored,
             rerollsLeft: rerollsLeft - 1,
-            activeEvent: event
+            activeEvent: event,
           });
           analytics.track("reroll", { remaining: rerollsLeft - 1 });
         }, DRAW_DELAY);
       },
 
       keepCombo: () => {
-        const { drawnCards, currentResult, rerollsLeft, totalRerolls, highScore, dailyHighScore, isDailyMode, totalGames, streak, activeEvent, achievements } = get();
+        const {
+          drawnCards,
+          currentResult,
+          rerollsLeft,
+          totalRerolls,
+          highScore,
+          dailyHighScore,
+          isDailyMode,
+          totalGames,
+          streak,
+          activeEvent,
+          achievements,
+        } = get();
         if (!drawnCards || !currentResult) return;
 
         const xpToGain = Math.round(currentResult.score * XP_PER_SCORE);
@@ -273,14 +331,14 @@ export const useComboGame = create<ComboState>()(
           rerollsUsed: totalRerolls - rerollsLeft,
           xpEarned: xpToGain,
           leveledUp,
-          date: todayStr
+          date: todayStr,
         };
 
         // Achievement Logic
         const newAchievements = [...achievements];
         const checkUnlock = (id: string) => {
-          if (!newAchievements.find(a => a.id === id)) {
-            const base = ACHIEVEMENTS.find(a => a.id === id);
+          if (!newAchievements.find((a) => a.id === id)) {
+            const base = ACHIEVEMENTS.find((a) => a.id === id);
             if (base) newAchievements.push({ ...base, unlockedAt: new Date().toISOString() });
           }
         };
@@ -310,14 +368,14 @@ export const useComboGame = create<ComboState>()(
           totalGames: newTotalGames,
           streak: newStreak,
           achievements: newAchievements,
-          unlockedPacks: newUnlockedPacks
+          unlockedPacks: newUnlockedPacks,
         });
 
-        analytics.track("game_complete", { 
-          score: currentResult.score, 
-          cards: drawnCards, 
+        analytics.track("game_complete", {
+          score: currentResult.score,
+          cards: drawnCards,
           rerolls: totalRerolls - rerollsLeft,
-          streak: newStreak
+          streak: newStreak,
         });
       },
 
@@ -346,14 +404,14 @@ export const useComboGame = create<ComboState>()(
           phase: "idle",
           drawnCards: null,
           currentResult: null,
-          rerollsLeft: 3
+          rerollsLeft: 3,
         });
-      }
+      },
     }),
     {
       name: "reverie-meta-storage",
-      partialize: (state) => ({ 
-        level: state.level, 
+      partialize: (state) => ({
+        level: state.level,
         xp: state.xp,
         highScore: state.highScore,
         dailyHighScore: state.dailyHighScore,
@@ -362,8 +420,8 @@ export const useComboGame = create<ComboState>()(
         achievements: state.achievements,
         totalGames: state.totalGames,
         streak: state.streak,
-        unlockedPacks: state.unlockedPacks
+        unlockedPacks: state.unlockedPacks,
       }),
-    }
-  )
+    },
+  ),
 );

@@ -34,7 +34,7 @@ class SoundEngine {
     const assets = {
       click: "/audio/click.mp3",
       error: "/audio/error.mp3",
-      victory: "/audio/victory.mp3"
+      victory: "/audio/victory.mp3",
     };
     Object.entries(assets).forEach(([key, url]) => {
       const audio = new Audio(url);
@@ -58,27 +58,31 @@ class SoundEngine {
     }
   }
 
-  startAmbient() { this.startSceneMusic("home"); }
-  stopAmbient() { this.stopSceneMusic(); }
+  startAmbient() {
+    this.startSceneMusic("home");
+  }
+  stopAmbient() {
+    this.stopSceneMusic();
+  }
 
   startSceneMusic(scene: SceneMusic) {
     this.init();
     if (!this.ctx || this.muted) return;
     if (this.currentScene === scene) return;
-    
+
     // Immediately clear current scene state to prevent rapid overlapping
     const prevScene = this.currentScene;
     this.currentScene = scene;
-    
+
     this.stopSceneMusic(prevScene !== "none"); // Fade if transitioning, else hard stop
 
     if (scene === "none") return;
 
     const session: BgmSession = { oscillators: [], gains: [], filters: [], interval: null };
     const now = this.ctx.currentTime;
-    
+
     // 1. DEEP DRONE LAYER
-    const droneFreqs = scene === "home" ? [55, 110, 82.41] : [41.20, 82.41, 61.74];
+    const droneFreqs = scene === "home" ? [55, 110, 82.41] : [41.2, 82.41, 61.74];
     droneFreqs.forEach((freq, i) => {
       const osc = this.ctx!.createOscillator();
       const gain = this.ctx!.createGain();
@@ -86,7 +90,7 @@ class SoundEngine {
 
       osc.type = "sine";
       osc.frequency.setValueAtTime(freq, now);
-      
+
       const lfo = this.ctx!.createOscillator();
       const lfoGain = this.ctx!.createGain();
       lfo.frequency.setValueAtTime(0.1 + i * 0.05, now);
@@ -104,18 +108,22 @@ class SoundEngine {
       osc.connect(filter);
       filter.connect(gain);
       gain.connect(this.masterGain!);
-      
+
       osc.start(now);
       session.oscillators.push(osc, lfo);
       session.gains.push(gain);
     });
 
     // 2. GENERATIVE MELODY
-    const scale = scene === "home" ? [220, 261.63, 329.63, 392, 440] : [196, 233.08, 293.66, 349.23];
-    session.interval = setInterval(() => {
-      if (!this.ctx || this.muted || this.currentScene !== scene) return;
-      this.playGhostNote(scale[Math.floor(Math.random() * scale.length)]);
-    }, scene === "home" ? 5000 : 3000);
+    const scale =
+      scene === "home" ? [220, 261.63, 329.63, 392, 440] : [196, 233.08, 293.66, 349.23];
+    session.interval = setInterval(
+      () => {
+        if (!this.ctx || this.muted || this.currentScene !== scene) return;
+        this.playGhostNote(scale[Math.floor(Math.random() * scale.length)]);
+      },
+      scene === "home" ? 5000 : 3000,
+    );
 
     this.activeSession = session;
   }
@@ -123,7 +131,7 @@ class SoundEngine {
   private playGhostNote(freq: number) {
     if (!this.ctx || !this.masterGain) return;
     const now = this.ctx.currentTime;
-    
+
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
     const filter = this.ctx.createBiquadFilter();
@@ -157,24 +165,32 @@ class SoundEngine {
 
   stopSceneMusic(fade = true) {
     if (!this.activeSession) return;
-    
+
     const session = this.activeSession;
     this.activeSession = null;
 
     if (session.interval) clearInterval(session.interval);
-    
+
     const now = this.ctx?.currentTime || 0;
     const fadeTime = fade ? 1.5 : 0.1;
 
-    session.gains.forEach(g => {
+    session.gains.forEach((g) => {
       g.gain.cancelScheduledValues(now);
       g.gain.exponentialRampToValueAtTime(0.001, now + fadeTime);
     });
 
-    setTimeout(() => {
-      session.oscillators.forEach(o => { try { o.stop(); o.disconnect(); } catch(e){} });
-      session.gains.forEach(g => g.disconnect());
-    }, fadeTime * 1000 + 100);
+    setTimeout(
+      () => {
+        session.oscillators.forEach((o) => {
+          try {
+            o.stop();
+            o.disconnect();
+          } catch (e) {}
+        });
+        session.gains.forEach((g) => g.disconnect());
+      },
+      fadeTime * 1000 + 100,
+    );
   }
 
   play(type: string) {

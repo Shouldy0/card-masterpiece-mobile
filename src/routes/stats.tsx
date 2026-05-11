@@ -28,8 +28,15 @@ function Stats() {
   return (
     <MobileFrame>
       <header className="flex items-center gap-2 px-4 pt-6">
-        <Link to="/profile" className="flex size-9 items-center justify-center rounded-full bg-card/60 ring-1 ring-gold/30"><ArrowLeft className="h-4 w-4 text-gold" /></Link>
-        <h1 className="flex-1 text-center font-display text-lg gold-text tracking-widest">STATISTICHE</h1>
+        <Link
+          to="/profile"
+          className="flex size-9 items-center justify-center rounded-full bg-card/60 ring-1 ring-gold/30"
+        >
+          <ArrowLeft className="h-4 w-4 text-gold" />
+        </Link>
+        <h1 className="flex-1 text-center font-display text-lg gold-text tracking-widest">
+          STATISTICHE
+        </h1>
         <span className="size-9" />
       </header>
 
@@ -52,23 +59,40 @@ function Stats() {
           <div className="flex h-24 items-end gap-2">
             {XP_WEEK.map((v, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <div className="w-full rounded-t-md bg-gradient-to-t from-mystic to-mystic-glow" style={{ height: `${(v / max) * 100}%` }} />
+                <div
+                  className="w-full rounded-t-md bg-gradient-to-t from-mystic to-mystic-glow"
+                  style={{ height: `${(v / max) * 100}%` }}
+                />
                 <span className="text-[9px] text-muted-foreground">{DAYS[i]}</span>
               </div>
             ))}
           </div>
-          <p className="mt-2 text-center text-[10px] text-muted-foreground">Totale: {XP_WEEK.reduce((a, b) => a + b, 0)} XP</p>
+          <p className="mt-2 text-center text-[10px] text-muted-foreground">
+            Totale: {XP_WEEK.reduce((a, b) => a + b, 0)} XP
+          </p>
         </div>
       </div>
 
       <div className="mt-4 px-4">
-        <p className="text-[10px] uppercase tracking-widest text-gold">Performance per Territorio</p>
+        <p className="text-[10px] uppercase tracking-widest text-gold">
+          Performance per Territorio
+        </p>
         <div className="mt-2 space-y-2">
-          {[{ n: "Memoria d'Infanzia", w: 72 }, { n: "Trauma Rimosso", w: 41 }, { n: "Sogno Lucido", w: 65 }].map((r) => (
+          {[
+            { n: "Memoria d'Infanzia", w: 72 },
+            { n: "Trauma Rimosso", w: 41 },
+            { n: "Sogno Lucido", w: 65 },
+          ].map((r) => (
             <div key={r.n} className="rounded-lg gold-frame bg-card/50 p-3">
-              <div className="flex items-center justify-between text-xs"><span>{r.n}</span><span className="font-display text-gold">{r.w}%</span></div>
+              <div className="flex items-center justify-between text-xs">
+                <span>{r.n}</span>
+                <span className="font-display text-gold">{r.w}%</span>
+              </div>
               <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-mystic/20">
-                <div className="h-full bg-gradient-to-r from-mystic-glow to-gold" style={{ width: `${r.w}%` }} />
+                <div
+                  className="h-full bg-gradient-to-r from-mystic-glow to-gold"
+                  style={{ width: `${r.w}%` }}
+                />
               </div>
             </div>
           ))}
@@ -76,14 +100,24 @@ function Stats() {
       </div>
 
       <div className="mt-4 px-4">
-        <p className="text-[10px] uppercase tracking-widest text-gold">Distribuzione carte giocate</p>
+        <p className="text-[10px] uppercase tracking-widest text-gold">
+          Distribuzione carte giocate
+        </p>
         <div className="mt-2 flex h-3 overflow-hidden rounded-full bg-mystic/10">
           {distribution.map((d) => (
-            <div key={d.name} className={`bg-gradient-to-r ${d.c}`} style={{ width: `${(d.v / 86) * 100}%` }} />
+            <div
+              key={d.name}
+              className={`bg-gradient-to-r ${d.c}`}
+              style={{ width: `${(d.v / 86) * 100}%` }}
+            />
           ))}
         </div>
         <div className="mt-2 flex justify-between text-[9px] uppercase tracking-widest text-muted-foreground">
-          {distribution.map((d) => <span key={d.name}>{d.name} {d.v}</span>)}
+          {distribution.map((d) => (
+            <span key={d.name}>
+              {d.name} {d.v}
+            </span>
+          ))}
         </div>
       </div>
 
@@ -95,7 +129,9 @@ function Stats() {
             <p className="font-display text-sm">Sogno Lucido</p>
             <p className="text-[10px] text-muted-foreground">Giocata 14 volte · 12 vittorie</p>
             <div className="mt-1 flex gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-3 w-3 text-gold fill-gold" />)}
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className="h-3 w-3 text-gold fill-gold" />
+              ))}
             </div>
           </div>
         </div>

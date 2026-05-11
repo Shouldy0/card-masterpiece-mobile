@@ -1,7 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
 import { auth, getFirebase } from "@/lib/firebase";
 import { MobileFrame } from "@/components/Common";
 import { Eye, Mail, Lock, LogIn, UserPlus, Sparkles, Chrome } from "lucide-react";
@@ -28,7 +33,7 @@ function AuthPage() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isLogin && password.length < 6) {
       toast.error("La password deve essere di almeno 6 caratteri");
       return;
@@ -47,7 +52,7 @@ function AuthPage() {
       } else {
         // RESET player to starter state for NEW user
         useGame.getState().resetPlayer();
-        
+
         const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
         const { savePlayerToCloud } = await import("@/game/persistence");
         const currentPlayerState = useGame.getState().player;
@@ -74,11 +79,11 @@ function AuthPage() {
       const firebaseAuth = await getAuthInstance();
       if (!firebaseAuth) throw new Error("Sistema di autenticazione non disponibile");
       const userCredential = await signInWithPopup(firebaseAuth, provider);
-      
+
       // Sync cloud data for Google users (initialize if new)
       const { loadPlayerFromCloud, savePlayerToCloud } = await import("@/game/persistence");
       const cloudData = await loadPlayerFromCloud(userCredential.user.uid);
-      
+
       if (cloudData) {
         useGame.setState({ player: cloudData });
       } else {
@@ -88,7 +93,7 @@ function AuthPage() {
         await savePlayerToCloud(userCredential.user.uid, initialData);
         toast.success("Benvenuto nel Sogno");
       }
-      
+
       navigate({ to: "/home" });
     } catch (error: any) {
       toast.error(error.message);
@@ -99,10 +104,12 @@ function AuthPage() {
     <MobileFrame className="px-8 pt-12 pb-10 flex flex-col justify-center min-h-screen">
       <div className="flex flex-col items-center gap-4 mb-10">
         <div className="size-20 rounded-full bg-mystic/20 ring-2 ring-gold/40 flex items-center justify-center">
-           <Eye className="size-10 text-gold animate-pulse" />
+          <Eye className="size-10 text-gold animate-pulse" />
         </div>
         <h1 className="font-display text-4xl gold-text tracking-widest text-center">REVERIE</h1>
-        <p className="text-xs text-gold/60 uppercase tracking-[0.3em] text-center">Sincronizza la tua coscienza</p>
+        <p className="text-xs text-gold/60 uppercase tracking-[0.3em] text-center">
+          Sincronizza la tua coscienza
+        </p>
       </div>
 
       <form onSubmit={handleAuth} className="relative z-30 space-y-6">
@@ -142,7 +149,10 @@ function AuthPage() {
       <div className="mt-8 pt-8 border-t border-gold/10">
         <p className="text-center text-xs text-gold/40">
           {isLogin ? "Nuovo sognatore?" : "Sei già dei nostri?"}{" "}
-          <button onClick={() => setIsLogin(!isLogin)} className="text-gold underline font-bold ml-1 hover:text-mystic-glow transition-colors">
+          <button
+            onClick={() => setIsLogin(!isLogin)}
+            className="text-gold underline font-bold ml-1 hover:text-mystic-glow transition-colors"
+          >
             {isLogin ? "Crea account" : "Accedi qui"}
           </button>
         </p>

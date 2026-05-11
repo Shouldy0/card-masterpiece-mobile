@@ -9,7 +9,8 @@ const OUTPUT_PATH = resolve(__dirname, "public/cards/prompts.md");
 
 const cardsSource = readFileSync(CARDS_PATH, "utf-8");
 
-const cardRegex = /\{\s*id:\s*"([^"]+)",\s*name:\s*"([^"]+)",\s*type:\s*"([^"]+)",[^}]*?rarity:\s*"([^"]+)",[^}]*?text:\s*"([^"]*)",[^}]*?flavor:\s*"([^"]*)",/gs;
+const cardRegex =
+  /\{\s*id:\s*"([^"]+)",\s*name:\s*"([^"]+)",\s*type:\s*"([^"]+)",[^}]*?rarity:\s*"([^"]+)",[^}]*?text:\s*"([^"]*)",[^}]*?flavor:\s*"([^"]*)",/gs;
 
 const PALETTES = {
   archetipo: "deep purple, violet, magenta",
@@ -20,7 +21,8 @@ const PALETTES = {
   eco: "emerald green, forest jade, vibrant viridian",
 };
 
-const ART_STYLE = "Dark fantasy card illustration, mystical cosmic horror, rich colors, intricate details, dramatic lighting, ethereal atmosphere, tarot card aesthetic";
+const ART_STYLE =
+  "Dark fantasy card illustration, mystical cosmic horror, rich colors, intricate details, dramatic lighting, ethereal atmosphere, tarot card aesthetic";
 
 const RARITY_MAP = {
   comune: "Comune",
@@ -48,7 +50,6 @@ function generatePrompt(card) {
   const rarity = RARITY_MAP[card.rarity];
 
   const prompts = {
-
     v1_ambizione: `A swirling gravitational singularity of deep purple energy at the center of a cosmic vortex, golden star fragments being pulled inward like moths to a violet flame, tendrils of magenta light reaching across the void --style raw --ar 3:4`,
     v2_ossessione: `A spiraling tunnel of distorted reality with countless watching eyes embedded in violet walls, a solitary figure trapped in an infinite regression of mirrors reflecting purple and magenta light --style raw --ar 3:4`,
     v3_nostalgia: `A translucent crystalline hourglass floating in violet mist, glowing golden memories swirling inside like captured fireflies, the glass cracking with magenta light seeping through --style raw --ar 3:4`,
@@ -116,11 +117,17 @@ function generatePrompt(card) {
     e10_eternita: `An emerald green clockface with no hands, time frozen in a single perfect moment, forest jade light shining in all directions at once, vibrant viridian stillness where everything makes sense --style raw --ar 3:4`,
   };
 
-  return prompts[card.id] || `${card.name}, ${faction} card, ${palette} color scheme, ${ART_STYLE} --style raw --ar 3:4`;
+  return (
+    prompts[card.id] ||
+    `${card.name}, ${faction} card, ${palette} color scheme, ${ART_STYLE} --style raw --ar 3:4`
+  );
 }
 
 function slugify(name) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/_$/, "");
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/_$/, "");
 }
 
 const cards = [];

@@ -12,7 +12,7 @@ export const ads = {
     return new Promise((resolve) => {
       // In a real scenario, you'd call the SDK here:
       // if (window.gads) window.gads.showInterstitial();
-      
+
       // Simulate ad delay
       console.log("[ADS] Requesting interstitial ad...");
       setTimeout(() => {
@@ -33,5 +33,5 @@ export const ads = {
         resolve(true);
       }, 2000);
     });
-  }
+  },
 };

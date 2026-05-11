@@ -62,18 +62,38 @@ export function getNextRankMilestone(rankPoints: number): number {
 }
 
 export function getMatchRewards(result: MatchState["result"]): MatchRewards {
-  if (result === "win") return { xp: 110, gold: 45, fragments: 20, gems: 8, packs: 1, rankPointsDelta: 25 };
-  if (result === "lose") return { xp: 25, gold: 10, fragments: 5, gems: 0, packs: 0, rankPointsDelta: -15 };
+  if (result === "win")
+    return { xp: 110, gold: 45, fragments: 20, gems: 8, packs: 1, rankPointsDelta: 25 };
+  if (result === "lose")
+    return { xp: 25, gold: 10, fragments: 5, gems: 0, packs: 0, rankPointsDelta: -15 };
   return { xp: 45, gold: 18, fragments: 8, gems: 0, packs: 0, rankPointsDelta: 5 };
 }
 
 export function buildStarterDeck(): string[] {
-  const starterPool = CARDS.filter(c => c.rarity === "comune" && (c.unlockLevel ?? 1) <= 1);
-  return shuffle(starterPool).slice(0, 15).map(c => c.id);
+  const starterPool = CARDS.filter((c) => c.rarity === "comune" && (c.unlockLevel ?? 1) <= 1);
+  return shuffle(starterPool)
+    .slice(0, 15)
+    .map((c) => c.id);
 }
 
 export function createInitialMatch(playerDeck: string[]): MatchState {
-  const aiDeck = shuffle(["v5_follia", "v7_rancore", "o5_cenere", "o8_tempesta", "c5_martire", "c10_boia", "b3_oblio", "b6_abisso", "s8_arcobaleno", "s10_risveglio", "v2_ossessione", "o2_bosco_sacro", "c2_re_caduto", "b5_cenere_blu", "s4_visione"]);
+  const aiDeck = shuffle([
+    "v5_follia",
+    "v7_rancore",
+    "o5_cenere",
+    "o8_tempesta",
+    "c5_martire",
+    "c10_boia",
+    "b3_oblio",
+    "b6_abisso",
+    "s8_arcobaleno",
+    "s10_risveglio",
+    "v2_ossessione",
+    "o2_bosco_sacro",
+    "c2_re_caduto",
+    "b5_cenere_blu",
+    "s4_visione",
+  ]);
   const pDeck = shuffle(playerDeck);
   return {
     turn: 1,
@@ -167,21 +187,30 @@ interface AppStore {
   claimRankReward: (id: string) => void;
 }
 
-function powerWithRules(state: MatchState, card: CardDef, side: Side, territory: TerritoryId, cardUid?: string): number {
+function powerWithRules(
+  state: MatchState,
+  card: CardDef,
+  side: Side,
+  territory: TerritoryId,
+  cardUid?: string,
+): number {
   let p = card.power;
   const enemySide: Side = side === "player" ? "ai" : "player";
   if (card.traits?.includes("immobile")) return p;
   let totalBuff = state.buffs[side];
   let totalWeaken = state.weakens[enemySide];
   const board = state.board[territory];
-  const myIndex = cardUid ? board.findIndex(o => o.uid === cardUid) : -1;
-  const neighbors = myIndex >= 0 ? board.filter((o, idx) => o.side === side && Math.abs(idx - myIndex) === 1) : [];
-  const isProtected = neighbors.some(n => cardsById[n.cardId]?.traits?.includes("protector"));
+  const myIndex = cardUid ? board.findIndex((o) => o.uid === cardUid) : -1;
+  const neighbors =
+    myIndex >= 0 ? board.filter((o, idx) => o.side === side && Math.abs(idx - myIndex) === 1) : [];
+  const isProtected = neighbors.some((n) => cardsById[n.cardId]?.traits?.includes("protector"));
   if (isProtected) totalWeaken = 0;
   p += totalBuff;
   p -= totalWeaken;
   if (card.type === "archetipo") {
-    const others = state.board[territory].filter(o => o.side === side && cardsById[o.cardId]?.type === "archetipo").length;
+    const others = state.board[territory].filter(
+      (o) => o.side === side && cardsById[o.cardId]?.type === "archetipo",
+    ).length;
     p += others;
     if (card.traits?.includes("synergy_buff")) {
       const enemyHand = side === "player" ? state.hand.ai.length : state.hand.player.length;
@@ -192,16 +221,20 @@ function powerWithRules(state: MatchState, card: CardDef, side: Side, territory:
   if (territory === "trauma") if (!isProtected) p -= 1;
   if (territory === "sogno") p += 1;
   if (card.traits?.includes("loner")) {
-    const myCards = state.board[territory].filter(o => o.side === side).length;
+    const myCards = state.board[territory].filter((o) => o.side === side).length;
     if (myCards <= 1) p += 3;
   }
-  (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach(t => {
+  (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach((t) => {
     const counts: Record<string, number> = {};
-    state.board[t].filter(o => o.side === side).forEach(o => {
-      const type = cardsById[o.cardId]?.type;
-      if (type) counts[type] = (counts[type] || 0) + 1;
+    state.board[t]
+      .filter((o) => o.side === side)
+      .forEach((o) => {
+        const type = cardsById[o.cardId]?.type;
+        if (type) counts[type] = (counts[type] || 0) + 1;
+      });
+    Object.values(counts).forEach((count) => {
+      if (count >= 2) p += 1;
     });
-    Object.values(counts).forEach(count => { if (count >= 2) p += 1; });
   });
   return Math.max(0, p);
 }
@@ -226,8 +259,14 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
     case "heal":
       let healAmount = card.effect.amount;
       if (card.traits?.includes("dynamic_heal")) {
-        const count = (["memoria", "trauma", "sogno"] as TerritoryId[]).reduce((s, t) => 
-          s + state.board[t].filter(o => o.side === side && cardsById[o.cardId]?.type === "archetipo").length, 0);
+        const count = (["memoria", "trauma", "sogno"] as TerritoryId[]).reduce(
+          (s, t) =>
+            s +
+            state.board[t].filter(
+              (o) => o.side === side && cardsById[o.cardId]?.type === "archetipo",
+            ).length,
+          0,
+        );
         healAmount = count * 2;
       }
       state.hp[side] = Math.min(20, state.hp[side] + healAmount);
@@ -241,12 +280,16 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
     state.focus[enemySide] = Math.max(0, state.focus[enemySide] - 1);
     state.log.push(`${side === "player" ? "Hai" : "L'avversario ha"} drenato 1 Focus!`);
     if (card.traits?.includes("executioner")) {
-      const enemyPower = state.board[territory].filter(o => o.side === enemySide).reduce((s, o) => s + o.power, 0);
+      const enemyPower = state.board[territory]
+        .filter((o) => o.side === enemySide)
+        .reduce((s, o) => s + o.power, 0);
       if (enemyPower > 15) {
-        const board = state.board[territory].filter(o => o.side === enemySide).sort((a, b) => a.power - b.power);
+        const board = state.board[territory]
+          .filter((o) => o.side === enemySide)
+          .sort((a, b) => a.power - b.power);
         if (board.length > 0) {
           const target = board[0];
-          state.board[territory] = state.board[territory].filter(o => o.uid !== target.uid);
+          state.board[territory] = state.board[territory].filter((o) => o.uid !== target.uid);
           state.log.push(`${card.name} ha eseguito una memoria nemica!`);
         }
       }
@@ -263,8 +306,8 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
 }
 
 function processEndTurnTriggers(state: MatchState) {
-  (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach(t => {
-    state.board[t].forEach(o => {
+  (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach((t) => {
+    state.board[t].forEach((o) => {
       const cardDef = cardsById[o.cardId];
       if (cardDef?.traits?.includes("growth")) o.power += 1;
     });
@@ -272,8 +315,8 @@ function processEndTurnTriggers(state: MatchState) {
 }
 
 function recalculateBoard(state: MatchState) {
-  (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach(t => {
-    state.board[t].forEach(o => {
+  (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach((t) => {
+    state.board[t].forEach((o) => {
       const def = cardsById[o.cardId];
       if (def) o.power = powerWithRules(state, def, o.side, t, o.uid);
     });
@@ -290,9 +333,15 @@ function aiTurn(state: MatchState) {
       .sort((a, b) => {
         const score = (card: CardDef) => {
           const efficiency = card.power / Math.max(1, card.cost);
-          if (style === "aggressive") return card.power * 1.45 + efficiency * 0.35 + card.cost * 0.25;
+          if (style === "aggressive")
+            return card.power * 1.45 + efficiency * 0.35 + card.cost * 0.25;
           if (style === "control") {
-            const utility = card.effect.kind === "weaken_enemy" || card.effect.kind === "heal" || card.effect.kind === "draw" ? 4.5 : 0;
+            const utility =
+              card.effect.kind === "weaken_enemy" ||
+              card.effect.kind === "heal" ||
+              card.effect.kind === "draw"
+                ? 4.5
+                : 0;
             return efficiency * 1 + utility + card.cost * 0.05;
           }
           return efficiency * 1.35 + card.power * 0.55;
@@ -302,15 +351,19 @@ function aiTurn(state: MatchState) {
     if (affordable.length === 0) break;
     const card = affordable[0];
     const tIds: TerritoryId[] = ["memoria", "trauma", "sogno"];
-    const scored = tIds.map((t) => {
-      const aiP = state.board[t].filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
-      const plP = state.board[t].filter((c) => c.side === "player").reduce((s, c) => s + c.power, 0);
-      const diff = aiP - plP;
-      const territoryValue = t === "sogno" ? 1 : t === "memoria" ? 0.8 : 0.6;
-      if (style === "aggressive") return { t, score: diff * -0.45 + territoryValue + plP * 0.35 };
-      if (style === "control") return { t, score: diff * -1.35 + territoryValue * 0.75 };
-      return { t, score: diff * -0.95 + territoryValue };
-    }).sort((a, b) => b.score - a.score);
+    const scored = tIds
+      .map((t) => {
+        const aiP = state.board[t].filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
+        const plP = state.board[t]
+          .filter((c) => c.side === "player")
+          .reduce((s, c) => s + c.power, 0);
+        const diff = aiP - plP;
+        const territoryValue = t === "sogno" ? 1 : t === "memoria" ? 0.8 : 0.6;
+        if (style === "aggressive") return { t, score: diff * -0.45 + territoryValue + plP * 0.35 };
+        if (style === "control") return { t, score: diff * -1.35 + territoryValue * 0.75 };
+        return { t, score: diff * -0.95 + territoryValue };
+      })
+      .sort((a, b) => b.score - a.score);
     const territory = scored[0].t;
     state.focus.ai -= card.cost;
     const idx = state.hand.ai.indexOf(card.id);
@@ -319,19 +372,23 @@ function aiTurn(state: MatchState) {
     const uid = `ai-${state.turn}-${Math.random()}`;
     state.board[territory].push({ uid, cardId: card.id, side: "ai", power: 0 });
     recalculateBoard(state);
-    state.log.push(`Avversario (${style}) gioca ${card.name} su ${territory} (Costo ${card.cost}).`);
+    state.log.push(
+      `Avversario (${style}) gioca ${card.name} su ${territory} (Costo ${card.cost}).`,
+    );
   }
 }
 
 function endMatchIfNeeded(state: MatchState) {
   if (state.turn > state.maxTurns) {
     const results: any = {};
-    let pWins = 0, aWins = 0;
-    (["memoria","trauma","sogno"] as TerritoryId[]).forEach((t) => {
+    let pWins = 0,
+      aWins = 0;
+    (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach((t) => {
       const p = state.board[t].filter((c) => c.side === "player").reduce((s, c) => s + c.power, 0);
       const a = state.board[t].filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
       results[t] = { p, a };
-      if (p > a) pWins++; else if (a > p) aWins++;
+      if (p > a) pWins++;
+      else if (a > p) aWins++;
     });
     state.territoryResults = results;
     state.status = "ended";
@@ -343,9 +400,24 @@ export const useGame = create<AppStore>()(
   persist(
     (set, get): AppStore => ({
       player: {
-        level: 1, xp: 0, xpToNext: 100, gold: 0, fragments: 0, gems: 0, wins: 0, matches: 0,
-        rank: "Sognatore Iniziale", rankPoints: 0, collection: [], deck: [], title: "Sognatore",
-        premiumPass: false, passClaimed: [], rankRewardsClaimed: [], ownedCosmetics: ["default_board"], onboardingDone: false,
+        level: 1,
+        xp: 0,
+        xpToNext: 100,
+        gold: 0,
+        fragments: 0,
+        gems: 0,
+        wins: 0,
+        matches: 0,
+        rank: "Sognatore Iniziale",
+        rankPoints: 0,
+        collection: [],
+        deck: [],
+        title: "Sognatore",
+        premiumPass: false,
+        passClaimed: [],
+        rankRewardsClaimed: [],
+        ownedCosmetics: ["default_board"],
+        onboardingDone: false,
       },
       onboardingPackOpened: false,
       tutorialStep: 0,
@@ -353,62 +425,84 @@ export const useGame = create<AppStore>()(
       lastSyncedAt: null,
       user: null,
       match: null,
-      settings: { soundOn: true, musicVolume: 0.5, sfxVolume: 0.8, vibration: true, hints: true, animSpeed: 1, language: "Italiano" },
+      settings: {
+        soundOn: true,
+        musicVolume: 0.5,
+        sfxVolume: 0.8,
+        vibration: true,
+        hints: true,
+        animSpeed: 1,
+        language: "Italiano",
+      },
 
       setOnboardingDone: () => set((s) => ({ player: { ...s.player, onboardingDone: true } })),
       setOnboardingPackOpened: (v) => set({ onboardingPackOpened: v }),
       setTutorialStep: (n) => set({ tutorialStep: n }),
-      
+
       startMatch: () => set({ match: createInitialMatch(get().player.deck), tutorialStep: 0 }),
       startTutorialMatch: () => {
         const tutorialMatch = createInitialMatch(buildStarterDeck());
         tutorialMatch.isTutorial = true;
-        tutorialMatch.hand.player = ["v2_ossessione", "o2_bosco_sacro", "c2_re_caduto", "s4_visione", "b3_oblio"];
+        tutorialMatch.hand.player = [
+          "v2_ossessione",
+          "o2_bosco_sacro",
+          "c2_re_caduto",
+          "s4_visione",
+          "b3_oblio",
+        ];
         tutorialMatch.hand.ai = ["v5_follia", "o5_cenere"];
         set({ match: tutorialMatch, tutorialStep: 1 });
       },
 
-      playCard: (cardUid, territory) => set((s) => {
-        if (!s.match || s.match.status !== "playing") return s;
-        const m = structuredClone(s.match);
-        const cardId = cardUid;
-        const card = cardsById[cardId];
-        if (!card || card.cost > m.focus.player) return s;
-        const idx = m.hand.player.indexOf(cardId);
-        if (idx === -1) return s;
-        m.hand.player.splice(idx, 1);
-        m.focus.player -= card.cost;
-        applyEffect(m, card, "player", territory);
-        const uid = `p-${m.turn}-${Math.random()}`;
-        m.board[territory].push({ uid, cardId, side: "player", power: 0 });
-        recalculateBoard(m);
-        m.log.push(`Giochi ${card.name} su ${territory} (Costo ${card.cost}).`);
-        return { match: m };
-      }),
+      playCard: (cardUid, territory) =>
+        set((s) => {
+          if (!s.match || s.match.status !== "playing") return s;
+          const m = structuredClone(s.match);
+          const cardId = cardUid;
+          const card = cardsById[cardId];
+          if (!card || card.cost > m.focus.player) return s;
+          const idx = m.hand.player.indexOf(cardId);
+          if (idx === -1) return s;
+          m.hand.player.splice(idx, 1);
+          m.focus.player -= card.cost;
+          applyEffect(m, card, "player", territory);
+          const uid = `p-${m.turn}-${Math.random()}`;
+          m.board[territory].push({ uid, cardId, side: "player", power: 0 });
+          recalculateBoard(m);
+          m.log.push(`Giochi ${card.name} su ${territory} (Costo ${card.cost}).`);
+          return { match: m };
+        }),
 
-      endTurn: () => set((s) => {
-        if (!s.match) return s;
-        const m = structuredClone(s.match);
-        aiTurn(m);
-        processEndTurnTriggers(m);
-        const pMem = m.board.memoria.filter(c => c.side === "player").reduce((s, c) => s + c.power, 0);
-        const aMem = m.board.memoria.filter(c => c.side === "ai").reduce((s, c) => s + c.power, 0);
-        if (pMem !== aMem) {
-          const controller: Side = pMem > aMem ? "player" : "ai";
-          const bonus = m.deck[controller].shift();
-          if (bonus) m.hand[controller].push(bonus);
-        }
-        m.buffs = { player: 0, ai: 0 };
-        m.weakens = { player: 0, ai: 0 };
-        m.turn += 1;
-        m.focus.player = Math.min(m.maxFocus, m.turn + 2);
-        m.focus.ai = Math.min(m.maxFocus, m.turn + 3);
-        const dP = m.deck.player.shift(); if (dP) m.hand.player.push(dP);
-        const dA = m.deck.ai.shift(); if (dA) m.hand.ai.push(dA);
-        recalculateBoard(m);
-        endMatchIfNeeded(m);
-        return { match: m };
-      }),
+      endTurn: () =>
+        set((s) => {
+          if (!s.match) return s;
+          const m = structuredClone(s.match);
+          aiTurn(m);
+          processEndTurnTriggers(m);
+          const pMem = m.board.memoria
+            .filter((c) => c.side === "player")
+            .reduce((s, c) => s + c.power, 0);
+          const aMem = m.board.memoria
+            .filter((c) => c.side === "ai")
+            .reduce((s, c) => s + c.power, 0);
+          if (pMem !== aMem) {
+            const controller: Side = pMem > aMem ? "player" : "ai";
+            const bonus = m.deck[controller].shift();
+            if (bonus) m.hand[controller].push(bonus);
+          }
+          m.buffs = { player: 0, ai: 0 };
+          m.weakens = { player: 0, ai: 0 };
+          m.turn += 1;
+          m.focus.player = Math.min(m.maxFocus, m.turn + 2);
+          m.focus.ai = Math.min(m.maxFocus, m.turn + 3);
+          const dP = m.deck.player.shift();
+          if (dP) m.hand.player.push(dP);
+          const dA = m.deck.ai.shift();
+          if (dA) m.hand.ai.push(dA);
+          recalculateBoard(m);
+          endMatchIfNeeded(m);
+          return { match: m };
+        }),
 
       exitMatch: () => {
         const { match, player, user } = get();
@@ -420,7 +514,10 @@ export const useGame = create<AppStore>()(
           updatedPlayer.gold += rewards.gold;
           updatedPlayer.matches += 1;
           if (match.result === "win") updatedPlayer.wins += 1;
-          updatedPlayer.rankPoints = Math.max(0, updatedPlayer.rankPoints + rewards.rankPointsDelta);
+          updatedPlayer.rankPoints = Math.max(
+            0,
+            updatedPlayer.rankPoints + rewards.rankPointsDelta,
+          );
           updatedPlayer.rank = getRankFromPoints(updatedPlayer.rankPoints);
           while (updatedPlayer.xp >= updatedPlayer.xpToNext) {
             updatedPlayer.level += 1;
@@ -451,7 +548,13 @@ export const useGame = create<AppStore>()(
         const starter = buildStarterDeck();
         const final = Array.from(new Set([...player.collection, ...starter]));
         if (final.length !== player.collection.length) {
-          set(s => ({ player: { ...s.player, collection: final, deck: s.player.deck.length === 15 ? s.player.deck : starter } }));
+          set((s) => ({
+            player: {
+              ...s.player,
+              collection: final,
+              deck: s.player.deck.length === 15 ? s.player.deck : starter,
+            },
+          }));
         }
       },
 
@@ -459,8 +562,16 @@ export const useGame = create<AppStore>()(
         const s = get();
         const balance = currency === "gold" ? s.player.gold : s.player.gems;
         if (balance < cost) return null;
-        const pulled = shuffle(CARDS).slice(0, 5).map(c => c.id);
-        set({ player: { ...s.player, [currency]: balance - cost, collection: Array.from(new Set([...s.player.collection, ...pulled])) } });
+        const pulled = shuffle(CARDS)
+          .slice(0, 5)
+          .map((c) => c.id);
+        set({
+          player: {
+            ...s.player,
+            [currency]: balance - cost,
+            collection: Array.from(new Set([...s.player.collection, ...pulled])),
+          },
+        });
         if (s.user?.uid) s.syncWithCloud(s.user.uid);
         return pulled;
       },
@@ -469,7 +580,13 @@ export const useGame = create<AppStore>()(
         const s = get();
         const balance = currency === "gold" ? s.player.gold : s.player.gems;
         if (balance < cost || s.player.ownedCosmetics.includes(id)) return false;
-        set({ player: { ...s.player, [currency]: balance - cost, ownedCosmetics: [...s.player.ownedCosmetics, id] } });
+        set({
+          player: {
+            ...s.player,
+            [currency]: balance - cost,
+            ownedCosmetics: [...s.player.ownedCosmetics, id],
+          },
+        });
         if (s.user?.uid) s.syncWithCloud(s.user.uid);
         return true;
       },
@@ -489,37 +606,68 @@ export const useGame = create<AppStore>()(
         const starter = buildStarterDeck();
         set({
           player: {
-            level: 1, xp: 0, xpToNext: 100, gold: 0, fragments: 0, gems: 0, wins: 0, matches: 0,
-            rank: "Sognatore Iniziale", rankPoints: 0, collection: [...starter], deck: [...starter],
-            title: "Sognatore", premiumPass: false, passClaimed: [], rankRewardsClaimed: [],
-            ownedCosmetics: ["default_board"], onboardingDone: false,
+            level: 1,
+            xp: 0,
+            xpToNext: 100,
+            gold: 0,
+            fragments: 0,
+            gems: 0,
+            wins: 0,
+            matches: 0,
+            rank: "Sognatore Iniziale",
+            rankPoints: 0,
+            collection: [...starter],
+            deck: [...starter],
+            title: "Sognatore",
+            premiumPass: false,
+            passClaimed: [],
+            rankRewardsClaimed: [],
+            ownedCosmetics: ["default_board"],
+            onboardingDone: false,
           },
-          onboardingPackOpened: false, match: null, tutorialStep: 0,
+          onboardingPackOpened: false,
+          match: null,
+          tutorialStep: 0,
         });
       },
       claimPassReward: (id, gold) => {
-        set(s => ({ player: { ...s.player, gold: s.player.gold + (gold || 0), passClaimed: Array.from(new Set([...s.player.passClaimed, id])) } }));
+        set((s) => ({
+          player: {
+            ...s.player,
+            gold: s.player.gold + (gold || 0),
+            passClaimed: Array.from(new Set([...s.player.passClaimed, id])),
+          },
+        }));
         if (get().user?.uid) get().syncWithCloud(get().user.uid);
       },
       activatePremiumPass: () => {
-        set(s => ({ player: { ...s.player, premiumPass: true } }));
+        set((s) => ({ player: { ...s.player, premiumPass: true } }));
         if (get().user?.uid) get().syncWithCloud(get().user.uid);
       },
       claimRankReward: (id) => {
-        set(s => ({ player: { ...s.player, rankRewardsClaimed: Array.from(new Set([...s.player.rankRewardsClaimed, id])) } }));
+        set((s) => ({
+          player: {
+            ...s.player,
+            rankRewardsClaimed: Array.from(new Set([...s.player.rankRewardsClaimed, id])),
+          },
+        }));
         if (get().user?.uid) get().syncWithCloud(get().user.uid);
-      }
+      },
     }),
-    { 
+    {
       name: "reverie-store-v5",
-      storage: createJSONStorage(() => (typeof window !== "undefined" ? localStorage : { getItem: () => null, setItem: () => {}, removeItem: () => {} } as any)),
+      storage: createJSONStorage(() =>
+        typeof window !== "undefined"
+          ? localStorage
+          : ({ getItem: () => null, setItem: () => {}, removeItem: () => {} } as any),
+      ),
       version: 5,
       partialize: (state) => {
         const { user, syncStatus, lastSyncedAt, ...rest } = state;
         return rest;
-      }
-    }
-  )
+      },
+    },
+  ),
 );
 
 export { TERRITORIES };

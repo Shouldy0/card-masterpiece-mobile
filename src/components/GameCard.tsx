@@ -15,14 +15,21 @@ interface Props {
 
 const factionStyles: Record<CardType, { bar: string; power: string }> = {
   archetipo: { bar: "bg-purple-500", power: "text-purple-300" },
-  ricordo:   { bar: "bg-yellow-500", power: "text-yellow-300" },
-  maschera:  { bar: "bg-red-500",    power: "text-red-300" },
-  oblio:     { bar: "bg-blue-500",   power: "text-blue-300" },
-  sogno:     { bar: "bg-cyan-400",   power: "text-cyan-300" },
-  eco:       { bar: "bg-emerald-500", power: "text-emerald-300" },
+  ricordo: { bar: "bg-yellow-500", power: "text-yellow-300" },
+  maschera: { bar: "bg-red-500", power: "text-red-300" },
+  oblio: { bar: "bg-blue-500", power: "text-blue-300" },
+  sogno: { bar: "bg-cyan-400", power: "text-cyan-300" },
+  eco: { bar: "bg-emerald-500", power: "text-emerald-300" },
 };
 
-export const GameCard = React.memo(function GameCard({ card, size = "md", glow, faded, selected, onClick }: Props) {
+export const GameCard = React.memo(function GameCard({
+  card,
+  size = "md",
+  glow,
+  faded,
+  selected,
+  onClick,
+}: Props) {
   const [imgError, setImgError] = React.useState(false);
   const f = factionStyles[card.type];
   const isXs = size === "xs";
@@ -40,7 +47,7 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
         "rounded-lg border border-white/10",
         faded && "opacity-45 grayscale",
         selected && "ring-2 ring-gold/70 z-50",
-        glow && "shadow-[0_0_12px_rgba(168,85,247,0.2)]"
+        glow && "shadow-[0_0_12px_rgba(168,85,247,0.2)]",
       )}
     >
       {/* Art */}
@@ -64,28 +71,42 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
 
       {/* Cost */}
       <div className="absolute top-1.5 left-1.5 z-20 flex items-center justify-center rounded-full bg-black/70 size-6">
-        <span className={cn(
-          "font-display font-bold",
-          isSm ? "text-[12px]" : isXs ? "text-[10px]" : "text-[12px]",
-          faded ? "text-white/40" : "text-white"
-        )}>
+        <span
+          className={cn(
+            "font-display font-bold",
+            isSm ? "text-[12px]" : isXs ? "text-[10px]" : "text-[12px]",
+            faded ? "text-white/40" : "text-white",
+          )}
+        >
           {card.cost}
         </span>
       </div>
 
       {/* Name */}
       <div className="absolute bottom-1.5 inset-x-1.5 z-20">
-        <h3 className={cn(
-          "font-display uppercase text-white font-bold truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]",
-          isXs ? "text-[8px] tracking-wide" : isSm ? "text-[10px] tracking-wider" : "text-[11px] tracking-wider"
-        )}>
+        <h3
+          className={cn(
+            "font-display uppercase text-white font-bold truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]",
+            isXs
+              ? "text-[8px] tracking-wide"
+              : isSm
+                ? "text-[10px] tracking-wider"
+                : "text-[11px] tracking-wider",
+          )}
+        >
           {card.name}
         </h3>
       </div>
 
       {/* Power */}
       <div className="absolute bottom-1.5 right-1.5 z-20 flex items-center justify-center bg-black/70 rounded size-6">
-        <span className={cn("font-display font-extrabold", isSm ? "text-[13px]" : "text-[12px]", f.power)}>
+        <span
+          className={cn(
+            "font-display font-extrabold",
+            isSm ? "text-[13px]" : "text-[12px]",
+            f.power,
+          )}
+        >
           {card.power}
         </span>
       </div>
@@ -93,12 +114,18 @@ export const GameCard = React.memo(function GameCard({ card, size = "md", glow, 
   );
 });
 
-export const CardBack = React.memo(function CardBack({ size = "md" }: { size?: keyof typeof CARD_SIZES }) {
+export const CardBack = React.memo(function CardBack({
+  size = "md",
+}: {
+  size?: keyof typeof CARD_SIZES;
+}) {
   return (
-    <div className={cn(
-      "relative shrink-0 overflow-hidden bg-gradient-to-br from-mystic/30 to-abyss shadow-md rounded-lg border border-white/10",
-      CARD_SIZES[size]
-    )}>
+    <div
+      className={cn(
+        "relative shrink-0 overflow-hidden bg-gradient-to-br from-mystic/30 to-abyss shadow-md rounded-lg border border-white/10",
+        CARD_SIZES[size],
+      )}
+    >
       <div className="absolute inset-0 flex items-center justify-center">
         <span className="font-display text-gold/50 text-lg">?</span>
       </div>

@@ -5,19 +5,45 @@ export class DeckEngine {
   private static ADJECTIVES = {
     positive: ["Radiante", "Eterno", "Luminoso", "Puro", "Vibrante", "Sacro"],
     negative: ["Oscuro", "Tormentato", "Fratturato", "Perduto", "Abissale", "Dimenticato"],
-    neutral: ["Antico", "Silenzioso", "Misterioso", "Invisibile", "Errante", "Latente"]
+    neutral: ["Antico", "Silenzioso", "Misterioso", "Invisibile", "Errante", "Latente"],
   };
 
   private static NOUNS = {
-    character: ["Sognatore", "Guardiano", "Ombra", "Oracolo", "Viandante", "Eco", "Anima", "Spirito"],
-    setting: ["Abisso", "Giardino", "Torre", "Vuoto", "Labirinto", "Rovina", "Santuario", "Confine"],
-    action: ["Ricordare", "Dimenticare", "Sognare", "Trascendere", "Frantumare", "Osservare", "Evolvere"]
+    character: [
+      "Sognatore",
+      "Guardiano",
+      "Ombra",
+      "Oracolo",
+      "Viandante",
+      "Eco",
+      "Anima",
+      "Spirito",
+    ],
+    setting: [
+      "Abisso",
+      "Giardino",
+      "Torre",
+      "Vuoto",
+      "Labirinto",
+      "Rovina",
+      "Santuario",
+      "Confine",
+    ],
+    action: [
+      "Ricordare",
+      "Dimenticare",
+      "Sognare",
+      "Trascendere",
+      "Frantumare",
+      "Osservare",
+      "Evolvere",
+    ],
   };
 
   private static ICONS = {
     character: ["👤", "🧙", "👼", "👻", "🧟", "🤖"],
     setting: ["🏛️", "🌲", "🌌", "🏜️", "🌋", "🏰"],
-    action: ["✨", "🔥", "💧", "🌪️", "⚡", "👁️"]
+    action: ["✨", "🔥", "💧", "🌪️", "⚡", "👁️"],
   };
 
   private static RARITY_SCORE: Record<string, number> = {
@@ -32,17 +58,22 @@ export class DeckEngine {
    */
   static generateProceduralCard(type: CardType, variant: GameVariant): Card {
     const isPositive = Math.random() > 0.5;
-    const adjPool = isPositive ? [...DeckEngine.ADJECTIVES.positive, ...DeckEngine.ADJECTIVES.neutral] : [...DeckEngine.ADJECTIVES.negative, ...DeckEngine.ADJECTIVES.neutral];
+    const adjPool = isPositive
+      ? [...DeckEngine.ADJECTIVES.positive, ...DeckEngine.ADJECTIVES.neutral]
+      : [...DeckEngine.ADJECTIVES.negative, ...DeckEngine.ADJECTIVES.neutral];
     const adj = adjPool[Math.floor(Math.random() * adjPool.length)];
-    
+
     // Customize nouns based on variant labels if possible
     const nounPool = DeckEngine.NOUNS[type as keyof typeof DeckEngine.NOUNS] || [];
-    const noun = nounPool[Math.floor(Math.random() * nounPool.length)] || variant.theme.labels[type] || "Entità";
-    
+    const noun =
+      nounPool[Math.floor(Math.random() * nounPool.length)] ||
+      variant.theme.labels[type] ||
+      "Entità";
+
     const name = Math.random() > 0.3 ? `${noun} ${adj}` : `${adj} ${noun}`;
     const iconPool = DeckEngine.ICONS[type as keyof typeof DeckEngine.ICONS] || [];
     const icon = iconPool[Math.floor(Math.random() * iconPool.length)] || "❓";
-    
+
     const rarities: CardRarity[] = ["common", "rare", "epic", "legendary"];
     const rarityWeights = [0.6, 0.25, 0.1, 0.05];
     const rVal = Math.random();
@@ -50,14 +81,17 @@ export class DeckEngine {
     let cumulative = 0;
     for (let i = 0; i < rarities.length; i++) {
       cumulative += rarityWeights[i];
-      if (rVal <= cumulative) { rarity = rarities[i]; break; }
+      if (rVal <= cumulative) {
+        rarity = rarities[i];
+        break;
+      }
     }
 
     const tags: string[] = [type];
     if (DeckEngine.ADJECTIVES.positive.includes(adj)) tags.push("peaceful", "truth", "holy");
     if (DeckEngine.ADJECTIVES.negative.includes(adj)) tags.push("dark", "lost", "fire");
     if (DeckEngine.ADJECTIVES.neutral.includes(adj)) tags.push("mystery", "ancient", "magic");
-    
+
     return {
       id: `proc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       name,
@@ -72,17 +106,21 @@ export class DeckEngine {
   /**
    * Draws a valid combo based on the active variant
    */
-  static drawCombo(variant: GameVariant, level: number = 1, streak: number = 0): [Card, Card, Card] {
+  static drawCombo(
+    variant: GameVariant,
+    level: number = 1,
+    streak: number = 0,
+  ): [Card, Card, Card] {
     const drawOne = (type: CardType) => {
       const procChance = Math.min(0.7, 0.4 + streak * 0.05);
       if (Math.random() < procChance) return this.generateProceduralCard(type, variant);
-      
-      const pool = variant.cards.filter(c => {
+
+      const pool = variant.cards.filter((c) => {
         if (c.type !== type) return false;
         if (c.rarity === "legendary") return level >= 2 || (streak >= 3 && Math.random() < 0.2);
         return true;
       });
-      
+
       if (pool.length === 0) return this.generateProceduralCard(type, variant);
       return pool[Math.floor(Math.random() * pool.length)];
     };
@@ -94,7 +132,7 @@ export class DeckEngine {
    * Evaluates a combination of cards using the variant's synergy rules
    */
   static evaluate(cards: Card[], variant: GameVariant): EvaluationResult {
-    const allTags = cards.flatMap(c => c.tags);
+    const allTags = cards.flatMap((c) => c.tags);
     const tagCounts = new Map<string, number>();
     for (const t of allTags) tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
 
@@ -111,7 +149,7 @@ export class DeckEngine {
     const activeBonuses: string[] = [];
     const activePenalties: string[] = [];
     for (const rule of variant.synergyRules) {
-      const matchCount = rule.tags.filter(t => allTags.includes(t)).length;
+      const matchCount = rule.tags.filter((t) => allTags.includes(t)).length;
       if (matchCount >= rule.tags.length) {
         score += rule.bonus;
         if (rule.isPenalty) activePenalties.push(rule.label);
@@ -139,7 +177,7 @@ export class DeckEngine {
       narration,
       bonuses: activeBonuses,
       penalties: activePenalties,
-      synergyLevel
+      synergyLevel,
     };
   }
 
@@ -157,7 +195,7 @@ export class DeckEngine {
       "C'è del potenziale.",
       "Una visione interessante.",
       "Magnifico equilibrio!",
-      "Il Sognatore si è svegliato!"
+      "Il Sognatore si è svegliato!",
     ];
     return feedbacks[stars - 1] || feedbacks[0];
   }

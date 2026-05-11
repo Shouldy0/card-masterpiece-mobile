@@ -5,7 +5,19 @@ import { MobileFrame } from "@/components/Common";
 import { BottomNav } from "@/components/BottomNav";
 import { useGame } from "@/game/store";
 import { sounds } from "@/utils/audio";
-import { Coins, Diamond, Plus, Library, BookOpen, ShoppingBag, Sparkles, Crown, Eye, Zap, Trophy } from "lucide-react";
+import {
+  Coins,
+  Diamond,
+  Plus,
+  Library,
+  BookOpen,
+  ShoppingBag,
+  Sparkles,
+  Crown,
+  Eye,
+  Zap,
+  Trophy,
+} from "lucide-react";
 import { useSound } from "@/hooks/useSound";
 import { GameCard } from "@/components/GameCard";
 import { cardsById } from "@/game/cards";
@@ -14,7 +26,14 @@ import { TutorialOverlay } from "@/components/Tutorial";
 export const Route = createFileRoute("/home")({ component: Home });
 
 function Home() {
-  const { player, startMatch, startTutorialMatch, onboardingPackOpened, openStarterPack, setOnboardingPackOpened } = useGame();
+  const {
+    player,
+    startMatch,
+    startTutorialMatch,
+    onboardingPackOpened,
+    openStarterPack,
+    setOnboardingPackOpened,
+  } = useGame();
   const navigate = useNavigate();
   const { play } = useSound();
 
@@ -23,14 +42,14 @@ function Home() {
     return () => {};
   }, []);
 
-  const play_btn = () => { 
-    sounds.play("whoosh"); 
+  const play_btn = () => {
+    sounds.play("whoosh");
     if (!player?.onboardingDone) {
       startTutorialMatch();
     } else {
-      startMatch(); 
+      startMatch();
     }
-    navigate({ to: "/vs" }); 
+    navigate({ to: "/vs" });
   };
 
   return (
@@ -56,7 +75,7 @@ function Home() {
             <div className="flex items-center gap-2">
               <ResourcePill icon={Coins} value={player.gold} color="text-gold" />
               <ResourcePill icon={Diamond} value={player.gems} color="text-mystic-glow" />
-              <button 
+              <button
                 onClick={() => navigate({ to: "/shop" })}
                 className="size-7 rounded-full bg-mystic/30 ring-1 ring-gold/40 flex items-center justify-center text-gold active:scale-95 transition-transform"
               >
@@ -90,10 +109,10 @@ function Home() {
 
             {/* PRIMARY ACTIONS */}
             <div className="w-full max-w-xs space-y-4">
-              <motion.button 
-                whileHover={{ scale: 1.02 }} 
-                whileTap={{ scale: 0.98 }} 
-                onClick={play_btn} 
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={play_btn}
                 className="w-full py-5 rounded-[2.5rem] bg-gradient-to-br from-mystic via-mystic-glow to-mystic text-foreground font-display text-lg font-bold uppercase tracking-[0.3em] shadow-[0_10px_40px_rgba(150,100,255,0.3)] border border-gold/20"
               >
                 GIOCA BATTAGLIA
@@ -108,19 +127,27 @@ function Home() {
   );
 }
 
-function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], onComplete: () => void }) {
-  const [stage, setStage] = React.useState<"idle" | "opening" | "ritual" | "revealing" | "done">("idle");
+function StarterPackOpening({
+  onOpen,
+  onComplete,
+}: {
+  onOpen: () => string[];
+  onComplete: () => void;
+}) {
+  const [stage, setStage] = React.useState<"idle" | "opening" | "ritual" | "revealing" | "done">(
+    "idle",
+  );
   const [cards, setCards] = React.useState<string[]>([]);
   const [revealed, setRevealed] = React.useState<Set<number>>(new Set());
   const { play } = useSound();
-  
+
   const packRef = useRef<HTMLDivElement>(null);
 
   // Ritual Logic: Drag pack to pedestal
   const handleRitualComplete = () => {
     setStage("opening");
     play("ripple");
-    
+
     setTimeout(() => {
       const generatedCards = onOpen();
       setCards(generatedCards);
@@ -131,9 +158,9 @@ function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], on
 
   const handleCardFlip = (idx: number) => {
     if (revealed.has(idx)) return;
-    setRevealed(prev => new Set([...prev, idx]));
+    setRevealed((prev) => new Set([...prev, idx]));
     play("card_deal");
-    
+
     // Auto-complete stage if all flipped
     if (revealed.size + 1 === cards.length) {
       setTimeout(() => setStage("done"), 1000);
@@ -143,7 +170,7 @@ function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], on
   const revealAll = () => {
     cards.forEach((_, i) => {
       setTimeout(() => {
-        setRevealed(prev => new Set([...prev, i]));
+        setRevealed((prev) => new Set([...prev, i]));
         play("card_deal");
       }, i * 100);
     });
@@ -153,7 +180,7 @@ function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], on
   // 3D Tilt Logic
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  
+
   const mouseX = useSpring(x, { stiffness: 150, damping: 20 });
   const mouseY = useSpring(y, { stiffness: 150, damping: 20 });
 
@@ -174,9 +201,8 @@ function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], on
     y.set(0);
   };
 
-
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -184,21 +210,20 @@ function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], on
     >
       {stage === "idle" || stage === "opening" ? (
         <div className="flex flex-col items-center justify-center z-10 w-full h-full relative">
-          
           {/* Sintonization Pedestal / Target */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-             <motion.div 
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  opacity: [0.2, 0.4, 0.2]
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="size-[320px] rounded-full border-2 border-gold/20 border-dashed flex items-center justify-center"
-             >
-                <div className="size-[280px] rounded-full border border-mystic-glow/10 flex items-center justify-center">
-                   <div className="size-[200px] rounded-full bg-gold/5 blur-2xl" />
-                </div>
-             </motion.div>
+            <motion.div
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.2, 0.4, 0.2],
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+              className="size-[320px] rounded-full border-2 border-gold/20 border-dashed flex items-center justify-center"
+            >
+              <div className="size-[280px] rounded-full border border-mystic-glow/10 flex items-center justify-center">
+                <div className="size-[200px] rounded-full bg-gold/5 blur-2xl" />
+              </div>
+            </motion.div>
           </div>
 
           <motion.div
@@ -207,58 +232,69 @@ function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], on
             dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
             dragElastic={0.8}
             onDragEnd={(_, info) => {
-               // Check if dragged to center
-               const dist = Math.sqrt(info.offset.x ** 2 + info.offset.y ** 2);
-               if (dist > 100) {
-                  handleRitualComplete();
-               }
+              // Check if dragged to center
+              const dist = Math.sqrt(info.offset.x ** 2 + info.offset.y ** 2);
+              if (dist > 100) {
+                handleRitualComplete();
+              }
             }}
             whileDrag={{ scale: 1.1, rotateZ: 5 }}
-            style={{ 
-              rotateX: stage === "idle" ? rotateX : 0, 
+            style={{
+              rotateX: stage === "idle" ? rotateX : 0,
               rotateY: stage === "idle" ? rotateY : 0,
-              transformStyle: "preserve-3d" 
+              transformStyle: "preserve-3d",
             }}
-            animate={stage === "opening" ? { 
-              scale: [1, 1.5, 0],
-              rotateZ: [0, 20, -20, 1080],
-              y: [0, -150, 0],
-              filter: ["brightness(1) blur(0px)", "brightness(4) blur(10px)", "brightness(0) blur(20px)"]
-            } : { 
-              y: [0, -20, 0],
+            animate={
+              stage === "opening"
+                ? {
+                    scale: [1, 1.5, 0],
+                    rotateZ: [0, 20, -20, 1080],
+                    y: [0, -150, 0],
+                    filter: [
+                      "brightness(1) blur(0px)",
+                      "brightness(4) blur(10px)",
+                      "brightness(0) blur(20px)",
+                    ],
+                  }
+                : {
+                    y: [0, -20, 0],
+                  }
+            }
+            transition={{
+              duration: stage === "opening" ? 2 : 4,
+              repeat: stage === "opening" ? 0 : Infinity,
             }}
-            transition={{ duration: stage === "opening" ? 2 : 4, repeat: stage === "opening" ? 0 : Infinity }}
             className="relative size-80 cursor-grab active:cursor-grabbing z-20"
           >
-             {/* Masterpiece Artifact */}
-             <div className="absolute inset-0 drop-shadow-[0_0_80px_rgba(150,100,255,0.4)]">
-                <img 
-                  src="/assets/starter-pack.png" 
-                  alt="Starter Pack" 
-                  className="size-full object-contain mix-blend-lighten select-none pointer-events-none"
-                />
-             </div>
+            {/* Masterpiece Artifact */}
+            <div className="absolute inset-0 drop-shadow-[0_0_80px_rgba(150,100,255,0.4)]">
+              <img
+                src="/assets/starter-pack.png"
+                alt="Starter Pack"
+                className="size-full object-contain mix-blend-lighten select-none pointer-events-none"
+              />
+            </div>
 
-             {/* Dynamic Shine Overlay */}
-             <motion.div 
-               style={{
-                 x: useTransform(mouseX, [-150, 150], [-50, 50]),
-                 y: useTransform(mouseY, [-150, 150], [-50, 50]),
-               }}
-               className="absolute inset-0 bg-radial-gradient from-white/10 to-transparent opacity-50 pointer-events-none"
-             />
+            {/* Dynamic Shine Overlay */}
+            <motion.div
+              style={{
+                x: useTransform(mouseX, [-150, 150], [-50, 50]),
+                y: useTransform(mouseY, [-150, 150], [-50, 50]),
+              }}
+              className="absolute inset-0 bg-radial-gradient from-white/10 to-transparent opacity-50 pointer-events-none"
+            />
           </motion.div>
-          
+
           <div className="absolute bottom-20 flex flex-col items-center">
-            <motion.h2 
-               animate={stage === "opening" ? { opacity: 0 } : { opacity: 1 }}
-               className="font-display text-2xl gold-text tracking-[0.3em] uppercase mb-4"
+            <motion.h2
+              animate={stage === "opening" ? { opacity: 0 } : { opacity: 1 }}
+              className="font-display text-2xl gold-text tracking-[0.3em] uppercase mb-4"
             >
               Sintonia Necessaria
             </motion.h2>
-            <motion.p 
-               animate={stage === "opening" ? { opacity: 0 } : { opacity: 1 }}
-               className="text-[10px] text-white/40 uppercase tracking-[0.5em] animate-pulse text-center"
+            <motion.p
+              animate={stage === "opening" ? { opacity: 0 } : { opacity: 1 }}
+              className="text-[10px] text-white/40 uppercase tracking-[0.5em] animate-pulse text-center"
             >
               Trascina l'artefatto per liberarlo
             </motion.p>
@@ -271,13 +307,17 @@ function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], on
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-6"
           >
-            <h2 className="font-display text-2xl text-gold tracking-widest uppercase mb-1">Rivelazione Sintonizzata</h2>
-            <p className="text-[10px] text-white/30 uppercase tracking-[0.4em]">Tocca le memorie per risvegliarle ({revealed.size}/{cards.length})</p>
+            <h2 className="font-display text-2xl text-gold tracking-widest uppercase mb-1">
+              Rivelazione Sintonizzata
+            </h2>
+            <p className="text-[10px] text-white/30 uppercase tracking-[0.4em]">
+              Tocca le memorie per risvegliarle ({revealed.size}/{cards.length})
+            </p>
           </motion.div>
-          
+
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-10 p-4 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md w-full max-h-[60vh] overflow-y-auto custom-scrollbar shadow-inner">
             {cards.map((id, idx) => (
-              <motion.div 
+              <motion.div
                 key={`${id}-${idx}`}
                 initial={{ opacity: 0, scale: 0.5, rotateY: 180 }}
                 animate={{ opacity: 1, scale: 1, rotateY: revealed.has(idx) ? 0 : 180 }}
@@ -287,23 +327,23 @@ function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], on
                 style={{ transformStyle: "preserve-3d" }}
               >
                 {/* Back Face */}
-                <div 
-                  className={`absolute inset-0 rounded-lg bg-gradient-to-br from-mystic-dark to-black border border-gold/30 flex items-center justify-center overflow-hidden transition-opacity duration-300 ${revealed.has(idx) ? 'opacity-0' : 'opacity-100'}`}
+                <div
+                  className={`absolute inset-0 rounded-lg bg-gradient-to-br from-mystic-dark to-black border border-gold/30 flex items-center justify-center overflow-hidden transition-opacity duration-300 ${revealed.has(idx) ? "opacity-0" : "opacity-100"}`}
                   style={{ backfaceVisibility: "hidden" }}
                 >
-                   <div className="size-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]" />
-                   <div className="absolute inset-2 border border-gold/10 rounded-md" />
-                   <div className="size-8 rounded-full border border-gold/40 flex items-center justify-center animate-pulse">
-                      <div className="size-2 bg-gold/60 rounded-full" />
-                   </div>
+                  <div className="size-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')]" />
+                  <div className="absolute inset-2 border border-gold/10 rounded-md" />
+                  <div className="size-8 rounded-full border border-gold/40 flex items-center justify-center animate-pulse">
+                    <div className="size-2 bg-gold/60 rounded-full" />
+                  </div>
                 </div>
 
                 {/* Front Face (Actual Card) */}
-                <div 
-                  className={`absolute inset-0 transition-opacity duration-300 ${revealed.has(idx) ? 'opacity-100' : 'opacity-0'}`}
+                <div
+                  className={`absolute inset-0 transition-opacity duration-300 ${revealed.has(idx) ? "opacity-100" : "opacity-0"}`}
                   style={{ backfaceVisibility: "hidden", transform: "rotateY(0deg)" }}
                 >
-                   <GameCard card={cardsById[id]} size="sm" />
+                  <GameCard card={cardsById[id]} size="sm" />
                 </div>
               </motion.div>
             ))}
@@ -320,12 +360,12 @@ function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], on
             </motion.button>
 
             {stage === "done" && (
-              <motion.button 
+              <motion.button
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={onComplete} 
+                onClick={onComplete}
                 className="px-16 py-5 rounded-full bg-gradient-to-r from-gold via-mystic-glow to-gold text-black font-display font-black text-xs tracking-[0.3em] uppercase shadow-[0_0_50px_rgba(255,215,0,0.4)]"
               >
                 INIZIA IL VIAGGIO
@@ -337,7 +377,7 @@ function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], on
 
       {/* Opening Flash Overlay */}
       {stage === "opening" && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: [0, 1, 0] }}
           transition={{ duration: 2, times: [0, 0.8, 1] }}
@@ -347,7 +387,6 @@ function StarterPackOpening({ onOpen, onComplete }: { onOpen: () => string[], on
     </motion.div>
   );
 }
-
 
 function ResourcePill({ icon: Icon, value, color }: { icon: any; value: number; color: string }) {
   return (

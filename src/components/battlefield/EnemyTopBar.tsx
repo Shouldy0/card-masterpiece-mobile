@@ -13,7 +13,16 @@ interface Props {
   name?: string;
 }
 
-export function EnemyTopBar({ hp, maxHp, focus, maxFocus, turn, maxTurns, avatarSrc, name = "OMBRA" }: Props) {
+export function EnemyTopBar({
+  hp,
+  maxHp,
+  focus,
+  maxFocus,
+  turn,
+  maxTurns,
+  avatarSrc,
+  name = "OMBRA",
+}: Props) {
   const hpPercent = Math.max(0, hp / maxHp);
 
   return (
@@ -21,7 +30,10 @@ export function EnemyTopBar({ hp, maxHp, focus, maxFocus, turn, maxTurns, avatar
       <div className="flex items-center gap-2.5">
         <div className="size-9 rounded-full border border-rose/30 bg-abyss overflow-hidden shrink-0">
           <img
-            src={avatarSrc ?? "https://api.dicebear.com/7.x/avataaars/svg?seed=Shadow&backgroundColor=030617&eyes=closed"}
+            src={
+              avatarSrc ??
+              "https://api.dicebear.com/7.x/avataaars/svg?seed=Shadow&backgroundColor=030617&eyes=closed"
+            }
             alt={name}
             className="size-full object-cover"
           />
@@ -29,7 +41,9 @@ export function EnemyTopBar({ hp, maxHp, focus, maxFocus, turn, maxTurns, avatar
 
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-2">
-            <span className="font-display text-[9px] uppercase tracking-wider text-white/70">{name}</span>
+            <span className="font-display text-[9px] uppercase tracking-wider text-white/70">
+              {name}
+            </span>
             <span className="font-display text-[10px] font-bold text-rose">{hp}</span>
           </div>
           <div className="w-16 h-1 rounded-full bg-white/10 overflow-hidden">
@@ -49,7 +63,7 @@ export function EnemyTopBar({ hp, maxHp, focus, maxFocus, turn, maxTurns, avatar
               key={i}
               className={cn(
                 "size-1.5 rounded-xs transition-all duration-300",
-                i < focus ? "bg-rose" : "bg-white/10"
+                i < focus ? "bg-rose" : "bg-white/10",
               )}
             />
           ))}

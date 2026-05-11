@@ -26,10 +26,16 @@ export function BottomNav() {
                 onClick={() => sounds.play("tick")}
                 className={cn(
                   "flex flex-col items-center gap-0.5 rounded-md px-1 py-1.5 text-[10px] font-medium transition-colors",
-                  active ? "text-gold" : "text-muted-foreground hover:text-foreground"
+                  active ? "text-gold" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                <span className={cn("flex size-9 items-center justify-center rounded-full transition-all", active && "bg-mystic/30 ring-1 ring-gold/50 shadow-[0_0_18px_-4px_var(--mystic-glow)]")}>
+                <span
+                  className={cn(
+                    "flex size-9 items-center justify-center rounded-full transition-all",
+                    active &&
+                      "bg-mystic/30 ring-1 ring-gold/50 shadow-[0_0_18px_-4px_var(--mystic-glow)]",
+                  )}
+                >
                   <Icon className="h-4 w-4" />
                 </span>
                 {it.label}

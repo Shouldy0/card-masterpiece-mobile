@@ -90,9 +90,6 @@ export const CanvasBackground: React.FC = () => {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 -z-10 h-full w-full pointer-events-none"
-    />
+    <canvas ref={canvasRef} className="fixed inset-0 -z-10 h-full w-full pointer-events-none" />
   );
 };

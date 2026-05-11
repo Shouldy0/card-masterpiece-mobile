@@ -1,4 +1,11 @@
-export type CardType = "character" | "setting" | "action" | "modifier" | "archetype" | "memory" | "mask";
+export type CardType =
+  | "character"
+  | "setting"
+  | "action"
+  | "modifier"
+  | "archetype"
+  | "memory"
+  | "mask";
 export type CardRarity = "common" | "rare" | "epic" | "legendary";
 
 export type GameEventType = "none" | "double_points" | "chaos" | "rare_boost" | "time_pressure";

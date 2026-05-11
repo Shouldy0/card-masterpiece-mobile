@@ -36,11 +36,43 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 function buildStarterDeck(): string[] {
-  return ["v1_ambizione", "v3_nostalgia", "v10_armonia", "o1_chiave_antica", "o3_giocattolo", "o6_giardino", "c1_giullare", "c3_vittima", "c7_bambino", "b2_silenzio", "b4_neve", "b7_pioggia", "s1_miraggio", "s3_nuvola", "s9_citta"];
+  return [
+    "v1_ambizione",
+    "v3_nostalgia",
+    "v10_armonia",
+    "o1_chiave_antica",
+    "o3_giocattolo",
+    "o6_giardino",
+    "c1_giullare",
+    "c3_vittima",
+    "c7_bambino",
+    "b2_silenzio",
+    "b4_neve",
+    "b7_pioggia",
+    "s1_miraggio",
+    "s3_nuvola",
+    "s9_citta",
+  ];
 }
 
 function createInitialMatch(aiStyle: AiStyle): MatchState {
-  const aiDeck = shuffle(["v5_follia", "v7_rancore", "o5_cenere", "o8_tempesta", "c5_martire", "c10_boia", "b3_oblio", "b6_abisso", "s8_arcobaleno", "s10_risveglio", "v2_ossessione", "o2_bosco_sacro", "c2_re_caduto", "b5_cenere_blu", "s4_visione"]);
+  const aiDeck = shuffle([
+    "v5_follia",
+    "v7_rancore",
+    "o5_cenere",
+    "o8_tempesta",
+    "c5_martire",
+    "c10_boia",
+    "b3_oblio",
+    "b6_abisso",
+    "s8_arcobaleno",
+    "s10_risveglio",
+    "v2_ossessione",
+    "o2_bosco_sacro",
+    "c2_re_caduto",
+    "b5_cenere_blu",
+    "s4_visione",
+  ]);
   const pDeck = shuffle(buildStarterDeck());
   return {
     turn: 1,
@@ -58,14 +90,21 @@ function createInitialMatch(aiStyle: AiStyle): MatchState {
   };
 }
 
-function powerWithRules(state: MatchState, card: CardDef, side: Side, territory: TerritoryId): number {
+function powerWithRules(
+  state: MatchState,
+  card: CardDef,
+  side: Side,
+  territory: TerritoryId,
+): number {
   let p = card.power;
   const enemySide: Side = side === "player" ? "ai" : "player";
   if (card.id === "v4_apatia") return p;
   p += state.buffs[side];
   p -= state.weakens[enemySide];
   if (card.type === "archetipo") {
-    const others = state.board[territory].filter((o) => o.side === side && cardsById[o.cardId]?.type === "archetipo").length;
+    const others = state.board[territory].filter(
+      (o) => o.side === side && cardsById[o.cardId]?.type === "archetipo",
+    ).length;
     p += others;
     if (card.id === "v2_ossessione") {
       const enemyHand = side === "player" ? state.hand.ai.length : state.hand.player.length;
@@ -103,9 +142,13 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
   if (card.type === "maschera") {
     state.focus[enemySide] = Math.max(0, state.focus[enemySide] - 1);
     if (card.id === "c10_boia") {
-      const enemyPower = state.board[territory].filter((o) => o.side === enemySide).reduce((s, o) => s + o.power, 0);
+      const enemyPower = state.board[territory]
+        .filter((o) => o.side === enemySide)
+        .reduce((s, o) => s + o.power, 0);
       if (enemyPower > 15) {
-        const board = state.board[territory].filter((o) => o.side === enemySide).sort((a, b) => a.power - b.power);
+        const board = state.board[territory]
+          .filter((o) => o.side === enemySide)
+          .sort((a, b) => a.power - b.power);
         if (board.length > 0) {
           const target = board[0];
           state.board[territory] = state.board[territory].filter((o) => o.uid !== target.uid);
@@ -129,9 +172,15 @@ function aiTurn(state: MatchState) {
       .sort((a, b) => {
         const score = (card: CardDef) => {
           const efficiency = card.power / Math.max(1, card.cost);
-          if (style === "aggressive") return card.power * 1.45 + efficiency * 0.35 + card.cost * 0.25;
+          if (style === "aggressive")
+            return card.power * 1.45 + efficiency * 0.35 + card.cost * 0.25;
           if (style === "control") {
-            const utility = card.effect.kind === "weaken_enemy" || card.effect.kind === "heal" || card.effect.kind === "draw" ? 4.5 : 0;
+            const utility =
+              card.effect.kind === "weaken_enemy" ||
+              card.effect.kind === "heal" ||
+              card.effect.kind === "draw"
+                ? 4.5
+                : 0;
             return efficiency * 1 + utility + card.cost * 0.05;
           }
           return efficiency * 1.35 + card.power * 0.55;
@@ -144,7 +193,9 @@ function aiTurn(state: MatchState) {
     const scored = tIds
       .map((t) => {
         const aiP = state.board[t].filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
-        const plP = state.board[t].filter((c) => c.side === "player").reduce((s, c) => s + c.power, 0);
+        const plP = state.board[t]
+          .filter((c) => c.side === "player")
+          .reduce((s, c) => s + c.power, 0);
         const diff = aiP - plP;
         const territoryValue = t === "sogno" ? 1 : t === "memoria" ? 0.8 : 0.6;
         if (style === "aggressive") return { t, score: diff * -0.45 + territoryValue + plP * 0.35 };
@@ -158,7 +209,12 @@ function aiTurn(state: MatchState) {
     if (idx >= 0) state.hand.ai.splice(idx, 1);
     applyEffect(state, card, "ai", territory);
     const power = powerWithRules(state, card, "ai", territory);
-    state.board[territory].push({ uid: `ai-${state.turn}-${Math.random()}`, cardId: card.id, side: "ai", power });
+    state.board[territory].push({
+      uid: `ai-${state.turn}-${Math.random()}`,
+      cardId: card.id,
+      side: "ai",
+      power,
+    });
   }
 }
 
@@ -175,8 +231,10 @@ function playerTurnGreedy(state: MatchState) {
     const scored = tIds
       .map((t) => {
         const aiP = state.board[t].filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
-        const plP = state.board[t].filter((c) => c.side === "player").reduce((s, c) => s + c.power, 0);
-        return { t, score: (aiP - plP) + (t === "sogno" ? 1 : 0) };
+        const plP = state.board[t]
+          .filter((c) => c.side === "player")
+          .reduce((s, c) => s + c.power, 0);
+        return { t, score: aiP - plP + (t === "sogno" ? 1 : 0) };
       })
       .sort((a, b) => b.score - a.score);
     const territory = scored[0].t;
@@ -185,7 +243,12 @@ function playerTurnGreedy(state: MatchState) {
     if (idx >= 0) state.hand.player.splice(idx, 1);
     applyEffect(state, card, "player", territory);
     const power = powerWithRules(state, card, "player", territory);
-    state.board[territory].push({ uid: `p-${state.turn}-${Math.random()}`, cardId: card.id, side: "player", power });
+    state.board[territory].push({
+      uid: `p-${state.turn}-${Math.random()}`,
+      cardId: card.id,
+      side: "player",
+      power,
+    });
   }
 }
 
@@ -195,8 +258,12 @@ function processEndTurn(state: MatchState) {
       if (o.cardId === "e10_eternita") o.power += 1;
     });
   });
-  const memoriaPlayer = state.board.memoria.filter((c) => c.side === "player").reduce((sum, c) => sum + c.power, 0);
-  const memoriaAi = state.board.memoria.filter((c) => c.side === "ai").reduce((sum, c) => sum + c.power, 0);
+  const memoriaPlayer = state.board.memoria
+    .filter((c) => c.side === "player")
+    .reduce((sum, c) => sum + c.power, 0);
+  const memoriaAi = state.board.memoria
+    .filter((c) => c.side === "ai")
+    .reduce((sum, c) => sum + c.power, 0);
   if (memoriaPlayer !== memoriaAi) {
     const controller: Side = memoriaPlayer > memoriaAi ? "player" : "ai";
     const bonusDraw = state.deck[controller].shift();
@@ -269,7 +336,9 @@ function main() {
   styles.forEach((s) => {
     const x = perStyle[s];
     const pct = (n: number) => (x.total ? ((n / x.total) * 100).toFixed(1) : "0.0");
-    console.log(`- ${s}: W ${x.win} (${pct(x.win)}%) / L ${x.lose} (${pct(x.lose)}%) / D ${x.draw} (${pct(x.draw)}%)`);
+    console.log(
+      `- ${s}: W ${x.win} (${pct(x.win)}%) / L ${x.lose} (${pct(x.lose)}%) / D ${x.draw} (${pct(x.draw)}%)`,
+    );
   });
 }
 

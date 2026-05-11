@@ -18,7 +18,9 @@ function Loading() {
 
   useEffect(() => {
     // Attempt to play signature sound, ignore if blocked
-    try { play("signature"); } catch (e) {}
+    try {
+      play("signature");
+    } catch (e) {}
   }, [play]);
 
   useEffect(() => {
@@ -26,7 +28,9 @@ function Loading() {
       setProgress((p) => {
         const n = Math.min(100, p + 2);
         if (n !== p && n % 20 === 0) {
-          try { play("tick"); } catch (e) {}
+          try {
+            play("tick");
+          } catch (e) {}
         }
         return n;
       });
@@ -40,12 +44,12 @@ function Loading() {
         try {
           const { getFirebase } = await import("@/lib/firebase");
           const { auth } = await getFirebase();
-          
+
           if (!auth) {
             console.warn("Auth not initialized, redirecting to login");
             return navigate({ to: "/auth" });
           }
-          
+
           // Wait a bit for auth state to stabilize
           setTimeout(() => {
             const user = auth.currentUser;

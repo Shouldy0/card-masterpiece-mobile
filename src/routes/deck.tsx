@@ -39,29 +39,39 @@ function Deck() {
     play("card_deal");
     setDeck([...deck, id]);
   };
-  const remove = (id: string) => { play("lock"); setDeck(deck.filter((c) => c !== id)); };
-  const save = () => { play("success"); saveDeck(deck); toast.success("Deck salvato"); };
+  const remove = (id: string) => {
+    play("lock");
+    setDeck(deck.filter((c) => c !== id));
+  };
+  const save = () => {
+    play("success");
+    saveDeck(deck);
+    toast.success("Deck salvato");
+  };
 
   return (
     <div className="fixed inset-0 overflow-hidden bg-black flex items-center justify-center font-serif select-none">
       <CanvasBackground />
-      
+
       {/* Decorative Orbs */}
       <div className="absolute top-[-10%] left-[-10%] size-64 bg-mystic/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] size-64 bg-gold/10 rounded-full blur-[120px] pointer-events-none" />
 
       <MobileFrame className="w-full h-[100dvh] flex flex-col bg-transparent">
-        
         {/* TOP SAFE AREA + HEADER */}
         <div className="shrink-0 pt-[env(safe-area-inset-top,20px)] bg-gradient-to-b from-black/60 to-transparent">
           <header className="flex items-center justify-between mb-4 px-6 pt-4">
             <div className="flex flex-col">
-              <span className="font-display text-[8px] text-gold/40 tracking-[0.5em] uppercase font-black">Laboratorio Arcano</span>
-              <h1 className="font-display text-xl text-gold tracking-widest uppercase mt-1">Mente</h1>
+              <span className="font-display text-[8px] text-gold/40 tracking-[0.5em] uppercase font-black">
+                Laboratorio Arcano
+              </span>
+              <h1 className="font-display text-xl text-gold tracking-widest uppercase mt-1">
+                Mente
+              </h1>
             </div>
             <div className="flex items-center gap-3">
               <FocusGems value={deck.length} max={DECK_SIZE} />
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => navigate({ to: "/home" })}
@@ -80,8 +90,8 @@ function Deck() {
                   key={t}
                   onClick={() => setFilter(t)}
                   className={`flex-1 py-2 rounded-xl text-[9px] font-black tracking-[0.1em] uppercase transition-all duration-300 ${
-                    filter === t 
-                      ? "bg-gold/20 text-gold ring-1 ring-gold/40 shadow-[0_0_20px_rgba(255,215,0,0.2)]" 
+                    filter === t
+                      ? "bg-gold/20 text-gold ring-1 ring-gold/40 shadow-[0_0_20px_rgba(255,215,0,0.2)]"
                       : "text-white/20 hover:text-white/50"
                   }`}
                 >
@@ -96,22 +106,37 @@ function Deck() {
         <div className="flex-1 overflow-y-auto px-6 no-scrollbar pb-40 pt-6">
           {/* Deck Preview Row */}
           <div className="mb-16 px-1">
-             <div className="flex items-center justify-between mb-4">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gold/60">Mazzo Selezionato</span>
-                <button onClick={save} className="text-[10px] font-black uppercase tracking-[0.3em] text-gold underline active:opacity-50 transition-opacity">Salva Modifiche</button>
-             </div>
-             <div className="flex gap-4 overflow-x-auto pb-6 no-scrollbar min-h-[160px] items-center">
-                {deck.map((id) => {
-                  const card = CARDS.find(c => c.id === id);
-                  if (!card) return null;
-                  return (
-                    <div key={id} className="shrink-0 transition-all hover:-translate-y-2 active:scale-95" onClick={() => remove(id)}>
-                      <GameCard card={card} size="sm" />
-                    </div>
-                  );
-                })}
-                {deck.length === 0 && <div className="text-[10px] text-white/20 italic py-8 px-4">Seleziona memorie sotto...</div>}
-             </div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gold/60">
+                Mazzo Selezionato
+              </span>
+              <button
+                onClick={save}
+                className="text-[10px] font-black uppercase tracking-[0.3em] text-gold underline active:opacity-50 transition-opacity"
+              >
+                Salva Modifiche
+              </button>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-6 no-scrollbar min-h-[160px] items-center">
+              {deck.map((id) => {
+                const card = CARDS.find((c) => c.id === id);
+                if (!card) return null;
+                return (
+                  <div
+                    key={id}
+                    className="shrink-0 transition-all hover:-translate-y-2 active:scale-95"
+                    onClick={() => remove(id)}
+                  >
+                    <GameCard card={card} size="sm" />
+                  </div>
+                );
+              })}
+              {deck.length === 0 && (
+                <div className="text-[10px] text-white/20 italic py-8 px-4">
+                  Seleziona memorie sotto...
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-y-16 gap-x-12 pt-12 mb-20 border-t border-white/10">
@@ -120,12 +145,12 @@ function Deck() {
               const inDeck = deck.includes(c.id);
               return (
                 <div key={c.id} className="flex flex-col items-center">
-                  <GameCard 
-                    card={c} 
-                    size="md" 
-                    faded={!isOwned || inDeck} 
+                  <GameCard
+                    card={c}
+                    size="md"
+                    faded={!isOwned || inDeck}
                     glow={inDeck}
-                    onClick={() => add(c.id)} 
+                    onClick={() => add(c.id)}
                   />
                 </div>
               );

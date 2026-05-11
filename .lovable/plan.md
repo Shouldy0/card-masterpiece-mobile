@@ -13,18 +13,18 @@ Tutte le 26 route esistono già, ma alcune sono ancora stub piatte e l'audio eng
 
 ## 2. SFX nelle schermate chiave
 
-| Schermata | Suoni |
-|---|---|
-| `/` (loading) | `signature` all'avvio, `tick` ad ogni step della progress bar |
-| `/onboarding` | `chime` su next, `dream_enter` sull'ultima slide |
-| `/home` | `whoosh` su tap "GIOCA BATTAGLIA" |
-| `/search` | `tick` per countdown, `pulse` ogni 2s |
-| `/vs` | `dream_enter` all'entrata, `whoosh` sull'animazione VS |
-| `/match` | `card_deal` quando peschi, `card_flip` su reveal, `lock` su selezione carta, `ripple` su fine turno, `success`/`fail` quando l'AI conquista un territorio |
-| `/end` | `victory` su win, `fail` su lose, `chime` su draw |
-| `/shop` | `record` su acquisto pacco, `reroll` quando insufficienti |
-| `/deck` | `card_deal` su add, `lock` su remove, `success` su salva |
-| `/pass`, `/ranked` | `chime` sui claim/CTA |
+| Schermata          | Suoni                                                                                                                                                     |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/` (loading)      | `signature` all'avvio, `tick` ad ogni step della progress bar                                                                                             |
+| `/onboarding`      | `chime` su next, `dream_enter` sull'ultima slide                                                                                                          |
+| `/home`            | `whoosh` su tap "GIOCA BATTAGLIA"                                                                                                                         |
+| `/search`          | `tick` per countdown, `pulse` ogni 2s                                                                                                                     |
+| `/vs`              | `dream_enter` all'entrata, `whoosh` sull'animazione VS                                                                                                    |
+| `/match`           | `card_deal` quando peschi, `card_flip` su reveal, `lock` su selezione carta, `ripple` su fine turno, `success`/`fail` quando l'AI conquista un territorio |
+| `/end`             | `victory` su win, `fail` su lose, `chime` su draw                                                                                                         |
+| `/shop`            | `record` su acquisto pacco, `reroll` quando insufficienti                                                                                                 |
+| `/deck`            | `card_deal` su add, `lock` su remove, `success` su salva                                                                                                  |
+| `/pass`, `/ranked` | `chime` sui claim/CTA                                                                                                                                     |
 
 ## 3. Schermate da rifinire (oggi minimali)
 
