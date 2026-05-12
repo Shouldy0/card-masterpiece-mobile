@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { CardFromId } from "@/components/GameCard";
 import { PlayedCard } from "@/game/store";
-import { cardsById } from "@/game/cards";
+import { cardsById, TERRITORIES } from "@/game/cards";
 
 interface Props {
   id: string;
@@ -117,11 +117,21 @@ export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, isCorr
       </AnimatePresence>
 
       {/* Territory header */}
-      <div className="relative z-10 flex items-center justify-center gap-1.5 py-1.5">
-        <span className="text-sm">{icon}</span>
-        <h4 className={cn("font-display text-[8px] uppercase tracking-[0.15em] font-semibold opacity-70", color)}>
-          {name}
-        </h4>
+      <div className="relative z-10 flex flex-col items-center justify-center py-1.5">
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm">{icon}</span>
+          <h4 className={cn("font-display text-[8px] uppercase tracking-[0.15em] font-semibold opacity-70", color)}>
+            {name}
+          </h4>
+        </div>
+        {(() => {
+          const tRule = TERRITORIES.find((t) => t.id === id)?.rule;
+          return tRule ? (
+            <p className="text-[5.5px] text-white/30 tracking-wider text-center px-2 leading-tight mt-0.5">
+              {tRule}
+            </p>
+          ) : null;
+        })()}
       </div>
 
       {/* Content */}

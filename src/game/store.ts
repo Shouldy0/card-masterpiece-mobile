@@ -362,6 +362,20 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
       }
       state.log.push(`${side === "player" ? "Hai" : "L'avversario ha"} inflitto un Pensiero Intrusivo!`);
       break;
+    case "trauma_enemy":
+      state.trauma[enemySide] = Math.min(100, (state.trauma[enemySide] || 0) + card.effect.amount);
+      state.log.push(`${card.name} infligge ${card.effect.amount}% Trauma all'avversario! (${state.trauma[enemySide]}%)`);
+      break;
+    case "steal_lucidity":
+      const stolen = Math.min(card.effect.amount, state.lucidity[enemySide]);
+      if (stolen > 0) {
+        state.lucidity[enemySide] = Math.max(0, state.lucidity[enemySide] - stolen);
+        state.lucidity[side] = Math.min(state.maxLucidity, state.lucidity[side] + stolen);
+        state.log.push(`${card.name} ruba ${stolen} Lucidità! (+${stolen} a te, -${stolen} al nemico)`);
+      } else {
+        state.log.push(`${card.name}: l'avversario non ha Lucidità da rubare.`);
+      }
+      break;
   }
   if (card.traits?.includes("oppressive")) {
     // Oppressive: persistent aura computed in powerWithRules — just log it
