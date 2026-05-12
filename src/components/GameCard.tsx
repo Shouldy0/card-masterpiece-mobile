@@ -10,6 +10,7 @@ interface Props {
   glow?: boolean;
   faded?: boolean;
   selected?: boolean;
+  powerOverride?: number;
   onClick?: () => void;
 }
 
@@ -28,12 +29,16 @@ export const GameCard = React.memo(function GameCard({
   glow,
   faded,
   selected,
+  powerOverride,
   onClick,
 }: Props) {
   const [imgError, setImgError] = React.useState(false);
   const f = factionStyles[card.type];
   const isXs = size === "xs";
   const isSm = size === "sm";
+  const displayPower = powerOverride !== undefined ? powerOverride : card.power;
+  const isPowered = powerOverride !== undefined && powerOverride > card.power;
+  const isWeakened = powerOverride !== undefined && powerOverride < card.power;
 
   return (
     <motion.button
@@ -109,15 +114,22 @@ export const GameCard = React.memo(function GameCard({
       </div>
 
       {/* Power */}
-      <div className="absolute bottom-1.5 right-1.5 z-30 flex items-center justify-center bg-black/80 rounded size-6 ring-1 ring-white/10 shadow-lg">
+      <div className={cn(
+        "absolute bottom-1.5 right-1.5 z-30 flex items-center justify-center rounded size-6 ring-1 shadow-lg",
+        isPowered ? "bg-green-900/90 ring-green-400/60" :
+        isWeakened ? "bg-red-900/90 ring-red-400/60" :
+        "bg-black/80 ring-white/10"
+      )}>
         <span
           className={cn(
             "font-display font-extrabold",
             isSm ? "text-[13px]" : "text-[12px]",
+            isPowered ? "text-green-300" :
+            isWeakened ? "text-red-300" :
             f.power,
           )}
         >
-          {card.power}
+          {displayPower}
         </span>
       </div>
     </motion.button>

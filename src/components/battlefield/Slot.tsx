@@ -77,7 +77,11 @@ export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, isCorr
         <div className="flex-1 flex items-center justify-center min-h-0 w-full">
           {aiCards.length > 0 ? (
             <div className="relative">
-              <CardFromId id={aiCards[aiCards.length - 1].cardId} size="xs" />
+              <CardFromId
+                id={aiCards[aiCards.length - 1].cardId}
+                size="xs"
+                powerOverride={aiCards.reduce((s, c) => s + c.power, 0)}
+              />
               {aiCards.length > 1 && (
                 <div className="absolute -top-0.5 -right-0.5 size-3.5 rounded-full bg-rose/80 text-white font-display text-[6px] flex items-center justify-center">
                   {aiCards.length}
@@ -119,6 +123,7 @@ export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, isCorr
                 id={playerCards[playerCards.length - 1].cardId}
                 size="xs"
                 glow={isWinning}
+                powerOverride={playerCards.reduce((s, c) => s + c.power, 0)}
               />
               {playerCards.length > 1 && (
                 <div className="absolute -top-0.5 -right-0.5 size-3.5 rounded-full bg-gold/80 text-black font-display text-[6px] flex items-center justify-center">
