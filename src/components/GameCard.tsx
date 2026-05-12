@@ -3,7 +3,7 @@ import { CardDef, cardsById, CardType } from "@/game/cards";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { CARD_SIZES, RARITY_BORDERS } from "@/game/constants";
-import { Skull, Shield, Zap, TrendingUp } from "lucide-react";
+import { Skull, Shield, Zap, TrendingUp, Info } from "lucide-react";
 
 interface Props {
   card: CardDef;
@@ -13,6 +13,7 @@ interface Props {
   selected?: boolean;
   powerOverride?: number;
   onClick?: () => void;
+  onInfo?: (e: React.MouseEvent) => void;
 }
 
 const factionStyles: Record<CardType, { bar: string; power: string; glow: string }> = {
@@ -32,6 +33,7 @@ export const GameCard = React.memo(function GameCard({
   selected,
   powerOverride,
   onClick,
+  onInfo,
 }: Props) {
   const [imgError, setImgError] = React.useState(false);
   const f = factionStyles[card.type];
@@ -109,6 +111,17 @@ export const GameCard = React.memo(function GameCard({
           <div className="size-4 rounded-sm bg-red-500/80 flex items-center justify-center shadow-lg ring-1 ring-white/20">
             <Skull className="size-2.5 text-white" />
           </div>
+        )}
+        {onInfo && !isXs && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onInfo(e);
+            }}
+            className="size-5 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/10 transition-colors shadow-lg mt-1"
+          >
+            <Info className="size-3 text-white/80" />
+          </button>
         )}
       </div>
 

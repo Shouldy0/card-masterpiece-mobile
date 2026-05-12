@@ -15,9 +15,10 @@ interface Props {
   selected: string | null;
   impacts: Record<string, number>;
   onPlay: (territory: TerritoryId) => void;
+  onInfo?: (id: string) => void;
 }
 
-export function BattleRow({ territories, board, selected, impacts, onPlay }: Props) {
+export function BattleRow({ territories, board, selected, impacts, onPlay, onInfo }: Props) {
   return (
     <div className="flex-1 flex gap-2 px-2 min-h-0 pb-1">
       {territories.map((t) => (
@@ -32,6 +33,7 @@ export function BattleRow({ territories, board, selected, impacts, onPlay }: Pro
           isImpacted={!!impacts[t.id]}
           isCorrupted={isLaneCorrupted(board[t.id])}
           onDrop={() => onPlay(t.id)}
+          onInfo={onInfo}
         />
       ))}
     </div>

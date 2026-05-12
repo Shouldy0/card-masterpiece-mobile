@@ -9,9 +9,10 @@ interface Props {
   onSelect: (id: string) => void;
   onDragToPlay?: (id: string) => void;
   onRepress?: (id: string) => void;
+  onInfo?: (id: string) => void;
 }
 
-export function PlayerHand({ cards, selected, playerLucidity, onSelect, onDragToPlay, onRepress }: Props) {
+export function PlayerHand({ cards, selected, playerLucidity, onSelect, onDragToPlay, onRepress, onInfo }: Props) {
   const n = cards.length;
   if (n === 0) return <div className="h-[130px]" />;
 
@@ -76,6 +77,7 @@ export function PlayerHand({ cards, selected, playerLucidity, onSelect, onDragTo
                 size="sm"
                 faded={!isAffordable && !isSelected}
                 selected={isSelected}
+                onInfo={() => onInfo?.(id)}
               />
             </motion.div>
           );

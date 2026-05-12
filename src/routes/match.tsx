@@ -24,6 +24,7 @@ function Match() {
   const [revealing, setRevealing] = useState<{ uid: string; territory: TerritoryId } | null>(null);
   const [isResolving, setIsResolving] = useState(false);
   const [activeResolvingLane, setActiveResolvingLane] = useState<TerritoryId | null>(null);
+  const [inspectedCard, setInspectedCard] = useState<string | null>(null);
   const playCard = useGame((s) => s.playCard);
   const repressCard = useGame((s) => s.repressCard);
   const endTurn = useGame((s) => s.endTurn);
@@ -115,6 +116,11 @@ function Match() {
     play("ripple");
     repressCard(cardId);
     setSelected(null);
+  };
+
+  const handleInspect = (id: string) => {
+    play("chime");
+    setInspectedCard(id);
   };
 
   const tutorialStep = useGame((s) => s.tutorialStep);
@@ -276,6 +282,7 @@ function Match() {
             selected={selected}
             impacts={impacts}
             onPlay={handlePlay}
+            onInfo={handleInspect}
           />
 
           {/* Resolution Overlay / Highlights */}
@@ -503,6 +510,7 @@ function Match() {
                   onSelect={handleSelect}
                   onDragToPlay={handleDragPlayCard}
                   onRepress={handleRepress}
+                  onInfo={handleInspect}
                 />
               </div>
               {/* Action button - bottom right */}
@@ -538,6 +546,78 @@ function Match() {
             </motion.div>
           </motion.div>
         )}
+      </AnimatePresence>
+      {/* Card Inspection Modal */}
+      <AnimatePresence>
+        {inspectedCard && (() => {
+          const card = cardsById[inspectedCard];
+          if (!card) return null;
+          return (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-abyss/90 backdrop-blur-md"
+              onClick={() => setInspectedCard(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, y: 20, opacity: 0 }}
+                animate={{ scale: 1, y: 0, opacity: 1 }}
+                exit={{ scale: 1.1, opacity: 0 }}
+                className="relative w-full max-w-sm bg-card/10 border border-white/10 rounded-[3rem] p-8 shadow-2xl flex flex-col items-center text-center"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button 
+                  onClick={() => setInspectedCard(null)}
+                  className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+                >
+                  <X className="size-5 text-white/50" />
+                </button>
+
+                <div className="mb-6">
+                  <CardFromId id={inspectedCard} size="lg" glow />
+                </div>
+
+                <h2 className="font-display text-2xl text-white font-bold uppercase tracking-widest mb-1">
+                  {card.name}
+                </h2>
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-[10px] font-bold uppercase text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded border border-cyan-400/20">
+                    Costo {card.cost}
+                  </span>
+                  <span className="text-[10px] font-bold uppercase text-gold bg-gold/10 px-2 py-0.5 rounded border border-gold/20">
+                    Potere {card.power}
+                  </span>
+                </div>
+
+                <div className="w-full space-y-4 text-left">
+                  <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                    <p className="text-[13px] text-white/80 leading-relaxed italic">
+                      "{card.text}"
+                    </p>
+                  </div>
+
+                  {card.traits && card.traits.length > 0 && (
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      {card.traits.map(t => (
+                        <div key={t} className="px-3 py-1 rounded-full bg-mystic/20 border border-mystic/30 text-[10px] font-bold text-mystic-glow uppercase tracking-tighter">
+                          {t.replace('_', ' ')}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => setInspectedCard(null)}
+                  className="mt-8 w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-white/50 hover:bg-white/10 transition-all"
+                >
+                  Chiudi Ispezione
+                </button>
+              </motion.div>
+            </motion.div>
+          );
+        })()}
       </AnimatePresence>
     </div>
   );

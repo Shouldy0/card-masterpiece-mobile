@@ -15,6 +15,7 @@ interface Props {
   isImpacted: boolean;
   isCorrupted: boolean;
   onDrop: () => void;
+  onInfo?: (id: string) => void;
 }
 
 function FloatingNumber({ value }: { value: number }) {
@@ -34,7 +35,7 @@ function FloatingNumber({ value }: { value: number }) {
   );
 }
 
-export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, isCorrupted, onDrop }: Props) {
+export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, isCorrupted, onDrop, onInfo }: Props) {
   const [prevPower, setPrevPower] = useState({ player: 0, ai: 0 });
   const [diff, setDiff] = useState<{ player: number | null; ai: number | null }>({ player: null, ai: null });
 
@@ -144,6 +145,7 @@ export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, isCorr
                 id={aiCards[aiCards.length - 1].cardId}
                 size="xs"
                 powerOverride={aiPower}
+                onInfo={() => onInfo?.(aiCards[aiCards.length - 1].cardId)}
               />
               {aiCards.length > 1 && (
                 <div className="absolute -top-1 -right-1 size-4 rounded-full bg-rose/90 border border-rose/50 text-white font-display text-[7px] flex items-center justify-center shadow-lg">
@@ -197,6 +199,7 @@ export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, isCorr
                 size="xs"
                 glow={isWinning}
                 powerOverride={playerPower}
+                onInfo={() => onInfo?.(playerCards[playerCards.length - 1].cardId)}
               />
               {playerCards.length > 1 && (
                 <div className="absolute -top-1 -right-1 size-4 rounded-full bg-gold/90 border border-gold/50 text-black font-display text-[7px] flex items-center justify-center shadow-lg">
