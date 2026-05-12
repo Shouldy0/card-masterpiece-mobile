@@ -8,9 +8,10 @@ interface Props {
   playerLucidity: number;
   onSelect: (id: string) => void;
   onDragToPlay?: (id: string) => void;
+  onRepress?: (id: string) => void;
 }
 
-export function PlayerHand({ cards, selected, playerLucidity, onSelect, onDragToPlay }: Props) {
+export function PlayerHand({ cards, selected, playerLucidity, onSelect, onDragToPlay, onRepress }: Props) {
   const n = cards.length;
   if (n === 0) return <div className="h-[130px]" />;
 
@@ -51,7 +52,7 @@ export function PlayerHand({ cards, selected, playerLucidity, onSelect, onDragTo
               }}
               drag="y"
               dragElastic={0.15}
-              dragConstraints={{ top: -150, bottom: 10 }}
+              dragConstraints={{ top: -150, bottom: 150 }}
               whileDrag={{
                 scale: 1.3,
                 zIndex: 100,
@@ -62,6 +63,8 @@ export function PlayerHand({ cards, selected, playerLucidity, onSelect, onDragTo
               onDragEnd={(_, info) => {
                 if (isSelected && info.offset.y < -100 && onDragToPlay) {
                   onDragToPlay(id);
+                } else if (isSelected && info.offset.y > 100 && onRepress) {
+                  onRepress(id);
                 }
               }}
               onTap={() => onSelect(id)}

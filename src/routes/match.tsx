@@ -31,6 +31,7 @@ function Match() {
   const [selected, setSelected] = useState<string | null>(null);
   const [revealing, setRevealing] = useState<{ uid: string; territory: TerritoryId } | null>(null);
   const playCard = useGame((s) => s.playCard);
+  const repressCard = useGame((s) => s.repressCard);
   const endTurn = useGame((s) => s.endTurn);
   const startMatch = useGame((s) => s.startMatch);
   const { play } = useSound();
@@ -110,6 +111,12 @@ function Match() {
       setRevealing(null);
       setSelected(null);
     }, 600);
+  };
+
+  const handleRepress = (cardId: string) => {
+    play("ripple");
+    repressCard(cardId);
+    setSelected(null);
   };
 
   const tutorialStep = useGame((s) => s.tutorialStep);
@@ -326,13 +333,30 @@ function Match() {
 
           {/* Hand + Action button */}
           <div className="relative flex items-end">
-            <div className="flex-1">
+            {/* Subconscious Pit visual cue */}
+            <AnimatePresence>
+              {selected && (
+                <motion.div
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 50 }}
+                  className="absolute -bottom-8 left-0 right-0 h-40 bg-gradient-to-t from-black via-rose-900/30 to-transparent pointer-events-none flex items-end justify-center pb-12 z-0"
+                >
+                  <span className="font-display text-[10px] tracking-[0.3em] text-rose/60 uppercase">
+                    ↓ Trascina giù per reprimere ↓
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <div className="flex-1 z-10">
               <PlayerHand
                 cards={match.hand.player}
                 selected={selected}
                 playerLucidity={match.lucidity.player}
                 onSelect={handleSelect}
                 onDragToPlay={handleDragPlayCard}
+                onRepress={handleRepress}
               />
             </div>
             {/* Action button - bottom right */}

@@ -19,6 +19,7 @@ export interface MatchState {
   maxLucidity: number;
   trauma: { player: number; ai: number };
   hp: { player: number; ai: number };
+  repressed: Record<Side, { cardId: string; turns: number }[]>;
   hand: { player: string[]; ai: string[] };
   deck: { player: string[]; ai: string[] };
   board: Record<TerritoryId, PlayedCard[]>;
@@ -103,6 +104,7 @@ export function createInitialMatch(playerDeck: string[]): MatchState {
     maxLucidity: 6,
     trauma: { player: 0, ai: 0 },
     hp: { player: 20, ai: 20 },
+    repressed: { player: [], ai: [] },
     hand: { player: pDeck.slice(0, 5), ai: aiDeck.slice(0, 5) },
     deck: { player: pDeck.slice(5), ai: aiDeck.slice(5) },
     board: { memoria: [], trauma: [], sogno: [] },
@@ -168,6 +170,7 @@ interface AppStore {
   startMatch: () => void;
   startTutorialMatch: () => void;
   playCard: (cardUid: string, territory: TerritoryId) => void;
+  repressCard: (cardUid: string) => void;
   endTurn: () => void;
   exitMatch: () => void;
   saveDeck: (deck: string[]) => void;
@@ -312,6 +315,15 @@ function processEndTurnTriggers(state: MatchState) {
     state.board[t].forEach((o) => {
       const cardDef = cardsById[o.cardId];
       if (cardDef?.traits?.includes("growth")) o.power += 1;
+    });
+  });
+
+  // Repression trauma generation
+  (["player", "ai"] as Side[]).forEach((side) => {
+    state.repressed[side].forEach((rep) => {
+      rep.turns += 1;
+      state.trauma[side] = Math.min(100, state.trauma[side] + 5);
+      state.log.push(`${side === "player" ? "Un ricordo represso pulsa" : "Un'ombra si agita"} (Trauma +5).`);
     });
   });
 }
@@ -472,6 +484,19 @@ export const useGame = create<AppStore>()(
           m.board[territory].push({ uid, cardId, side: "player", power: 0 });
           recalculateBoard(m);
           m.log.push(`Giochi ${card.name} su ${territory} (Costo ${card.cost}).`);
+          return { match: m };
+        }),
+
+      repressCard: (cardUid) =>
+        set((s) => {
+          if (!s.match || s.match.status !== "playing") return s;
+          const m = structuredClone(s.match);
+          const idx = m.hand.player.indexOf(cardUid);
+          if (idx === -1) return s;
+          m.hand.player.splice(idx, 1);
+          m.lucidity.player = Math.min(m.maxLucidity, m.lucidity.player + 2);
+          m.repressed.player.push({ cardId: cardUid, turns: 0 });
+          m.log.push(`Hai represso un ricordo per recuperare Lucidità.`);
           return { match: m };
         }),
 
