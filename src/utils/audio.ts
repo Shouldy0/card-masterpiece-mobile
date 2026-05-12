@@ -195,8 +195,11 @@ class SoundEngine {
 
   play(type: string) {
     this.init();
-    if (this.muted) return;
+    if (this.muted || !this.ctx || !this.masterGain) return;
 
+    const now = this.ctx.currentTime;
+    
+    // Check for pre-loaded assets first
     let assetKey: string | null = null;
     if (type === "tick" || type === "click") assetKey = "click";
     if (type === "fail" || type === "error") assetKey = "error";
@@ -209,19 +212,105 @@ class SoundEngine {
       return;
     }
 
-    if (this.ctx) {
-      const now = this.ctx.currentTime;
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(880, now);
-      osc.frequency.exponentialRampToValueAtTime(440, now + 0.05);
-      gain.gain.setValueAtTime(0.04, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-      osc.connect(gain);
-      gain.connect(this.masterGain!);
-      osc.start(now);
-      osc.stop(now + 0.05);
+    // Procedural SFX for better impact
+    switch(type) {
+      case "card_play":
+      case "ripple": {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(120, now);
+        osc.frequency.exponentialRampToValueAtTime(40, now + 0.2);
+        gain.gain.setValueAtTime(this.sfxVol * 0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(now);
+        osc.stop(now + 0.2);
+        break;
+      }
+      case "damage":
+      case "lock": {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const noise = this.ctx.createBufferSource();
+        const bufferSize = this.ctx.sampleRate * 0.1;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        noise.buffer = buffer;
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(80, now);
+        osc.frequency.linearRampToValueAtTime(20, now + 0.15);
+        gain.gain.setValueAtTime(this.sfxVol * 0.5, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+        noise.connect(gain);
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(now);
+        noise.start(now);
+        osc.stop(now + 0.15);
+        break;
+      }
+      case "heal":
+      case "chime": {
+        [440, 660, 880].forEach((f, i) => {
+          const osc = this.ctx!.createOscillator();
+          const gain = this.ctx!.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(f, now + i * 0.05);
+          gain.gain.setValueAtTime(0, now + i * 0.05);
+          gain.gain.linearRampToValueAtTime(this.sfxVol * 0.15, now + i * 0.05 + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+          osc.connect(gain);
+          gain.connect(this.masterGain!);
+          osc.start(now + i * 0.05);
+          osc.stop(now + 0.6);
+        });
+        break;
+      }
+      case "ping":
+      case "ping_active": {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(1200, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+        gain.gain.setValueAtTime(this.sfxVol * 0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(now);
+        osc.stop(now + 0.4);
+        break;
+      }
+      case "destroy": {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(60, now);
+        osc.frequency.linearRampToValueAtTime(10, now + 0.5);
+        gain.gain.setValueAtTime(this.sfxVol * 0.6, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start(now);
+        osc.stop(now + 0.5);
+        break;
+      }
+      default: {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.exponentialRampToValueAtTime(440, now + 0.05);
+        gain.gain.setValueAtTime(0.04, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        osc.connect(gain);
+        gain.connect(this.masterGain!);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      }
     }
   }
 }
