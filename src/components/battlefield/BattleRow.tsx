@@ -1,5 +1,5 @@
 import { Slot } from "./Slot";
-import { PlayedCard } from "@/game/store";
+import { PlayedCard, isLaneCorrupted } from "@/game/store";
 import { TerritoryId } from "@/game/cards";
 
 interface TerritoryMeta {
@@ -30,6 +30,7 @@ export function BattleRow({ territories, board, selected, impacts, onPlay }: Pro
           cards={board[t.id]}
           canPlay={selected !== null}
           isImpacted={!!impacts[t.id]}
+          isCorrupted={isLaneCorrupted(board[t.id])}
           onDrop={() => onPlay(t.id)}
         />
       ))}

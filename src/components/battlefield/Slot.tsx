@@ -12,10 +12,11 @@ interface Props {
   cards: PlayedCard[];
   canPlay: boolean;
   isImpacted: boolean;
+  isCorrupted: boolean;
   onDrop: () => void;
 }
 
-export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, onDrop }: Props) {
+export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, isCorrupted, onDrop }: Props) {
   const playerCards = cards.filter((c) => c.side === "player");
   const aiCards = cards.filter((c) => c.side === "ai");
   const playerPower = playerCards.reduce((s, c) => s + c.power, 0);
@@ -40,7 +41,8 @@ export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, onDrop
         `lane-${id}`,
         canPlay ? "lane-active border-white/20 cursor-pointer shadow-[0_0_30px_var(--lane-color)] ring-1 ring-white/10" : "border-white/5",
         isWinning && !canPlay && "border-gold/30 shadow-[inset_0_0_20px_rgba(255,215,0,0.05)]",
-        !isWinning && aiPower > playerPower && !canPlay && "border-rose/30 shadow-[inset_0_0_20px_rgba(244,63,94,0.05)]"
+        !isWinning && aiPower > playerPower && !canPlay && "border-rose/30 shadow-[inset_0_0_20px_rgba(244,63,94,0.05)]",
+        isCorrupted && "lane-corrupted"
       )}
     >
       {/* Ambient background layers */}

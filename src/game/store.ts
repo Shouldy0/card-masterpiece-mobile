@@ -192,6 +192,17 @@ interface AppStore {
   claimRankReward: (id: string) => void;
 }
 
+export function isLaneCorrupted(cardsInLane: PlayedCard[]): boolean {
+  let corruption = 0;
+  cardsInLane.forEach((c) => {
+    const def = cardsById[c.cardId];
+    if (def && (def.type === "oblio" || def.type === "maschera")) {
+      corruption += def.power;
+    }
+  });
+  return corruption >= 6;
+}
+
 function powerWithRules(
   state: MatchState,
   card: CardDef,
@@ -241,6 +252,16 @@ function powerWithRules(
       if (count >= 2) p += 1;
     });
   });
+
+  // Corruption Mechanics
+  if (isLaneCorrupted(state.board[territory])) {
+    if (card.type === "ricordo") {
+      p = Math.floor(p / 2);
+    } else if (card.type === "oblio" || card.type === "maschera") {
+      p *= 2;
+    }
+  }
+
   return Math.max(0, p);
 }
 
