@@ -15,8 +15,9 @@ export interface PlayedCard {
 export interface MatchState {
   turn: number;
   maxTurns: number;
-  focus: { player: number; ai: number };
-  maxFocus: number;
+  lucidity: { player: number; ai: number };
+  maxLucidity: number;
+  trauma: { player: number; ai: number };
   hp: { player: number; ai: number };
   hand: { player: string[]; ai: string[] };
   deck: { player: string[]; ai: string[] };
@@ -98,8 +99,9 @@ export function createInitialMatch(playerDeck: string[]): MatchState {
   return {
     turn: 1,
     maxTurns: 6,
-    focus: { player: 6, ai: 6 },
-    maxFocus: 6,
+    lucidity: { player: 6, ai: 6 },
+    maxLucidity: 6,
+    trauma: { player: 0, ai: 0 },
     hp: { player: 20, ai: 20 },
     hand: { player: pDeck.slice(0, 5), ai: aiDeck.slice(0, 5) },
     deck: { player: pDeck.slice(5), ai: aiDeck.slice(5) },
@@ -250,7 +252,7 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
       break;
     case "buff_self":
       let amount = card.effect.amount;
-      if (card.traits?.includes("synergy_buff") && state.focus[side] === 0) amount *= 2;
+      if (card.traits?.includes("synergy_buff") && state.lucidity[side] === 0) amount *= 2;
       state.buffs[side] += amount;
       break;
     case "weaken_enemy":
@@ -277,8 +279,8 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
     state.weakens[side] += 1;
   }
   if (card.type === "maschera") {
-    state.focus[enemySide] = Math.max(0, state.focus[enemySide] - 1);
-    state.log.push(`${side === "player" ? "Hai" : "L'avversario ha"} drenato 1 Focus!`);
+    state.lucidity[enemySide] = Math.max(0, state.lucidity[enemySide] - 1);
+    state.log.push(`${side === "player" ? "Hai" : "L'avversario ha"} drenato 1 Lucidità!`);
     if (card.traits?.includes("executioner")) {
       const enemyPower = state.board[territory]
         .filter((o) => o.side === enemySide)
@@ -329,7 +331,7 @@ function aiTurn(state: MatchState) {
   while (safety-- > 0) {
     const affordable = state.hand.ai
       .map((id) => cardsById[id])
-      .filter((c) => c && c.cost <= state.focus.ai)
+      .filter((c) => c && c.cost <= state.lucidity.ai)
       .sort((a, b) => {
         const score = (card: CardDef) => {
           const efficiency = card.power / Math.max(1, card.cost);
@@ -365,7 +367,7 @@ function aiTurn(state: MatchState) {
       })
       .sort((a, b) => b.score - a.score);
     const territory = scored[0].t;
-    state.focus.ai -= card.cost;
+    state.lucidity.ai -= card.cost;
     const idx = state.hand.ai.indexOf(card.id);
     if (idx >= 0) state.hand.ai.splice(idx, 1);
     applyEffect(state, card, "ai", territory);
@@ -460,11 +462,11 @@ export const useGame = create<AppStore>()(
           const m = structuredClone(s.match);
           const cardId = cardUid;
           const card = cardsById[cardId];
-          if (!card || card.cost > m.focus.player) return s;
+          if (!card || card.cost > m.lucidity.player) return s;
           const idx = m.hand.player.indexOf(cardId);
           if (idx === -1) return s;
           m.hand.player.splice(idx, 1);
-          m.focus.player -= card.cost;
+          m.lucidity.player -= card.cost;
           applyEffect(m, card, "player", territory);
           const uid = `p-${m.turn}-${Math.random()}`;
           m.board[territory].push({ uid, cardId, side: "player", power: 0 });
@@ -493,8 +495,8 @@ export const useGame = create<AppStore>()(
           m.buffs = { player: 0, ai: 0 };
           m.weakens = { player: 0, ai: 0 };
           m.turn += 1;
-          m.focus.player = Math.min(m.maxFocus, m.turn + 2);
-          m.focus.ai = Math.min(m.maxFocus, m.turn + 3);
+          m.lucidity.player = Math.min(m.maxLucidity, m.turn + 2);
+          m.lucidity.ai = Math.min(m.maxLucidity, m.turn + 3);
           const dP = m.deck.player.shift();
           if (dP) m.hand.player.push(dP);
           const dA = m.deck.ai.shift();

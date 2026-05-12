@@ -5,12 +5,12 @@ import { cardsById } from "@/game/cards";
 interface Props {
   cards: string[];
   selected: string | null;
-  playerFocus: number;
+  playerLucidity: number;
   onSelect: (id: string) => void;
   onDragToPlay?: (id: string) => void;
 }
 
-export function PlayerHand({ cards, selected, playerFocus, onSelect, onDragToPlay }: Props) {
+export function PlayerHand({ cards, selected, playerLucidity, onSelect, onDragToPlay }: Props) {
   const n = cards.length;
   if (n === 0) return <div className="h-[130px]" />;
 
@@ -28,7 +28,7 @@ export function PlayerHand({ cards, selected, playerFocus, onSelect, onDragToPla
           const yArc = Math.pow(Math.abs(offset), 1.4) * 6;
           const zIdx = Math.round(n - Math.abs(offset));
           const isSelected = selected === id;
-          const isAffordable = cardsById[id]?.cost <= playerFocus;
+          const isAffordable = cardsById[id]?.cost <= playerLucidity;
 
           return (
             <motion.div

@@ -70,7 +70,7 @@ function Match() {
   const handlePlay = (territory: TerritoryId) => {
     if (!selected) return;
     const card = cardsById[selected];
-    if (!card || card.cost > match.focus.player) {
+    if (!card || card.cost > match.lucidity.player) {
       setSelected(null);
       return;
     }
@@ -93,7 +93,7 @@ function Match() {
 
   const handleDragPlayCard = (cardId: string) => {
     const card = cardsById[cardId];
-    if (!card || card.cost > match.focus.player) return;
+    if (!card || card.cost > match.lucidity.player) return;
     const territory: TerritoryId = card.type === "ricordo" ? "memoria" : "sogno";
     setRevealing({ uid: cardId, territory });
     play("card_flip");
@@ -228,8 +228,9 @@ function Match() {
         <EnemyTopBar
           hp={match.hp.ai}
           maxHp={20}
-          focus={match.focus.ai}
-          maxFocus={match.maxFocus}
+          lucidity={match.lucidity.ai}
+          maxLucidity={match.maxLucidity}
+          trauma={match.trauma.ai}
           turn={match.turn}
           maxTurns={match.maxTurns}
           name="OMBRA"
@@ -260,34 +261,54 @@ function Match() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
               </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <span className="font-display text-[9px] uppercase tracking-wider text-white/60">
-                    TU
-                  </span>
-                  <span className="font-display text-[10px] font-bold text-gold">
-                    {match.hp.player}
-                  </span>
+              <div className="flex flex-col gap-1 w-20">
+                {/* HP */}
+                <div className="flex flex-col gap-0.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-display text-[8px] uppercase tracking-wider text-white/60">
+                      Sincronia
+                    </span>
+                    <span className="font-display text-[9px] font-bold text-gold">
+                      {match.hp.player}
+                    </span>
+                  </div>
+                  <div className="w-full h-1 rounded-full bg-white/10 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-gold to-yellow-400 transition-all"
+                      style={{ width: `${(match.hp.player / 20) * 100}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="w-16 h-1 rounded-full bg-white/10 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-gold to-yellow-400 transition-all"
-                    style={{ width: `${(match.hp.player / 20) * 100}%` }}
-                  />
+                {/* Trauma */}
+                <div className="flex flex-col gap-0.5 mt-0.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-display text-[8px] uppercase tracking-wider text-rose/80">
+                      Trauma
+                    </span>
+                    <span className="font-display text-[9px] font-bold text-rose">
+                      {match.trauma.player}%
+                    </span>
+                  </div>
+                  <div className="w-full h-1 rounded-full bg-white/10 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-rose to-red-600 transition-all"
+                      style={{ width: `${Math.min(100, match.trauma.player)}%` }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Focus gems */}
+              {/* Lucidity gems */}
               <div className="flex items-center gap-0.5">
-                {Array.from({ length: match.maxFocus }).map((_, i) => (
+                {Array.from({ length: match.maxLucidity }).map((_, i) => (
                   <div
                     key={i}
                     className={cn(
                       "size-1.5 rounded-sm transition-all duration-300",
-                      i < match.focus.player
-                        ? "bg-gold shadow-[0_0_6px_rgba(255,215,0,0.5)]"
+                      i < match.lucidity.player
+                        ? "bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.5)]"
                         : "bg-white/10",
                     )}
                   />
@@ -309,7 +330,7 @@ function Match() {
               <PlayerHand
                 cards={match.hand.player}
                 selected={selected}
-                playerFocus={match.focus.player}
+                playerLucidity={match.lucidity.player}
                 onSelect={handleSelect}
                 onDragToPlay={handleDragPlayCard}
               />

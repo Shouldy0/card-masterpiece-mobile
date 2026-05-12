@@ -5,8 +5,9 @@ import { cn } from "@/lib/utils";
 interface Props {
   hp: number;
   maxHp: number;
-  focus: number;
-  maxFocus: number;
+  lucidity: number;
+  maxLucidity: number;
+  trauma: number;
   turn: number;
   maxTurns: number;
   avatarSrc?: string;
@@ -16,8 +17,9 @@ interface Props {
 export function EnemyTopBar({
   hp,
   maxHp,
-  focus,
-  maxFocus,
+  lucidity,
+  maxLucidity,
+  trauma,
   turn,
   maxTurns,
   avatarSrc,
@@ -57,22 +59,31 @@ export function EnemyTopBar({
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Trauma Enemy */}
+        <div className="flex flex-col gap-0.5 w-12 mr-1">
+          <div className="flex items-center justify-between">
+            <span className="font-display text-[6px] uppercase tracking-wider text-rose/80">Trauma</span>
+            <span className="font-display text-[7px] font-bold text-rose">{trauma}%</span>
+          </div>
+          <div className="w-full h-0.5 rounded-full bg-white/10 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-rose to-red-600 transition-all"
+              style={{ width: `${Math.min(100, trauma)}%` }}
+            />
+          </div>
+        </div>
+
         <div className="flex items-center gap-0.5 mr-1">
-          {Array.from({ length: maxFocus }).map((_, i) => (
+          {Array.from({ length: maxLucidity }).map((_, i) => (
             <div
               key={i}
               className={cn(
                 "size-1.5 rounded-xs transition-all duration-300",
-                i < focus ? "bg-rose" : "bg-white/10",
+                i < lucidity ? "bg-rose" : "bg-white/10",
               )}
             />
           ))}
         </div>
-
-        <Skull className="size-3 text-rose/60" />
-        <span className="font-display text-[8px] text-white/50 -ml-1">2</span>
-        <ShieldCheck className="size-3 text-azure/60" />
-        <span className="font-display text-[8px] text-white/50 -ml-1">15</span>
 
         <div className="font-display text-[8px] text-white/30 tracking-wider ml-1">
           {turn}/{maxTurns}
