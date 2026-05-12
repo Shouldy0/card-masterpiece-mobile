@@ -18,6 +18,7 @@ export interface MatchState {
   lucidity: { player: number; ai: number };
   maxLucidity: number;
   trauma: { player: number; ai: number };
+  psychosisCount: { player: number; ai: number };
   hp: { player: number; ai: number };
   repressed: Record<Side, { cardId: string; turns: number }[]>;
   hand: { player: string[]; ai: string[] };
@@ -103,6 +104,7 @@ export function createInitialMatch(playerDeck: string[]): MatchState {
     lucidity: { player: 6, ai: 6 },
     maxLucidity: 6,
     trauma: { player: 0, ai: 0 },
+    psychosisCount: { player: 0, ai: 0 },
     hp: { player: 20, ai: 20 },
     repressed: { player: [], ai: [] },
     hand: { player: pDeck.slice(0, 5), ai: aiDeck.slice(0, 5) },
@@ -349,6 +351,40 @@ function processEndTurnTriggers(state: MatchState) {
   });
 }
 
+function checkPsychosis(state: MatchState) {
+  (["player", "ai"] as Side[]).forEach((side) => {
+    if (state.trauma[side] >= 100) {
+      state.log.push(`⚠️ ${side === "player" ? "Hai" : "L'avversario ha"} subito un CROLLO PSICOTICO!`);
+      state.psychosisCount[side] += 1;
+      
+      const currentHandSize = state.hand[side].length;
+      state.deck[side].push(...state.hand[side]);
+      state.deck[side] = shuffle(state.deck[side]);
+      state.hand[side] = [];
+      const newHandSize = Math.max(1, currentHandSize - 1);
+      for (let i = 0; i < newHandSize; i++) {
+        const c = state.deck[side].shift();
+        if (c) state.hand[side].push(c);
+      }
+
+      const myCards: { territory: TerritoryId; uid: string }[] = [];
+      (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach((t) => {
+        state.board[t].forEach((c) => {
+          if (c.side === side) myCards.push({ territory: t, uid: c.uid });
+        });
+      });
+      if (myCards.length > 0) {
+        const target = myCards[Math.floor(Math.random() * myCards.length)];
+        state.board[target.territory] = state.board[target.territory].filter((c) => c.uid !== target.uid);
+        state.log.push(`La psicosi ha frammentato una carta in ${target.territory}.`);
+      }
+
+      state.trauma[side] = 0;
+      state.hp[side] = Math.max(1, state.hp[side] - 5); 
+    }
+  });
+}
+
 function recalculateBoard(state: MatchState) {
   (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach((t) => {
     state.board[t].forEach((o) => {
@@ -527,6 +563,7 @@ export const useGame = create<AppStore>()(
           const m = structuredClone(s.match);
           aiTurn(m);
           processEndTurnTriggers(m);
+          checkPsychosis(m);
           const pMem = m.board.memoria
             .filter((c) => c.side === "player")
             .reduce((s, c) => s + c.power, 0);

@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useGame, TERRITORIES } from "@/game/store";
 import { cardsById, TerritoryId } from "@/game/cards";
 import { CardFromId } from "@/components/GameCard";
@@ -38,6 +38,19 @@ function Match() {
 
   const [impacts, setImpacts] = useState<Record<string, number>>({});
   const [globalImpact, setGlobalImpact] = useState(0);
+
+  const [psychosisActive, setPsychosisActive] = useState(false);
+  const prevPsychosisCountRef = useRef(match?.psychosisCount.player || 0);
+
+  useEffect(() => {
+    if (!match) return;
+    if (match.psychosisCount.player > prevPsychosisCountRef.current) {
+      setPsychosisActive(true);
+      play("fail");
+      setTimeout(() => setPsychosisActive(false), 2500);
+      prevPsychosisCountRef.current = match.psychosisCount.player;
+    }
+  }, [match?.psychosisCount.player, play]);
 
   useEffect(() => {
     sounds.startSceneMusic("match");
@@ -190,6 +203,26 @@ function Match() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-white/5 pointer-events-none z-50"
           />
+        )}
+      </AnimatePresence>
+
+      {/* Psychosis Distortion */}
+      <AnimatePresence>
+        {psychosisActive && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 pointer-events-none z-[150] mix-blend-difference"
+          >
+            <div className="absolute inset-0 bg-red-600/30 backdrop-invert" />
+            <div className="absolute inset-0 psychosis-noise opacity-30 mix-blend-overlay animate-[lane-trauma-glitch_0.2s_infinite]" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <h1 className="font-display text-4xl text-rose tracking-widest uppercase font-black mix-blend-screen animate-pulse shadow-rose drop-shadow-[0_0_20px_rgba(244,63,94,1)]">
+                PSICOSI
+              </h1>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
