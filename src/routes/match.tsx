@@ -30,6 +30,8 @@ function Match() {
   const match = useGame((s) => s.match);
   const [selected, setSelected] = useState<string | null>(null);
   const [revealing, setRevealing] = useState<{ uid: string; territory: TerritoryId } | null>(null);
+  const [isResolving, setIsResolving] = useState(false);
+  const [activeResolvingLane, setActiveResolvingLane] = useState<TerritoryId | null>(null);
   const playCard = useGame((s) => s.playCard);
   const repressCard = useGame((s) => s.repressCard);
   const endTurn = useGame((s) => s.endTurn);
@@ -71,14 +73,29 @@ function Match() {
   if (!match) return null;
 
   const handleSelect = (id: string) => {
+    if (isResolving) return;
     setSelected(selected === id ? null : id);
     play("lock");
   };
 
-  const handleEndTurn = () => {
+  const handleEndTurn = async () => {
+    if (isResolving) return;
     play("ripple");
+    setIsResolving(true);
+
+    const lanes: TerritoryId[] = ["memoria", "trauma", "sogno"];
+    for (const lane of lanes) {
+      setActiveResolvingLane(lane);
+      play("ping");
+      await new Promise((r) => setTimeout(r, 600));
+    }
+
+    setActiveResolvingLane(null);
     endTurn();
-    setTimeout(() => play("card_deal"), 250);
+    setTimeout(() => {
+      setIsResolving(false);
+      play("card_deal");
+    }, 400);
   };
 
   const handlePlay = (territory: TerritoryId) => {
@@ -177,6 +194,7 @@ function Match() {
   }, [match, tutorialStep, setTutorialStep]);
 
   const actionLabel =
+    isResolving ? "ATTENDI" :
     match.isTutorial && tutorialStep === 1 ? "CONFERMA" : selected ? "ATTACCA" : "FINE TURNO";
 
   return (
@@ -281,13 +299,53 @@ function Match() {
 
 
         {/* CENTER: Battlefield slots */}
-        <BattleRow
-          territories={territoryList}
-          board={match.board}
-          selected={selected}
-          impacts={impacts}
-          onPlay={handlePlay}
-        />
+        <div className="relative flex-1 flex flex-col">
+          <BattleRow
+            territories={territoryList}
+            board={match.board}
+            selected={selected}
+            impacts={impacts}
+            onPlay={handlePlay}
+          />
+
+          {/* Resolution Overlay / Highlights */}
+          <AnimatePresence>
+            {isResolving && activeResolvingLane && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-50 pointer-events-none"
+              >
+                {territoryList.map((t, i) => (
+                  <div
+                    key={t.id}
+                    className={cn(
+                      "absolute top-0 bottom-0 transition-all duration-300",
+                      activeResolvingLane === t.id ? "bg-white/5 ring-4 ring-white/20 z-50" : "opacity-0"
+                    )}
+                    style={{
+                      left: `${(i / 3) * 100}%`,
+                      width: "33.33%",
+                    }}
+                  >
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1.2, opacity: 1 }}
+                        className="bg-black/80 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 shadow-2xl"
+                      >
+                        <span className="font-display text-[10px] uppercase tracking-[0.3em] font-black text-white">
+                          Risoluzione...
+                        </span>
+                      </motion.div>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Battle Log strip */}
         <AnimatePresence>
@@ -504,7 +562,8 @@ function Match() {
               <ActionButton
                 label={actionLabel}
                 onClick={handleEndTurn}
-                sublabel={selected ? undefined : `Turno ${match.turn}`}
+                disabled={isResolving}
+                sublabel={isResolving ? "..." : selected ? undefined : `Turno ${match.turn}`}
               />
             </div>
           </div>
