@@ -83,21 +83,21 @@ export function buildStarterDeck(): string[] {
 
 export function createInitialMatch(playerDeck: string[]): MatchState {
   const aiDeck = shuffle([
-    "v5_follia",
-    "v7_rancore",
-    "o5_cenere",
-    "o8_tempesta",
-    "c5_martire",
-    "c10_boia",
-    "b3_oblio",
-    "b6_abisso",
-    "s8_arcobaleno",
-    "s10_risveglio",
-    "v2_ossessione",
-    "o2_bosco_sacro",
-    "c2_re_caduto",
-    "b5_cenere_blu",
-    "s4_visione",
+    "v3_nostalgia",
+    "v4_apatia",
+    "o1_chiave_antica",
+    "o3_giocattolo",
+    "o9_nebbia",
+    "c1_giullare",
+    "c3_vittima",
+    "c8_eremita",
+    "b2_silenzio",
+    "b4_neve",
+    "s1_miraggio",
+    "s3_nuvola",
+    "s5_stella",
+    "v8_solitudine",
+    "b7_pioggia",
   ]);
   const pDeck = shuffle(playerDeck);
   return {
@@ -460,47 +460,41 @@ function recalculateBoard(state: MatchState) {
 }
 
 function aiTurn(state: MatchState) {
-  const style = state.aiStyle;
-  let safety = 6;
-  while (safety-- > 0) {
+  // AI plays at most 2 cards per turn (was 6) to feel beatable
+  let cardsPlayed = 0;
+  const maxCardsPerTurn = 2;
+  let safety = 4;
+  while (safety-- > 0 && cardsPlayed < maxCardsPerTurn) {
     const affordable = state.hand.ai
       .map((id) => cardsById[id])
       .filter((c) => c && c.cost <= state.lucidity.ai)
       .sort((a, b) => {
         const score = (card: CardDef) => {
+          // Base efficiency with significant random noise so AI makes mistakes
           const efficiency = card.power / Math.max(1, card.cost);
-          if (style === "aggressive")
-            return card.power * 1.45 + efficiency * 0.35 + card.cost * 0.25;
-          if (style === "control") {
-            const utility =
-              card.effect.kind === "weaken_enemy" ||
-              card.effect.kind === "heal" ||
-              card.effect.kind === "draw"
-                ? 4.5
-                : 0;
-            return efficiency * 1 + utility + card.cost * 0.05;
-          }
-          return efficiency * 1.35 + card.power * 0.55;
+          const noise = (Math.random() - 0.5) * 4; // ±2 random error
+          return efficiency + noise;
         };
         return score(b) - score(a);
       });
     if (affordable.length === 0) break;
     const card = affordable[0];
     const tIds: TerritoryId[] = ["memoria", "trauma", "sogno"];
-    const scored = tIds
-      .map((t) => {
-        const aiP = state.board[t].filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
-        const plP = state.board[t]
-          .filter((c) => c.side === "player")
-          .reduce((s, c) => s + c.power, 0);
-        const diff = aiP - plP;
-        const territoryValue = t === "sogno" ? 1 : t === "memoria" ? 0.8 : 0.6;
-        if (style === "aggressive") return { t, score: diff * -0.45 + territoryValue + plP * 0.35 };
-        if (style === "control") return { t, score: diff * -1.35 + territoryValue * 0.75 };
-        return { t, score: diff * -0.95 + territoryValue };
-      })
-      .sort((a, b) => b.score - a.score);
-    const territory = scored[0].t;
+    // AI territory choice: picks a random territory 40% of the time (mistakes)
+    let territory: TerritoryId;
+    if (Math.random() < 0.4) {
+      territory = tIds[Math.floor(Math.random() * tIds.length)];
+    } else {
+      const scored = tIds
+        .map((t) => {
+          const aiP = state.board[t].filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
+          const plP = state.board[t].filter((c) => c.side === "player").reduce((s, c) => s + c.power, 0);
+          const diff = aiP - plP;
+          return { t, score: diff * -0.8 + Math.random() * 1.5 };
+        })
+        .sort((a, b) => b.score - a.score);
+      territory = scored[0].t;
+    }
     state.lucidity.ai -= card.cost;
     const idx = state.hand.ai.indexOf(card.id);
     if (idx >= 0) state.hand.ai.splice(idx, 1);
@@ -508,9 +502,8 @@ function aiTurn(state: MatchState) {
     const uid = `ai-${state.turn}-${Math.random()}`;
     state.board[territory].push({ uid, cardId: card.id, side: "ai", power: 0 });
     recalculateBoard(state);
-    state.log.push(
-      `Avversario (${style}) gioca ${card.name} su ${territory} (Costo ${card.cost}).`,
-    );
+    state.log.push(`Ombra gioca ${card.name} su ${territory}.`);
+    cardsPlayed++;
   }
 }
 
