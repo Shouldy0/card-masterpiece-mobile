@@ -16,8 +16,8 @@ export type CardTrait =
 export type CardEffect =
   | { kind: "draw"; amount: number }
   | { kind: "buff_self"; amount: number }
-  | { kind: "weaken_enemy"; amount: number }
   | { kind: "heal"; amount: number }
+  | { kind: "add_intrusive"; amount: number }
   | { kind: "none" };
 
 export interface CardDef {
@@ -420,9 +420,9 @@ export const CARDS: CardDef[] = [
     cost: 5,
     power: 8,
     rarity: "rara",
-    text: "Paura.",
+    text: "Inquina la mente avversaria con 1 Pensiero Intrusivo.",
     flavor: "Tutti abbiamo un mostro che indossa un volto umano.",
-    effect: { kind: "none" },
+    effect: { kind: "add_intrusive", amount: 1 },
     traits: ["oppressive"],
     unlockLevel: 3,
     art: "/cards/mostro.png?v=3",
@@ -461,9 +461,9 @@ export const CARDS: CardDef[] = [
     cost: 4,
     power: 7,
     rarity: "epica",
-    text: "Presenza inquietante.",
+    text: "Aggiunge 1 Pensiero Intrusivo alla mano nemica.",
     flavor: "La mano che ti nutre è la stessa che stringe il cappio.",
-    effect: { kind: "none" },
+    effect: { kind: "add_intrusive", amount: 1 },
     traits: ["oppressive"],
     unlockLevel: 5,
     art: "/cards/traditore_latente.png?v=3",
@@ -976,6 +976,21 @@ export const CARDS: CardDef[] = [
     traits: ["growth"],
     unlockLevel: 10,
     art: "/cards/eternita_eco.png?v=3",
+  },
+  
+  // --- CARTE SPECIALI (NON COLLEZIONABILI) ---
+  {
+    id: "x_pensiero_intrusivo",
+    name: "Pensiero Intrusivo",
+    type: "oblio",
+    cost: 3,
+    power: -2,
+    rarity: "comune",
+    text: "Non puoi reprimere questo pensiero. Giocalo per rimuoverlo, sacrificando Lucidità e Potere.",
+    flavor: "Un ronzio fastidioso che rifiuta di spegnersi.",
+    effect: { kind: "none" },
+    traits: ["immobile"],
+    art: "/cards/placeholder.png",
   },
 ];
 

@@ -299,6 +299,12 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
       }
       state.hp[side] = Math.min(20, state.hp[side] + healAmount);
       break;
+    case "add_intrusive":
+      for (let i = 0; i < card.effect.amount; i++) {
+        state.hand[enemySide].push("x_pensiero_intrusivo");
+      }
+      state.log.push(`${side === "player" ? "Hai" : "L'avversario ha"} inflitto un Pensiero Intrusivo!`);
+      break;
   }
   if (card.traits?.includes("oppressive")) {
     state.log.push(`${card.name} emana un'aura opprimente!`);
@@ -536,6 +542,12 @@ export const useGame = create<AppStore>()(
           if (idx === -1) return s;
           m.hand.player.splice(idx, 1);
           m.lucidity.player -= card.cost;
+
+          if (cardId === "x_pensiero_intrusivo") {
+            m.log.push(`Hai scartato un Pensiero Intrusivo (Costo ${card.cost} Lucidità).`);
+            return { match: m };
+          }
+
           applyEffect(m, card, "player", territory);
           const uid = `p-${m.turn}-${Math.random()}`;
           m.board[territory].push({ uid, cardId, side: "player", power: 0 });
@@ -550,6 +562,10 @@ export const useGame = create<AppStore>()(
           const m = structuredClone(s.match);
           const idx = m.hand.player.indexOf(cardUid);
           if (idx === -1) return s;
+          if (cardUid === "x_pensiero_intrusivo") {
+            m.log.push("I Pensieri Intrusivi non possono essere repressi!");
+            return { match: m };
+          }
           m.hand.player.splice(idx, 1);
           m.lucidity.player = Math.min(m.maxLucidity, m.lucidity.player + 2);
           m.repressed.player.push({ cardId: cardUid, turns: 0 });

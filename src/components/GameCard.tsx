@@ -68,7 +68,7 @@ export const GameCard = React.memo(function GameCard({
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-mystic/30 to-abyss living-card-art" />
         )}
-        <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-3/5 bg-gradient-to-t from-black via-black/60 to-transparent" />
       </div>
 
       {/* Faction bar */}
@@ -87,24 +87,29 @@ export const GameCard = React.memo(function GameCard({
         </span>
       </div>
 
-      {/* Name */}
-      <div className="absolute bottom-1.5 inset-x-1.5 z-20">
+      {/* Bottom Info Area */}
+      <div className="absolute bottom-0 inset-x-0 z-20 flex flex-col p-1.5 pt-4 pb-2 text-left">
         <h3
           className={cn(
-            "font-display uppercase text-white font-bold truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]",
+            "font-display uppercase text-white font-bold drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]",
             isXs
-              ? "text-[8px] tracking-wide"
+              ? "text-[8px] tracking-wide truncate pr-5"
               : isSm
-                ? "text-[10px] tracking-wider"
-                : "text-[11px] tracking-wider",
+                ? "text-[9px] tracking-wider truncate pr-6"
+                : "text-[11px] tracking-wider pr-8 leading-tight",
           )}
         >
           {card.name}
         </h3>
+        {!isXs && !isSm && card.description && (
+          <p className="text-[7.5px] leading-[9.5px] text-white/75 mt-0.5 pr-7 line-clamp-3">
+            {card.description}
+          </p>
+        )}
       </div>
 
       {/* Power */}
-      <div className="absolute bottom-1.5 right-1.5 z-20 flex items-center justify-center bg-black/70 rounded size-6">
+      <div className="absolute bottom-1.5 right-1.5 z-30 flex items-center justify-center bg-black/80 rounded size-6 ring-1 ring-white/10 shadow-lg">
         <span
           className={cn(
             "font-display font-extrabold",
