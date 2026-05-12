@@ -101,9 +101,9 @@ export const GameCard = React.memo(function GameCard({
         >
           {card.name}
         </h3>
-        {!isXs && !isSm && card.description && (
+        {!isXs && !isSm && card.text && (
           <p className="text-[7.5px] leading-[9.5px] text-white/75 mt-0.5 pr-7 line-clamp-3">
-            {card.description}
+            {card.text}
           </p>
         )}
       </div>
