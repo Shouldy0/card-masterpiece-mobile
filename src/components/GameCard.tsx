@@ -13,13 +13,13 @@ interface Props {
   onClick?: () => void;
 }
 
-const factionStyles: Record<CardType, { bar: string; power: string }> = {
-  archetipo: { bar: "bg-purple-500", power: "text-purple-300" },
-  ricordo: { bar: "bg-yellow-500", power: "text-yellow-300" },
-  maschera: { bar: "bg-red-500", power: "text-red-300" },
-  oblio: { bar: "bg-blue-500", power: "text-blue-300" },
-  sogno: { bar: "bg-cyan-400", power: "text-cyan-300" },
-  eco: { bar: "bg-emerald-500", power: "text-emerald-300" },
+const factionStyles: Record<CardType, { bar: string; power: string; glow: string }> = {
+  archetipo: { bar: "bg-purple-500", power: "text-purple-300", glow: "rgba(168,85,247,0.3)" },
+  ricordo: { bar: "bg-yellow-500", power: "text-yellow-300", glow: "rgba(234,179,8,0.3)" },
+  maschera: { bar: "bg-red-500", power: "text-red-300", glow: "rgba(239,68,68,0.3)" },
+  oblio: { bar: "bg-blue-500", power: "text-blue-300", glow: "rgba(59,130,246,0.3)" },
+  sogno: { bar: "bg-cyan-400", power: "text-cyan-300", glow: "rgba(34,211,238,0.3)" },
+  eco: { bar: "bg-emerald-500", power: "text-emerald-300", glow: "rgba(16,185,129,0.3)" },
 };
 
 export const GameCard = React.memo(function GameCard({
@@ -39,17 +39,22 @@ export const GameCard = React.memo(function GameCard({
     <motion.button
       type="button"
       onClick={onClick}
+      whileHover={onClick ? { scale: 1.02 } : undefined}
       whileTap={onClick ? { scale: 0.95 } : undefined}
+      style={{ "--faction-glow": f.glow } as React.CSSProperties}
       className={cn(
         "relative shrink-0 overflow-hidden text-left bg-black shadow-md",
+        "living-card",
         CARD_SIZES[size],
         RARITY_BORDERS[card.rarity],
         "rounded-lg border border-white/10",
         faded && "opacity-45 grayscale",
         selected && "ring-2 ring-gold/70 z-50",
-        glow && "shadow-[0_0_12px_rgba(168,85,247,0.2)]",
+        glow && "shadow-[0_0_12px_rgba(168,85,247,0.4)]",
       )}
     >
+      <div className="living-card-reflection" />
+      
       {/* Art */}
       <div className="absolute inset-0 bg-[#0a0a0c]">
         {!imgError ? (
@@ -57,11 +62,11 @@ export const GameCard = React.memo(function GameCard({
             src={card.art}
             alt={card.name}
             onError={() => setImgError(true)}
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover living-card-art"
             loading="lazy"
           />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-mystic/30 to-abyss" />
+          <div className="absolute inset-0 bg-gradient-to-br from-mystic/30 to-abyss living-card-art" />
         )}
         <div className="absolute bottom-0 inset-x-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent" />
       </div>

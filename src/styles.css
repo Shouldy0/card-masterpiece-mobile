@@ -414,3 +414,54 @@
   transform: scale(0.98);
 }
 
+/* --- REVERIE: Card Idle Life Animations --- */
+@keyframes card-micro-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-1.5px) rotate(0.3deg); }
+  75% { transform: translateY(1px) rotate(-0.2deg); }
+}
+
+@keyframes card-breathing-shadow {
+  0%, 100% { box-shadow: 0 4px 15px -5px rgba(0,0,0,0.8), 0 0 8px -2px var(--faction-glow, rgba(255,255,255,0.05)); }
+  50% { box-shadow: 0 8px 25px -5px rgba(0,0,0,0.9), 0 0 16px 1px var(--faction-glow, rgba(255,255,255,0.1)); }
+}
+
+@keyframes card-shimmer-edge {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes card-art-drift {
+  0%, 100% { transform: scale(1.08) translate(0, 0); }
+  50% { transform: scale(1.08) translate(-1.5%, 1%); }
+}
+
+.living-card {
+  animation: card-micro-float 7s ease-in-out infinite, card-breathing-shadow 5s ease-in-out infinite;
+  transform-style: preserve-3d;
+  will-change: transform, box-shadow;
+}
+
+.living-card-art {
+  animation: card-art-drift 15s ease-in-out infinite;
+  will-change: transform;
+}
+
+.living-card-reflection {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.02) 25%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 55%
+  );
+  background-size: 200% 100%;
+  animation: card-shimmer-edge 10s infinite linear;
+  pointer-events: none;
+  z-index: 10;
+  mix-blend-mode: overlay;
+}
+
+
