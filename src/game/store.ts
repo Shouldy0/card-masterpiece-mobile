@@ -219,19 +219,58 @@ function powerWithRules(
   let p = card.power;
   const enemySide: Side = side === "player" ? "ai" : "player";
   if (card.traits?.includes("immobile")) return p;
-  let totalBuff = state.buffs[side] + state.localBuffs[territory][side];
-  let totalWeaken = state.weakens[enemySide] + state.localWeakens[territory][enemySide];
+
   const board = state.board[territory];
   const myIndex = cardUid ? board.findIndex((o) => o.uid === cardUid) : -1;
   const neighbors =
     myIndex >= 0 ? board.filter((o, idx) => o.side === side && Math.abs(idx - myIndex) === 1) : [];
   const isProtected = neighbors.some((n) => cardsById[n.cardId]?.traits?.includes("protector"));
-  if (isProtected) totalWeaken = 0;
-  p += totalBuff;
-  p -= totalWeaken;
+
+  // --- GLOBAL buffs/weakens (turn-based, reset each turn) ---
+  let globalBuff = state.buffs[side];
+  let globalWeaken = isProtected ? 0 : state.weakens[enemySide];
+
+  // --- LOCAL AURAS from ally cards in this territory (buff_self, local target) ---
+  let localBuff = 0;
+  board.forEach((o) => {
+    if (o.side === side && o.uid !== cardUid) {
+      const def = cardsById[o.cardId];
+      if (!def) return;
+      if (def.effect.kind === "buff_self" && (def.effect as any).target === "local") {
+        let amt = def.effect.amount;
+        if (def.traits?.includes("synergy_buff")) {
+          const myTypeCount = board.filter((b) => b.side === side && cardsById[b.cardId]?.type === def.type).length;
+          if (myTypeCount >= 2) amt += 1;
+        }
+        localBuff += amt;
+      }
+    }
+  });
+
+  // --- LOCAL AURAS from enemy cards in this territory (weaken_enemy + oppressive) ---
+  let localWeaken = 0;
+  if (!isProtected) {
+    board.forEach((o) => {
+      if (o.side === enemySide) {
+        const def = cardsById[o.cardId];
+        if (!def) return;
+        if (def.effect.kind === "weaken_enemy" && (def.effect as any).target === "local") {
+          localWeaken += def.effect.amount;
+        }
+        if (def.traits?.includes("oppressive")) {
+          localWeaken += 1;
+        }
+      }
+    });
+  }
+
+  p += globalBuff + localBuff;
+  p -= globalWeaken + localWeaken;
+
+  // --- Territory rules ---
   if (card.type === "archetipo") {
-    const others = state.board[territory].filter(
-      (o) => o.side === side && cardsById[o.cardId]?.type === "archetipo",
+    const others = board.filter(
+      (o) => o.side === side && cardsById[o.cardId]?.type === "archetipo" && o.uid !== cardUid,
     ).length;
     p += others;
     if (card.traits?.includes("synergy_buff")) {
@@ -240,12 +279,14 @@ function powerWithRules(
     }
   }
   if (card.type === "ricordo" && territory === "memoria") p += 2;
-  if (territory === "trauma") if (!isProtected) p -= 1;
+  if (territory === "trauma" && !isProtected) p -= 1;
   if (territory === "sogno") p += 1;
   if (card.traits?.includes("loner")) {
-    const myCards = state.board[territory].filter((o) => o.side === side).length;
+    const myCards = board.filter((o) => o.side === side).length;
     if (myCards <= 1) p += 3;
   }
+
+  // --- Cross-territory synergy bonus ---
   (["memoria", "trauma", "sogno"] as TerritoryId[]).forEach((t) => {
     const counts: Record<string, number> = {};
     state.board[t]
@@ -259,8 +300,8 @@ function powerWithRules(
     });
   });
 
-  // Corruption Mechanics
-  if (isLaneCorrupted(state.board[territory])) {
+  // --- Corruption Mechanics ---
+  if (isLaneCorrupted(board)) {
     if (card.type === "ricordo") {
       p = Math.floor(p / 2);
     } else if (card.type === "oblio" || card.type === "maschera") {
@@ -284,18 +325,20 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
       let amount = card.effect.amount;
       if (card.traits?.includes("synergy_buff") && state.lucidity[side] === 0) amount *= 2;
       if ((card.effect as any).target === "local") {
-        state.localBuffs[territory][side] += amount;
-        state.log.push(`${card.name} potenzia le carte in ${territory}!`);
+        // Local buff_self: aura effect computed dynamically in powerWithRules — just log it
+        state.log.push(`${card.name} emana un'aura potenziante in ${territory}!`);
       } else {
         state.buffs[side] += amount;
+        state.log.push(`${card.name} potenzia tutte le tue carte per questo turno (+${amount})!`);
       }
       break;
     case "weaken_enemy":
       if ((card.effect as any).target === "local") {
-        state.localWeakens[territory][side] += card.effect.amount;
+        // Local weaken: aura effect computed dynamically in powerWithRules — just log it
         state.log.push(`${card.name} indebolisce i nemici in ${territory}!`);
       } else {
         state.weakens[side] += card.effect.amount;
+        state.log.push(`${card.name} indebolisce il nemico globalmente (-${card.effect.amount})!`);
       }
       break;
     case "heal":
@@ -321,8 +364,8 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
       break;
   }
   if (card.traits?.includes("oppressive")) {
+    // Oppressive: persistent aura computed in powerWithRules — just log it
     state.log.push(`${card.name} emana un'aura opprimente in ${territory}!`);
-    state.localWeakens[territory][side] += 1;
   }
   if (card.type === "maschera") {
     state.lucidity[enemySide] = Math.max(0, state.lucidity[enemySide] - 1);
