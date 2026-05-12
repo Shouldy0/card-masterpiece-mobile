@@ -4,6 +4,7 @@ import { MusicProvider } from "@/components/MusicProvider";
 import { getFirebase } from "@/lib/firebase";
 import { useGame } from "@/game/store";
 import { useEffect } from "react";
+import { GlossaryOverlay } from "@/components/Glossary";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -73,6 +74,7 @@ function RootComponent() {
       </main>
       <Toaster />
       <MusicProvider />
+      <GlossaryOverlay />
     </div>
   );
 }
