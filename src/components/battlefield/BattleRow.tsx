@@ -23,6 +23,7 @@ export function BattleRow({ territories, board, selected, impacts, onPlay }: Pro
       {territories.map((t) => (
         <Slot
           key={t.id}
+          id={t.id}
           name={t.name}
           icon={t.icon}
           color={t.color}

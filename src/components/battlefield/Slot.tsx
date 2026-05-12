@@ -4,6 +4,7 @@ import { CardFromId } from "@/components/GameCard";
 import { PlayedCard } from "@/game/store";
 
 interface Props {
+  id: string;
   name: string;
   icon: string;
   color: string;
@@ -13,7 +14,7 @@ interface Props {
   onDrop: () => void;
 }
 
-export function Slot({ name, icon, color, cards, canPlay, isImpacted, onDrop }: Props) {
+export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, onDrop }: Props) {
   const playerCards = cards.filter((c) => c.side === "player");
   const aiCards = cards.filter((c) => c.side === "ai");
   const playerPower = playerCards.reduce((s, c) => s + c.power, 0);
@@ -25,14 +26,24 @@ export function Slot({ name, icon, color, cards, canPlay, isImpacted, onDrop }: 
     <motion.button
       onClick={onDrop}
       whileTap={canPlay ? { scale: 0.97 } : undefined}
-      animate={isImpacted ? { scale: [1, 1.03, 1] } : {}}
+      whileHover={canPlay ? { scale: 1.02 } : undefined}
+      animate={isImpacted ? { scale: [1, 1.05, 1], filter: ["brightness(1)", "brightness(1.5)", "brightness(1)"] } : {}}
       className={cn(
-        "flex-1 relative flex flex-col rounded-xl border transition-all duration-300 overflow-hidden min-h-0",
-        canPlay ? "border-gold/40 cursor-pointer" : "border-white/5",
+        "flex-1 relative flex flex-col rounded-xl border transition-all duration-500 overflow-hidden min-h-0",
+        "lane-base",
+        `lane-${id}`,
+        canPlay ? "lane-active border-white/20 cursor-pointer shadow-[0_0_30px_var(--lane-color)] ring-1 ring-white/10" : "border-white/5",
+        isWinning && !canPlay && "border-gold/30 shadow-[inset_0_0_20px_rgba(255,215,0,0.05)]",
+        !isWinning && aiPower > playerPower && !canPlay && "border-rose/30 shadow-[inset_0_0_20px_rgba(244,63,94,0.05)]"
       )}
     >
+      {/* Ambient background layers */}
+      <div className="lane-ambient-bg" />
+      <div className="lane-breathing" />
+      <div className="lane-particles" />
+      
       {/* Territory header */}
-      <div className="flex items-center justify-center gap-1.5 py-2">
+      <div className="relative z-10 flex items-center justify-center gap-1.5 py-2">
         <span className="text-sm">{icon}</span>
         <h4
           className={cn(
@@ -45,7 +56,7 @@ export function Slot({ name, icon, color, cards, canPlay, isImpacted, onDrop }: 
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col items-center justify-between pb-2 px-2 gap-1">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-between pb-2 px-2 gap-1">
         {/* Opponent card */}
         <div className="flex-1 flex items-center justify-center min-h-0 w-full">
           {aiCards.length > 0 ? (

@@ -13,25 +13,33 @@ export function ActionButton({ label, onClick, disabled, sublabel }: Props) {
     <motion.button
       onClick={onClick}
       disabled={disabled}
-      whileTap={{ scale: 0.95 }}
+      whileHover={!disabled ? { scale: 1.02 } : undefined}
+      whileTap={!disabled ? { scale: 0.96 } : undefined}
       className={cn(
-        "flex flex-col items-center justify-center rounded-xl px-4 py-2.5 min-w-[72px]",
-        "border transition-all duration-200",
+        "relative flex flex-col items-center justify-center rounded-xl px-6 py-3 min-w-[90px]",
+        "transition-all duration-500 shadow-2xl",
         disabled
-          ? "border-white/5 text-white/20 cursor-not-allowed"
-          : "border-gold/40 text-gold cursor-pointer",
+          ? "bg-abyss/50 border border-white/5 cursor-not-allowed opacity-40 grayscale"
+          : "ritual-button cursor-pointer",
       )}
     >
+      {!disabled && (
+        <>
+          <div className="ritual-button-glow" />
+          <div className="ritual-button-distortion" />
+        </>
+      )}
+      
       <span
         className={cn(
-          "font-display text-[11px] font-bold tracking-[0.15em]",
-          disabled ? "text-white/20" : "text-gold",
+          "font-display text-[11px] font-bold tracking-[0.2em] uppercase z-10",
+          disabled ? "text-white/20" : "ritual-button-text",
         )}
       >
         {label}
       </span>
       {sublabel && !disabled && (
-        <span className="font-display text-[6px] tracking-[0.2em] text-white/30 mt-0.5">
+        <span className="font-display text-[6px] tracking-[0.3em] text-gold-dim/70 mt-1 z-10 uppercase font-semibold">
           {sublabel}
         </span>
       )}

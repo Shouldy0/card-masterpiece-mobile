@@ -270,3 +270,147 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* --- REVERIE: Lane Aesthetics --- */
+@keyframes lane-breathe {
+  0%, 100% { opacity: 0.2; transform: scaleY(1); }
+  50% { opacity: 0.4; transform: scaleY(1.02); }
+}
+
+@keyframes particle-drift {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  20% { opacity: 0.3; }
+  80% { opacity: 0.3; }
+  100% { transform: translateY(-40px) rotate(20deg); opacity: 0; }
+}
+
+@keyframes pulse-border {
+  0%, 100% { border-color: rgba(255, 255, 255, 0.05); box-shadow: inset 0 0 0 rgba(0,0,0,0); }
+  50% { border-color: var(--lane-color, rgba(255, 255, 255, 0.2)); box-shadow: inset 0 0 20px var(--lane-color, rgba(255, 255, 255, 0)); }
+}
+
+.lane-base {
+  position: relative;
+  isolation: isolate;
+}
+
+.lane-ambient-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--lane-color, rgba(255,255,255,0.05)) 0%, transparent 60%);
+  opacity: 0.15;
+  transition: opacity 0.7s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lane-breathing {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at bottom, var(--lane-color, rgba(255,255,255,0.1)), transparent 60%);
+  animation: lane-breathe 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+}
+
+.lane-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, var(--lane-color, rgba(255,255,255,0.8)) 1px, transparent 1px);
+  background-size: 24px 36px;
+  background-position: 0 0;
+  opacity: 0;
+  transition: opacity 1s ease;
+  z-index: 0;
+}
+
+.lane-active .lane-particles {
+  animation: particle-drift 20s linear infinite;
+  opacity: 0.15;
+}
+
+.lane-active .lane-ambient-bg {
+  opacity: 0.3;
+}
+
+.lane-active .lane-breathing {
+  animation-duration: 4s;
+  opacity: 0.7;
+}
+
+.lane-memoria { --lane-color: var(--gold); }
+.lane-trauma { --lane-color: var(--rose); }
+.lane-sogno { --lane-color: var(--azure); }
+
+/* --- REVERIE: Ritual Action Button --- */
+@keyframes ritual-breathe {
+  0%, 100% { box-shadow: 0 0 15px -5px var(--gold-dim), inset 0 0 10px -5px var(--gold-dim); border-color: rgba(255, 215, 0, 0.2); }
+  50% { box-shadow: 0 0 25px 0px var(--gold), inset 0 0 20px 0px var(--gold); border-color: rgba(255, 215, 0, 0.5); }
+}
+
+@keyframes energy-converge {
+  0% { transform: translateX(-100%) skewX(-15deg); opacity: 0; }
+  50% { opacity: 0.4; }
+  100% { transform: translateX(100%) skewX(-15deg); opacity: 0; }
+}
+
+.ritual-button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: radial-gradient(ellipse at center, rgba(13, 10, 20, 0.9) 0%, rgba(5, 3, 10, 0.95) 100%);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.ritual-button:not(:disabled) {
+  animation: ritual-breathe 4s ease-in-out infinite;
+}
+
+.ritual-button-glow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(8px);
+}
+
+.ritual-button:not(:disabled) .ritual-button-glow {
+  animation: energy-converge 5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ritual-button-distortion {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.ritual-button:active:not(:disabled) .ritual-button-distortion {
+  opacity: 0.2;
+}
+
+.ritual-button-text {
+  background: linear-gradient(180deg, var(--gold), var(--gold-dim));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 10px rgba(255,215,0,0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ritual-button:active:not(:disabled) .ritual-button-text {
+  text-shadow: 0 0 20px rgba(255,215,0,0.8);
+  filter: brightness(1.5);
+  transform: scale(0.98);
+}
+
