@@ -145,6 +145,13 @@ export interface PlayerProgress {
   rankRewardsClaimed: string[];
   ownedCosmetics: string[];
   onboardingDone: boolean;
+  avatarId: string;
+  frameId: string;
+  bgId: string;
+  ownedAvatars: string[];
+  ownedFrames: string[];
+  ownedBgs: string[];
+  ownedTitles: string[];
 }
 
 export interface MatchRewards {
@@ -184,6 +191,7 @@ interface AppStore {
   setPuzzleCompleted: (id: string) => void;
   addFriend: (name: string) => void;
   sendMessage: (text: string) => void;
+  setProfileItem: (type: "avatarId" | "frameId" | "bgId" | "title", id: string) => void;
   startCampaignMatch: (nodeId: number) => void;
   startPuzzleMatch: (puzzleId: string) => void;
   startMatch: () => void;
@@ -616,6 +624,10 @@ export const useGame = create<AppStore>()(
       sendMessage: (text) => set((s) => ({
         messages: [...s.messages, { from: "Tu", text, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]
       })),
+
+      setProfileItem: (type, id) => set((s) => ({
+        player: { ...s.player, [type]: id }
+      })),
       
       startCampaignMatch: (nodeId: number) => {
         const campaignDecks: Record<number, string[]> = {
@@ -882,6 +894,13 @@ export const useGame = create<AppStore>()(
             rankRewardsClaimed: [],
             ownedCosmetics: ["default_board"],
             onboardingDone: false,
+            avatarId: "default",
+            frameId: "none",
+            bgId: "default",
+            ownedAvatars: ["default", "archetipo_icon", "maschera_icon"],
+            ownedFrames: ["none", "gold_border", "mystic_glow"],
+            ownedBgs: ["default", "nebula", "abyss"],
+            ownedTitles: ["Sognatore", "Cercatore di Verità", "Ombra Errante"],
           },
           onboardingPackOpened: false,
           match: null,
