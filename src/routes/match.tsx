@@ -279,22 +279,6 @@ function Match() {
         {/* Separator */}
         <div className="mx-3 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
 
-        {/* Battle Log */}
-        <div className="absolute top-14 left-3 z-40 flex flex-col items-start gap-1 pointer-events-none max-w-[200px]">
-          <AnimatePresence>
-            {match.log.slice(-3).map((msg, i) => (
-              <motion.div
-                key={match.log.length - 3 + i}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="bg-black/60 backdrop-blur-md border border-white/5 rounded px-2 py-1.5 text-[8px] text-white/80 shadow-lg"
-              >
-                {msg}
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
 
         {/* CENTER: Battlefield slots */}
         <BattleRow
@@ -304,6 +288,25 @@ function Match() {
           impacts={impacts}
           onPlay={handlePlay}
         />
+
+        {/* Battle Log strip */}
+        <AnimatePresence>
+          {match.log.length > 0 && (
+            <motion.div
+              key={match.log[match.log.length - 1]}
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="mx-3 mb-1 px-3 py-1 bg-black/40 border border-white/5 rounded-lg flex items-center gap-2 overflow-hidden"
+            >
+              <span className="text-white/20 text-[6px]">▶</span>
+              <p className="text-[7px] text-white/60 font-mono truncate flex-1">
+                {match.log[match.log.length - 1]}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* BOTTOM: Hand + Player info + Action */}
         <div className="relative">
