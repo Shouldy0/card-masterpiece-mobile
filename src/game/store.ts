@@ -173,6 +173,7 @@ interface AppStore {
   setOnboardingDone: () => void;
   setOnboardingPackOpened: (v: boolean) => void;
   setTutorialStep: (n: number) => void;
+  restartTutorial: () => void;
   startMatch: () => void;
   startTutorialMatch: () => void;
   playCard: (cardUid: string, territory: TerritoryId) => void;
@@ -581,6 +582,13 @@ export const useGame = create<AppStore>()(
       setOnboardingDone: () => set((s) => ({ player: { ...s.player, onboardingDone: true } })),
       setOnboardingPackOpened: (v) => set({ onboardingPackOpened: v }),
       setTutorialStep: (n) => set({ tutorialStep: n }),
+
+      restartTutorial: () => {
+        set((s) => ({
+          player: { ...s.player, onboardingDone: false },
+          tutorialStep: 0
+        }));
+      },
 
       startMatch: () => set({ match: createInitialMatch(get().player.deck), tutorialStep: 0 }),
       startTutorialMatch: () => {

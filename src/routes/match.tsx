@@ -156,21 +156,27 @@ function Match() {
     switch (tutorialStep) {
       case 1:
         return {
-          title: "Inizia il Rituale",
-          desc: "Hai 1 Lucidità. Tocca 'Stella Cadente' (Costo 1) e giocala in 'Sogno'.",
-          target: "Stella Cadente -> Sogno",
+          title: "Sincronia Mentale",
+          desc: "Vedi la barra dorata in basso? È la tua Sincronia (HP). Se arriva a 0, perdi. Sopra c'è la Lucidità (Energia) che cresce ogni turno.",
+          target: "Osserva Barra Sincronia",
         };
       case 2:
         return {
-          title: "Flusso di Energia",
-          desc: "Bene. Ogni turno la tua Lucidità aumenta. Ora tocca 'FINE TURNO'.",
-          target: "Premi FINE TURNO",
+          title: "Prima Memoria",
+          desc: "Hai 1 Lucidità. Trascina 'Stella Cadente' sul territorio 'Sogno'. Ogni territorio ha regole uniche: leggile in alto!",
+          target: "Stella Cadente -> Sogno",
         };
       case 3:
         return {
-          title: "Sinergia Territoriale",
-          desc: "Turno 2: hai 2 Lucidità. Gioca 'Giocattolo Rotto' in 'Memoria'.",
-          target: "Giocattolo Rotto -> Memoria",
+          title: "Passaggio di Stato",
+          desc: "Ottimo. Ora tocca 'FINE TURNO'. Nel prossimo turno avrai 2 Lucidità e potrai giocare memorie più potenti.",
+          target: "Premi FINE TURNO",
+        };
+      case 4:
+        return {
+          title: "Controllare il Campo",
+          desc: "L'avversario ha risposto. Vinci chi ha più POTERE in una zona. Controlla 2 zone su 3 alla fine del Turno 6 per vincere!",
+          target: "Gioca in Memoria",
         };
       case 4:
         return {
@@ -187,15 +193,18 @@ function Match() {
 
   useEffect(() => {
     if (match.isTutorial) {
-      if (tutorialStep === 1 && match.board.sogno.length > 0) setTutorialStep(2);
-      if (tutorialStep === 2 && match.turn === 2) setTutorialStep(3);
-      if (tutorialStep === 3 && match.board.memoria.length > 0) setTutorialStep(4);
+      if (tutorialStep === 2 && match.board.sogno.length > 0) setTutorialStep(3);
+      if (tutorialStep === 3 && match.turn === 2) setTutorialStep(4);
     }
   }, [match, tutorialStep, setTutorialStep]);
 
+  const handleTutorialNext = () => {
+    if (tutorialStep === 1) setTutorialStep(2);
+  };
+
   const actionLabel =
     isResolving ? "ATTENDI" :
-    match.isTutorial && tutorialStep === 1 ? "CONFERMA" : selected ? "ATTACCA" : "FINE TURNO";
+    match.isTutorial && tutorialStep === 1 ? "CAPITO" : selected ? "GIOCA" : "FINE TURNO";
 
   return (
     <div
@@ -561,7 +570,7 @@ function Match() {
             <div className="absolute bottom-3 right-3 z-30">
               <ActionButton
                 label={actionLabel}
-                onClick={handleEndTurn}
+                onClick={match.isTutorial && tutorialStep === 1 ? handleTutorialNext : handleEndTurn}
                 disabled={isResolving}
                 sublabel={isResolving ? "..." : selected ? undefined : `Turno ${match.turn}`}
               />

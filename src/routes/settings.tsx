@@ -93,6 +93,18 @@ function Settings() {
               value={settings.vibration}
               onChange={(v: boolean) => toggleSetting("vibration", v)}
             />
+            <div className="pt-2">
+              <button
+                onClick={() => {
+                  sounds.play("ripple");
+                  restartTutorial();
+                  navigate({ to: "/home" });
+                }}
+                className="w-full rounded-md bg-mystic/20 border border-gold/40 py-3 text-xs uppercase tracking-[0.2em] text-gold font-display shadow-[0_0_15px_rgba(150,100,255,0.2)]"
+              >
+                Rigioca Tutorial
+              </button>
+            </div>
           </>
         )}
         {tab === "Audio" && (
