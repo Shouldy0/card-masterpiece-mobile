@@ -140,20 +140,20 @@ function Match() {
       case 1:
         return {
           title: "Inizia il Rituale",
-          desc: "Tocca 'Ossessione' e poi tocca il territorio 'Sogno Lucido' per giocarla.",
-          target: "Ossessione -> Sogno Lucido",
+          desc: "Hai 1 Lucidità. Tocca 'Stella Cadente' (Costo 1) e giocala in 'Sogno'.",
+          target: "Stella Cadente -> Sogno",
         };
       case 2:
         return {
           title: "Flusso di Energia",
-          desc: "Hai usato Focus. Ora tocca 'END TURN' per passare il turno.",
-          target: "Premi END TURN",
+          desc: "Bene. Ogni turno la tua Lucidità aumenta. Ora tocca 'FINE TURNO'.",
+          target: "Premi FINE TURNO",
         };
       case 3:
         return {
           title: "Sinergia Territoriale",
-          desc: "L'avversario ha risposto. Tocca 'Bosco Sacro' e poi 'Memoria' per il bonus.",
-          target: "Bosco Sacro -> Memoria",
+          desc: "Turno 2: hai 2 Lucidità. Gioca 'Giocattolo Rotto' in 'Memoria'.",
+          target: "Giocattolo Rotto -> Memoria",
         };
       case 4:
         return {

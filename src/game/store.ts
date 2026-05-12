@@ -587,13 +587,13 @@ export const useGame = create<AppStore>()(
         const tutorialMatch = createInitialMatch(buildStarterDeck());
         tutorialMatch.isTutorial = true;
         tutorialMatch.hand.player = [
-          "v2_ossessione",
+          "s5_stella",
+          "o3_giocattolo",
           "o2_bosco_sacro",
+          "v2_ossessione",
           "c2_re_caduto",
-          "s4_visione",
-          "b3_oblio",
         ];
-        tutorialMatch.hand.ai = ["v5_follia", "o5_cenere"];
+        tutorialMatch.hand.ai = ["s3_nuvola", "o5_cenere"];
         set({ match: tutorialMatch, tutorialStep: 1 });
       },
 

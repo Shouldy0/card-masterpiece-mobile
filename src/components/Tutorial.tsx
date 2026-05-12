@@ -29,9 +29,9 @@ const STEPS = [
     color: "purple",
   },
   {
-    title: "Il Focus (Energia)",
+    title: "La Lucidità (Energia)",
     content:
-      "Ogni turno ricevi Focus. Usalo per evocare le tue memorie. Gestisci saggiamente la tua energia mentale.",
+      "Ogni turno ricevi Lucidità. Inizi con 1 nel primo turno e aumenta di 1 ogni turno successivo. Gestisci saggiamente la tua energia mentale.",
     icon: <Zap className="size-12 text-emerald-400" />,
     color: "emerald",
   },
