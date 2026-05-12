@@ -170,10 +170,12 @@ interface AppStore {
   tutorialStep: number;
 
   // actions
-  setOnboardingDone: () => void;
-  setOnboardingPackOpened: (v: boolean) => void;
-  setTutorialStep: (n: number) => void;
-  restartTutorial: () => void;
+  campaignProgress: number;
+  completedPuzzles: string[];
+  setCampaignProgress: (v: number) => void;
+  setPuzzleCompleted: (id: string) => void;
+  startCampaignMatch: (nodeId: number) => void;
+  startPuzzleMatch: (puzzleId: string) => void;
   startMatch: () => void;
   startTutorialMatch: () => void;
   playCard: (cardUid: string, territory: TerritoryId) => void;
@@ -579,9 +581,28 @@ export const useGame = create<AppStore>()(
         language: "Italiano",
       },
 
+      campaignProgress: 0,
+      completedPuzzles: [],
+
       setOnboardingDone: () => set((s) => ({ player: { ...s.player, onboardingDone: true } })),
       setOnboardingPackOpened: (v) => set({ onboardingPackOpened: v }),
       setTutorialStep: (n) => set({ tutorialStep: n }),
+      
+      setCampaignProgress: (v) => set({ campaignProgress: v }),
+      setPuzzleCompleted: (id) => set((s) => ({ completedPuzzles: [...s.completedPuzzles, id] })),
+      
+      startCampaignMatch: (nodeId: number) => {
+        const match = createInitialMatch(get().player.deck);
+        match.log = [`Inizio sfida narrativa: Nodo ${nodeId}`];
+        set({ match, tutorialStep: 0 });
+      },
+
+      startPuzzleMatch: (puzzleId: string) => {
+        const match = createInitialMatch([]);
+        match.isTutorial = true;
+        match.log = [`Risolvi il puzzle: ${puzzleId}`];
+        set({ match, tutorialStep: 0 });
+      },
 
       restartTutorial: () => {
         set((s) => ({

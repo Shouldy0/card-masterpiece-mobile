@@ -17,6 +17,9 @@ import {
   Eye,
   Zap,
   Trophy,
+  Map,
+  Puzzle,
+  Gamepad2,
 } from "lucide-react";
 import { useSound } from "@/hooks/useSound";
 import { GameCard } from "@/components/GameCard";
@@ -107,15 +110,46 @@ function Home() {
               </div>
             </motion.div>
 
-            {/* PRIMARY ACTIONS */}
-            <div className="w-full max-w-xs space-y-4">
+            {/* GAME MODES GRID */}
+            <div className="w-full max-w-sm grid grid-cols-2 gap-3 mt-4">
               <motion.button
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate({ to: "/campaign" })}
+                className="col-span-2 relative h-28 rounded-3xl overflow-hidden border border-gold/30 group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-mystic/40 to-abyss group-hover:from-mystic/60 transition-colors" />
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-20 group-hover:opacity-40 transition-opacity">
+                  <Map className="size-20 text-gold" />
+                </div>
+                <div className="relative h-full flex flex-col justify-center px-6 text-left">
+                  <h3 className="font-display text-lg gold-text tracking-widest uppercase mb-1">Campagna</h3>
+                  <p className="text-[9px] text-white/40 uppercase tracking-widest">Il Risveglio del Sognatore</p>
+                </div>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate({ to: "/puzzles" })}
+                className="relative h-32 rounded-3xl overflow-hidden border border-white/5 bg-card/40 group"
+              >
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                  <Puzzle className="size-8 text-mystic-glow mb-2" />
+                  <h3 className="font-display text-[10px] text-white tracking-widest uppercase">Puzzle</h3>
+                </div>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={play_btn}
-                className="w-full py-5 rounded-[2.5rem] bg-gradient-to-br from-mystic via-mystic-glow to-mystic text-foreground font-display text-lg font-bold uppercase tracking-[0.3em] shadow-[0_10px_40px_rgba(150,100,255,0.3)] border border-gold/20"
+                className="relative h-32 rounded-3xl overflow-hidden border border-white/5 bg-card/40 group"
               >
-                GIOCA BATTAGLIA
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                  <Gamepad2 className="size-8 text-emerald-400 mb-2" />
+                  <h3 className="font-display text-[10px] text-white tracking-widest uppercase">Battaglia</h3>
+                </div>
               </motion.button>
             </div>
           </div>
