@@ -279,6 +279,23 @@ function Match() {
         {/* Separator */}
         <div className="mx-3 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
 
+        {/* Battle Log */}
+        <div className="absolute top-14 left-3 z-40 flex flex-col items-start gap-1 pointer-events-none max-w-[200px]">
+          <AnimatePresence>
+            {match.log.slice(-3).map((msg, i) => (
+              <motion.div
+                key={match.log.length - 3 + i}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="bg-black/60 backdrop-blur-md border border-white/5 rounded px-2 py-1.5 text-[8px] text-white/80 shadow-lg"
+              >
+                {msg}
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+
         {/* CENTER: Battlefield slots */}
         <BattleRow
           territories={territoryList}
@@ -319,6 +336,21 @@ function Match() {
                     />
                   </div>
                 </div>
+                {/* Active Buffs/Weakens */}
+                {(match.buffs.player > 0 || match.weakens.ai > 0) && (
+                  <div className="flex gap-1 -mt-1">
+                    {match.buffs.player > 0 && (
+                      <span className="text-[7px] text-green-400 font-bold bg-green-400/10 px-1 rounded">
+                        +{match.buffs.player} ATK
+                      </span>
+                    )}
+                    {match.weakens.ai > 0 && (
+                      <span className="text-[7px] text-purple-400 font-bold bg-purple-400/10 px-1 rounded">
+                        Oppressione
+                      </span>
+                    )}
+                  </div>
+                )}
                 {/* Trauma */}
                 <div className="flex flex-col gap-0.5 mt-0.5">
                   <div className="flex items-center justify-between">
@@ -366,6 +398,75 @@ function Match() {
 
           {/* Hand + Action button */}
           <div className="relative flex items-end">
+            {/* Selected card ability preview */}
+          <AnimatePresence>
+            {selected && (() => {
+              const selCard = cardsById[selected];
+              if (!selCard) return null;
+              const effectLabel = (() => {
+                const ef = selCard.effect;
+                if (ef.kind === "draw") return `📖 Pesca ${ef.amount} carta${ef.amount > 1 ? "e" : ""}`;
+                if (ef.kind === "buff_self") return (ef as any).target === "local" ? `✨ Aura +${ef.amount} Potere in questa Lane` : `⚡ +${ef.amount} Potere globale questo turno`;
+                if (ef.kind === "weaken_enemy") return (ef as any).target === "local" ? `💀 Aura -${ef.amount} ai nemici in questa Lane` : `🌑 -${ef.amount} Potere nemico globale`;
+                if (ef.kind === "heal") return selCard.traits?.includes("dynamic_heal") ? `💚 Cura 2 HP per Archetipo in gioco` : `💚 Cura ${ef.amount} HP`;
+                if (ef.kind === "add_intrusive") return `🕷 Inietta ${ef.amount} Pensiero Intrusivo nella mano nemica`;
+                return null;
+              })();
+              const traitLabels: string[] = [];
+              if (selCard.traits?.includes("growth")) traitLabels.push("📈 Cresce +1 ogni turno");
+              if (selCard.traits?.includes("loner")) traitLabels.push("🔮 +3 se solo in lane");
+              if (selCard.traits?.includes("protector")) traitLabels.push("🛡 Protegge adiacenti");
+              if (selCard.traits?.includes("oppressive")) traitLabels.push("👁 Aura -1 ai nemici in lane");
+              if (selCard.traits?.includes("resetter")) traitLabels.push("♻ Azzera tutti gli effetti");
+              if (selCard.traits?.includes("executioner")) traitLabels.push("⚔ Elimina la carta nemica più debole");
+              return (
+                <motion.div
+                  key={selected}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute bottom-full left-3 right-3 mb-1 z-30 bg-black/85 backdrop-blur-xl border border-white/10 rounded-xl p-3 shadow-2xl"
+                >
+                  <div className="flex items-start justify-between mb-1.5">
+                    <div>
+                      <h3 className="font-display text-[10px] uppercase tracking-widest text-white font-bold">{selCard.name}</h3>
+                      <span className={cn(
+                        "text-[7px] uppercase tracking-wider font-bold",
+                        selCard.type === "archetipo" ? "text-purple-400" :
+                        selCard.type === "ricordo" ? "text-yellow-400" :
+                        selCard.type === "maschera" ? "text-red-400" :
+                        selCard.type === "oblio" ? "text-blue-400" :
+                        selCard.type === "sogno" ? "text-cyan-400" : "text-emerald-400"
+                      )}>{selCard.type}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[8px] text-white/50">Costo</span>
+                      <span className="font-display text-[10px] font-bold text-cyan-400">{selCard.cost}</span>
+                      <span className="text-[8px] text-white/50 ml-1">Potere</span>
+                      <span className="font-display text-[10px] font-bold text-gold">{selCard.power}</span>
+                    </div>
+                  </div>
+                  {effectLabel && (
+                    <p className="text-[8px] text-white/90 bg-white/5 rounded px-2 py-1 mb-1 leading-tight">
+                      {effectLabel}
+                    </p>
+                  )}
+                  {traitLabels.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {traitLabels.map((t, i) => (
+                        <span key={i} className="text-[6.5px] bg-mystic/20 border border-mystic/30 text-mystic-glow px-1.5 py-0.5 rounded">{t}</span>
+                      ))}
+                    </div>
+                  )}
+                  {!effectLabel && traitLabels.length === 0 && (
+                    <p className="text-[7px] text-white/50 italic">{selCard.text}</p>
+                  )}
+                </motion.div>
+              );
+            })()}
+          </AnimatePresence>
+
             {/* Subconscious Pit visual cue */}
             <AnimatePresence>
               {selected && (
