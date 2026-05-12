@@ -374,27 +374,30 @@ function Match() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              {/* Lucidity gems */}
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: match.maxLucidity }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      "size-1.5 rounded-sm transition-all duration-300",
-                      i < match.lucidity.player
-                        ? "bg-cyan-400 shadow-[0_0_6px_rgba(34,211,238,0.5)]"
-                        : "bg-white/10",
-                    )}
-                  />
-                ))}
-              </div>
-              {/* Deck count */}
-              <div className="flex items-center gap-1 rounded-full bg-white/5 px-2 py-0.5 border border-white/5">
-                <span className="font-display text-[9px] text-white/40">Mazzo</span>
-                <span className="font-display text-[10px] font-bold text-white/80">
-                  {match.deck.player.length}
+            <div className="flex flex-col items-end gap-1">
+              <div className="flex items-center gap-1.5">
+                <span className="font-display text-[9px] font-bold text-cyan-400 uppercase tracking-widest mr-1">Lucidità</span>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: match.maxLucidity }).map((_, i) => (
+                    <motion.div
+                      key={i}
+                      initial={false}
+                      animate={i < match.lucidity.player ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0.3 }}
+                      className={cn(
+                        "size-2.5 rotate-45 border transition-all duration-300",
+                        i < match.lucidity.player
+                          ? "bg-cyan-400 border-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.6)]"
+                          : "bg-white/5 border-white/10",
+                      )}
+                    />
+                  ))}
+                </div>
+                <span className="font-display text-xs font-black text-cyan-400 ml-1 ml-2">
+                  {match.lucidity.player}
                 </span>
+              </div>
+              <div className="font-display text-[8px] text-white/30 tracking-[0.2em] uppercase">
+                Turno <span className="text-white/80 font-bold">{match.turn}</span> / {match.maxTurns}
               </div>
             </div>
           </div>

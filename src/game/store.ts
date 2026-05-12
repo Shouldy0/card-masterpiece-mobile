@@ -103,7 +103,7 @@ export function createInitialMatch(playerDeck: string[]): MatchState {
   return {
     turn: 1,
     maxTurns: 6,
-    lucidity: { player: 6, ai: 6 },
+    lucidity: { player: 1, ai: 1 },
     maxLucidity: 6,
     trauma: { player: 0, ai: 0 },
     psychosisCount: { player: 0, ai: 0 },
@@ -662,8 +662,8 @@ export const useGame = create<AppStore>()(
           m.localBuffs = { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } };
           m.localWeakens = { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } };
           m.turn += 1;
-          m.lucidity.player = Math.min(m.maxLucidity, m.turn + 2);
-          m.lucidity.ai = Math.min(m.maxLucidity, m.turn + 3);
+          m.lucidity.player = Math.min(m.maxLucidity, m.turn);
+          m.lucidity.ai = Math.min(m.maxLucidity, m.turn);
           const dP = m.deck.player.shift();
           if (dP) m.hand.player.push(dP);
           const dA = m.deck.ai.shift();
