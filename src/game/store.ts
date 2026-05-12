@@ -34,6 +34,9 @@ export interface MatchState {
   territoryResults?: Record<TerritoryId, { p: number; a: number }>;
   aiStyle: "aggressive" | "control" | "balanced";
   isTutorial?: boolean;
+  matchType?: "standard" | "campaign" | "puzzle";
+  campaignNode?: number;
+  puzzleId?: string;
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -81,8 +84,8 @@ export function buildStarterDeck(): string[] {
     .map((c) => c.id);
 }
 
-export function createInitialMatch(playerDeck: string[]): MatchState {
-  const aiDeck = shuffle([
+export function createInitialMatch(playerDeck: string[], aiDeckOverride?: string[]): MatchState {
+  const defaultAiDeck = [
     "v3_nostalgia",
     "v4_apatia",
     "o1_chiave_antica",
@@ -98,7 +101,8 @@ export function createInitialMatch(playerDeck: string[]): MatchState {
     "s5_stella",
     "v8_solitudine",
     "b7_pioggia",
-  ]);
+  ];
+  const aiDeck = shuffle(aiDeckOverride || defaultAiDeck);
   const pDeck = shuffle(playerDeck);
   return {
     turn: 1,
@@ -592,15 +596,37 @@ export const useGame = create<AppStore>()(
       setPuzzleCompleted: (id) => set((s) => ({ completedPuzzles: [...s.completedPuzzles, id] })),
       
       startCampaignMatch: (nodeId: number) => {
-        const match = createInitialMatch(get().player.deck);
+        const campaignDecks: Record<number, string[]> = {
+          1: ["v4_apatia", "v3_nostalgia", "o3_giocattolo", "c1_giullare", "s3_nuvola", "s5_stella", "v8_solitudine", "b7_pioggia", "o1_chiave_antica", "o9_nebbia", "c3_vittima", "c8_eremita", "b2_silenzio", "b4_neve", "s1_miraggio"],
+          2: ["v2_ossessione", "v7_rancore", "o10_anello", "c9_mostro", "b5_cenere_blu", "s4_visione", "v9_coraggio", "o7_primo_volo", "c11_ombra_riflessa", "b8_fantasma", "s2_aurora", "v6_empatia", "o6_giardino", "c14_corruttore_silenzioso", "b9_rovine"],
+          3: ["v1_ambizione", "v5_follia", "o5_cenere", "c10_boia", "b3_oblio", "b6_abisso", "s6_isole", "c13_bestia_repressa", "v10_armonia", "o2_bosco_sacro", "c2_re_caduto", "b1_vuoto", "c12_traditore_latente", "c20_oro_sepolto", "s10_infinito"],
+          4: ["v5_follia", "v5_follia", "b6_abisso", "b6_abisso", "c10_boia", "o5_cenere", "s10_infinito", "s10_infinito", "v1_ambizione", "v1_ambizione", "c13_bestia_repressa", "c13_bestia_repressa", "b3_oblio", "b3_oblio", "o2_bosco_sacro"]
+        };
+        const match = createInitialMatch(get().player.deck, campaignDecks[nodeId]);
+        match.matchType = "campaign";
+        match.campaignNode = nodeId;
         match.log = [`Inizio sfida narrativa: Nodo ${nodeId}`];
         set({ match, tutorialStep: 0 });
       },
 
       startPuzzleMatch: (puzzleId: string) => {
         const match = createInitialMatch([]);
+        match.matchType = "puzzle";
+        match.puzzleId = puzzleId;
         match.isTutorial = true;
         match.log = [`Risolvi il puzzle: ${puzzleId}`];
+        
+        if (puzzleId === "p1") {
+          // Scenario: Avversario domina Sogno con 10 potere. Tu devi vincere con 1 mossa.
+          match.board.sogno = [{ uid: "ai_p1", cardId: "b3_oblio", side: "ai", power: 8 }];
+          match.hand.player = ["v8_solitudine"]; // Ora 4 + 3 loner = 7 (ancora non basta, serve buff)
+          match.lucidity.player = 2;
+        } else if (puzzleId === "p2") {
+          match.board.trauma = [{ uid: "ai_p2", cardId: "c2_re_caduto", side: "ai", power: 7 }];
+          match.hand.player = ["c10_boia"];
+          match.lucidity.player = 6;
+        }
+
         set({ match, tutorialStep: 0 });
       },
 
@@ -711,7 +737,19 @@ export const useGame = create<AppStore>()(
           updatedPlayer.xp += rewards.xp;
           updatedPlayer.gold += rewards.gold;
           updatedPlayer.matches += 1;
-          if (match.result === "win") updatedPlayer.wins += 1;
+          if (match.result === "win") {
+            updatedPlayer.wins += 1;
+            // Handle Campaign Progress
+            if (match.matchType === "campaign" && match.campaignNode !== undefined) {
+              if (match.campaignNode === get().campaignProgress + 1) {
+                set({ campaignProgress: get().campaignProgress + 1 });
+              }
+            }
+            // Handle Puzzle Progress
+            if (match.matchType === "puzzle" && match.puzzleId) {
+              get().setPuzzleCompleted(match.puzzleId);
+            }
+          }
           updatedPlayer.rankPoints = Math.max(
             0,
             updatedPlayer.rankPoints + rewards.rankPointsDelta,

@@ -37,10 +37,39 @@ function Campaign() {
         <div className="size-8" />
       </header>
 
-      <div className="flex-1 overflow-y-auto px-4 py-8 space-y-12">
+      <div className="flex-1 overflow-y-auto px-4 py-8 space-y-12 relative custom-scrollbar">
+        {/* Parallax Background Decor */}
+        <div className="absolute inset-0 pointer-events-none opacity-30">
+          <motion.div 
+            animate={{ y: [0, -100, 0], opacity: [0.1, 0.3, 0.1] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="absolute top-1/4 left-1/4 size-64 bg-mystic-glow/20 blur-[100px] rounded-full" 
+          />
+          <motion.div 
+            animate={{ y: [0, 100, 0], opacity: [0.1, 0.2, 0.1] }}
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            className="absolute bottom-1/4 right-1/4 size-80 bg-gold/10 blur-[120px] rounded-full" 
+          />
+        </div>
+
         <div className="relative">
+          {/* Progress Indicator */}
+          <div className="mb-10 px-4">
+            <div className="flex justify-between items-end mb-2">
+              <span className="text-[10px] font-black uppercase text-gold/60 tracking-tighter">Sincronia Narrativa</span>
+              <span className="text-xs font-display font-bold text-gold">{Math.round((campaignProgress / CAMPAIGN_NODES.length) * 100)}%</span>
+            </div>
+            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${(campaignProgress / CAMPAIGN_NODES.length) * 100}%` }}
+                className="h-full bg-gradient-to-r from-mystic to-gold shadow-[0_0_10px_rgba(255,215,0,0.5)]"
+              />
+            </div>
+          </div>
+
           {/* Visual path line */}
-          <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-gold/5 via-gold/20 to-transparent" />
+          <div className="absolute left-8 top-20 bottom-0 w-0.5 bg-gradient-to-b from-gold/40 via-gold/10 to-transparent" />
           
           {CAMPAIGN_NODES.map((node, i) => {
             const isLocked = i > campaignProgress;
