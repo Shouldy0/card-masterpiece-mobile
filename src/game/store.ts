@@ -176,8 +176,14 @@ interface AppStore {
   // actions
   campaignProgress: number;
   completedPuzzles: string[];
+  friends: { id: string; name: string; status: "online" | "offline"; rank: string }[];
+  guild: { name: string; level: number; members: number } | null;
+  messages: { from: string; text: string; time: string }[];
+  
   setCampaignProgress: (v: number) => void;
   setPuzzleCompleted: (id: string) => void;
+  addFriend: (name: string) => void;
+  sendMessage: (text: string) => void;
   startCampaignMatch: (nodeId: number) => void;
   startPuzzleMatch: (puzzleId: string) => void;
   startMatch: () => void;
@@ -587,6 +593,14 @@ export const useGame = create<AppStore>()(
 
       campaignProgress: 0,
       completedPuzzles: [],
+      friends: [
+        { id: "f1", name: "Luna_Dream", status: "online", rank: "Custode Lucido" },
+        { id: "f2", name: "Void_Walker", status: "offline", rank: "Sognatore Esperto" },
+      ],
+      guild: { name: "I Senzavolto", level: 5, members: 24 },
+      messages: [
+        { from: "Luna_Dream", text: "Bella partita ieri!", time: "10:30" },
+      ],
 
       setOnboardingDone: () => set((s) => ({ player: { ...s.player, onboardingDone: true } })),
       setOnboardingPackOpened: (v) => set({ onboardingPackOpened: v }),
@@ -594,6 +608,14 @@ export const useGame = create<AppStore>()(
       
       setCampaignProgress: (v) => set({ campaignProgress: v }),
       setPuzzleCompleted: (id) => set((s) => ({ completedPuzzles: [...s.completedPuzzles, id] })),
+      
+      addFriend: (name) => set((s) => ({ 
+        friends: [...s.friends, { id: Math.random().toString(), name, status: "offline", rank: "Novizio" }] 
+      })),
+
+      sendMessage: (text) => set((s) => ({
+        messages: [...s.messages, { from: "Tu", text, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]
+      })),
       
       startCampaignMatch: (nodeId: number) => {
         const campaignDecks: Record<number, string[]> = {

@@ -24,6 +24,8 @@ import {
   Layers,
   Sword,
   Heart,
+  Share2,
+  Download,
 } from "lucide-react";
 import { GameCard } from "@/components/GameCard";
 import { BottomNav } from "@/components/BottomNav";
@@ -128,6 +130,19 @@ function Collection() {
                     className="w-full bg-black/40 backdrop-blur-sm ring-1 ring-gold/20 rounded-xl py-2.5 pl-9 pr-4 text-[10px] text-foreground placeholder:text-gold/20 focus:outline-none focus:ring-gold/50 transition-all font-medium tracking-wider"
                   />
                 </div>
+
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    const code = btoa(JSON.stringify(player.deck));
+                    navigator.clipboard.writeText(code);
+                    sounds.play("victory");
+                    alert("Codice mazzo copiato negli appunti!");
+                  }}
+                  className="size-10 rounded-xl bg-gold/5 ring-1 ring-gold/20 flex items-center justify-center hover:bg-gold/10 transition-colors"
+                >
+                  <Share2 className="size-4 text-gold/60" />
+                </motion.button>
 
                 <motion.button
                   whileTap={{ scale: 0.95 }}
