@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { CardFromId } from "@/components/GameCard";
 import { PlayedCard } from "@/game/store";
+import { cardsById } from "@/game/cards";
 
 interface Props {
   id: string;
@@ -22,6 +23,11 @@ export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, onDrop
   const isWinning = playerPower > aiPower;
   const isEmpty = cards.length === 0;
 
+  const cardTypes = new Set(cards.map((c) => cardsById[c.cardId]?.type).filter(Boolean));
+  const hasTrauma = cardTypes.has("maschera") || cardTypes.has("oblio");
+  const hasDream = cardTypes.has("sogno") || cardTypes.has("eco");
+  const hasMemory = cardTypes.has("ricordo") || cardTypes.has("archetipo");
+
   return (
     <motion.button
       onClick={onDrop}
@@ -41,6 +47,11 @@ export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, onDrop
       <div className="lane-ambient-bg" />
       <div className="lane-breathing" />
       <div className="lane-particles" />
+
+      {/* Reactive Battlefield Effects */}
+      {hasTrauma && <div className="lane-effect-trauma" />}
+      {hasDream && <div className="lane-effect-dream" />}
+      {hasMemory && <div className="lane-effect-memory" />}
       
       {/* Territory header */}
       <div className="relative z-10 flex items-center justify-center gap-1.5 py-2">
