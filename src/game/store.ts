@@ -24,8 +24,10 @@ export interface MatchState {
   hand: { player: string[]; ai: string[] };
   deck: { player: string[]; ai: string[] };
   board: Record<TerritoryId, PlayedCard[]>;
-  buffs: Record<Side, number>; // self buffs
-  weakens: Record<Side, number>; // applied to enemy
+  buffs: Record<Side, number>; // self buffs (global)
+  weakens: Record<Side, number>; // applied to enemy (global)
+  localBuffs: Record<TerritoryId, Record<Side, number>>;
+  localWeakens: Record<TerritoryId, Record<Side, number>>;
   log: string[];
   status: "playing" | "ended";
   result?: "win" | "lose" | "draw";
@@ -112,6 +114,8 @@ export function createInitialMatch(playerDeck: string[]): MatchState {
     board: { memoria: [], trauma: [], sogno: [] },
     buffs: { player: 0, ai: 0 },
     weakens: { player: 0, ai: 0 },
+    localBuffs: { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } },
+    localWeakens: { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } },
     log: ["La Reverie ha inizio…"],
     status: "playing",
     aiStyle: pickAiStyle(),
@@ -215,8 +219,8 @@ function powerWithRules(
   let p = card.power;
   const enemySide: Side = side === "player" ? "ai" : "player";
   if (card.traits?.includes("immobile")) return p;
-  let totalBuff = state.buffs[side];
-  let totalWeaken = state.weakens[enemySide];
+  let totalBuff = state.buffs[side] + state.localBuffs[territory][side];
+  let totalWeaken = state.weakens[enemySide] + state.localWeakens[territory][enemySide];
   const board = state.board[territory];
   const myIndex = cardUid ? board.findIndex((o) => o.uid === cardUid) : -1;
   const neighbors =
@@ -279,10 +283,20 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
     case "buff_self":
       let amount = card.effect.amount;
       if (card.traits?.includes("synergy_buff") && state.lucidity[side] === 0) amount *= 2;
-      state.buffs[side] += amount;
+      if ((card.effect as any).target === "local") {
+        state.localBuffs[territory][side] += amount;
+        state.log.push(`${card.name} potenzia le carte in ${territory}!`);
+      } else {
+        state.buffs[side] += amount;
+      }
       break;
     case "weaken_enemy":
-      state.weakens[side] += card.effect.amount;
+      if ((card.effect as any).target === "local") {
+        state.localWeakens[territory][side] += card.effect.amount;
+        state.log.push(`${card.name} indebolisce i nemici in ${territory}!`);
+      } else {
+        state.weakens[side] += card.effect.amount;
+      }
       break;
     case "heal":
       let healAmount = card.effect.amount;
@@ -307,8 +321,8 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
       break;
   }
   if (card.traits?.includes("oppressive")) {
-    state.log.push(`${card.name} emana un'aura opprimente!`);
-    state.weakens[side] += 1;
+    state.log.push(`${card.name} emana un'aura opprimente in ${territory}!`);
+    state.localWeakens[territory][side] += 1;
   }
   if (card.type === "maschera") {
     state.lucidity[enemySide] = Math.max(0, state.lucidity[enemySide] - 1);
@@ -334,7 +348,9 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
     if (card.traits?.includes("resetter")) {
       state.buffs = { player: 0, ai: 0 };
       state.weakens = { player: 0, ai: 0 };
-      state.log.push(`${card.name} ha azzerato gli effetti globali.`);
+      state.localBuffs = { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } };
+      state.localWeakens = { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } };
+      state.log.push(`${card.name} ha azzerato gli effetti attivi.`);
     }
   }
 }
@@ -593,6 +609,8 @@ export const useGame = create<AppStore>()(
           }
           m.buffs = { player: 0, ai: 0 };
           m.weakens = { player: 0, ai: 0 };
+          m.localBuffs = { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } };
+          m.localWeakens = { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } };
           m.turn += 1;
           m.lucidity.player = Math.min(m.maxLucidity, m.turn + 2);
           m.lucidity.ai = Math.min(m.maxLucidity, m.turn + 3);

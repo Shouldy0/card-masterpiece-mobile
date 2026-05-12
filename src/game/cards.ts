@@ -15,7 +15,8 @@ export type CardTrait =
 
 export type CardEffect =
   | { kind: "draw"; amount: number }
-  | { kind: "buff_self"; amount: number }
+  | { kind: "buff_self"; amount: number; target?: "global" | "local" }
+  | { kind: "weaken_enemy"; amount: number; target?: "global" | "local" }
   | { kind: "heal"; amount: number }
   | { kind: "add_intrusive"; amount: number }
   | { kind: "none" };
@@ -46,7 +47,7 @@ export const CARDS: CardDef[] = [
     rarity: "leggendaria",
     text: "Attira a sé le risorse vicine, potenziando la propria energia per ogni frammento stellare raccolto.",
     flavor: "Voglio tutto, anche se il prezzo è la mia anima.",
-    effect: { kind: "buff_self", amount: 2 },
+    effect: { kind: "buff_self", amount: 2, target: "local" },
     unlockLevel: 10,
     art: "/cards/ambizione.png?v=3",
   },
@@ -59,7 +60,7 @@ export const CARDS: CardDef[] = [
     rarity: "epica",
     text: "Rivela le intenzioni nascoste dell'avversario, distorcendo la sua percezione della realtà.",
     flavor: "Un pensiero che si nutre di te finché non resta altro.",
-    effect: { kind: "weaken_enemy", amount: 1 },
+    effect: { kind: "weaken_enemy", amount: 1, target: "global" },
     traits: ["synergy_buff"],
     unlockLevel: 5,
     art: "/cards/ossessione.png?v=3",
@@ -100,7 +101,7 @@ export const CARDS: CardDef[] = [
     rarity: "leggendaria",
     text: "Scatena un vortice di caos che spezza le difese nemiche attraverso geometrie impossibili.",
     flavor: "La verità è un cerchio che non si chiude mai.",
-    effect: { kind: "buff_self", amount: 3 },
+    effect: { kind: "buff_self", amount: 3, target: "local" },
     unlockLevel: 10,
     art: "/cards/follia.png?v=3",
   },
@@ -127,7 +128,7 @@ export const CARDS: CardDef[] = [
     rarity: "rara",
     text: "Infligge un'eco di dolore che riduce il Potere di tutte le carte nemiche in questo territorio.",
     flavor: "Un fuoco che brucia senza mai spegnersi.",
-    effect: { kind: "weaken_enemy", amount: 1 },
+    effect: { kind: "weaken_enemy", amount: 1, target: "local" },
     unlockLevel: 3,
     art: "/cards/rancore.png?v=3",
   },
@@ -196,7 +197,7 @@ export const CARDS: CardDef[] = [
     rarity: "epica",
     text: "+1 Potere globale.",
     flavor: "Tutto era magico, finché non abbiamo iniziato a capire.",
-    effect: { kind: "buff_self", amount: 1 },
+    effect: { kind: "buff_self", amount: 1, target: "global" },
     unlockLevel: 5,
     art: "/cards/bosco_sacro.png?v=3",
   },
@@ -235,7 +236,7 @@ export const CARDS: CardDef[] = [
     rarity: "leggendaria",
     text: "+2 Potere globale.",
     flavor: "Siamo polvere di stelle destinata a tornare cenere.",
-    effect: { kind: "buff_self", amount: 2 },
+    effect: { kind: "buff_self", amount: 2, target: "global" },
     traits: ["synergy_buff"],
     unlockLevel: 10,
     art: "/cards/cenere_e_stelle.png?v=3",
@@ -436,7 +437,7 @@ export const CARDS: CardDef[] = [
     rarity: "leggendaria",
     text: "Taglia il potere -3.",
     flavor: "La fine del viaggio è solo un altro colpo di scure.",
-    effect: { kind: "weaken_enemy", amount: 3 },
+    effect: { kind: "weaken_enemy", amount: 3, target: "local" },
     traits: ["executioner"],
     unlockLevel: 10,
     art: "/cards/boia.png?v=3",
@@ -450,7 +451,7 @@ export const CARDS: CardDef[] = [
     rarity: "rara",
     text: "Proietta le colpe: -1 Potere a un nemico.",
     flavor: "Non guardi me, guardi ciò che odi di te stesso.",
-    effect: { kind: "weaken_enemy", amount: 1 },
+    effect: { kind: "weaken_enemy", amount: 1, target: "local" },
     unlockLevel: 3,
     art: "/cards/ombra_riflessa.png?v=3",
   },
@@ -491,7 +492,7 @@ export const CARDS: CardDef[] = [
     rarity: "rara",
     text: "-1 Potere ai nemici qui.",
     flavor: "Ogni compromesso è un mattone nella tua prigione.",
-    effect: { kind: "weaken_enemy", amount: 1 },
+    effect: { kind: "weaken_enemy", amount: 1, target: "local" },
     unlockLevel: 3,
     art: "/cards/corruttore_silenzioso.png?v=3",
   },
@@ -504,7 +505,7 @@ export const CARDS: CardDef[] = [
     rarity: "epica",
     text: "+2 Potere per Maschera.",
     flavor: "Siamo due facce di una moneta che non ha mai toccato terra.",
-    effect: { kind: "buff_self", amount: 2 },
+    effect: { kind: "buff_self", amount: 2, target: "local" },
     traits: ["synergy_buff"],
     unlockLevel: 5,
     art: "/cards/altro_me.png?v=3",
@@ -641,7 +642,7 @@ export const CARDS: CardDef[] = [
     rarity: "epica",
     text: "Debuff -2.",
     flavor: "Ciò che resta dopo che la speranza si è spenta.",
-    effect: { kind: "weaken_enemy", amount: 2 },
+    effect: { kind: "weaken_enemy", amount: 2, target: "global" },
     unlockLevel: 5,
     art: "/cards/cenere_blu.png?v=3",
   },
