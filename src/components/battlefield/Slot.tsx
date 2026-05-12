@@ -48,6 +48,9 @@ export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, onDrop
       <div className="lane-breathing" />
       <div className="lane-particles" />
 
+      {/* Subconscious Symbol */}
+      <div className={cn("lane-symbol", `lane-symbol-${id}`)} />
+
       {/* Reactive Battlefield Effects */}
       {hasTrauma && <div className="lane-effect-trauma" />}
       {hasDream && <div className="lane-effect-dream" />}
