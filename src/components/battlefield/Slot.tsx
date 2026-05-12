@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { CardFromId } from "@/components/GameCard";
 import { PlayedCard } from "@/game/store";
@@ -16,11 +17,50 @@ interface Props {
   onDrop: () => void;
 }
 
+function FloatingNumber({ value }: { value: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 0, scale: 0.5 }}
+      animate={{ opacity: 1, y: -40, scale: 1.5 }}
+      exit={{ opacity: 0, scale: 2 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className={cn(
+        "absolute z-[100] font-display text-lg font-black pointer-events-none drop-shadow-[0_0_10px_rgba(0,0,0,0.5)]",
+        value > 0 ? "text-green-400" : "text-rose"
+      )}
+    >
+      {value > 0 ? `+${value}` : value}
+    </motion.div>
+  );
+}
+
 export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, isCorrupted, onDrop }: Props) {
+  const [prevPower, setPrevPower] = useState({ player: 0, ai: 0 });
+  const [diff, setDiff] = useState<{ player: number | null; ai: number | null }>({ player: null, ai: null });
+
   const playerCards = cards.filter((c) => c.side === "player");
   const aiCards = cards.filter((c) => c.side === "ai");
   const playerPower = playerCards.reduce((s, c) => s + c.power, 0);
   const aiPower = aiCards.reduce((s, c) => s + c.power, 0);
+
+  useEffect(() => {
+    if (playerPower !== prevPower.player) {
+      setDiff((d) => ({ ...d, player: playerPower - prevPower.player }));
+      setPrevPower((p) => ({ ...p, player: playerPower }));
+      const t = setTimeout(() => setDiff((d) => ({ ...d, player: null })), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [playerPower]);
+
+  useEffect(() => {
+    if (aiPower !== prevPower.ai) {
+      setDiff((d) => ({ ...d, ai: aiPower - prevPower.ai }));
+      setPrevPower((p) => ({ ...p, ai: aiPower }));
+      const t = setTimeout(() => setDiff((d) => ({ ...d, ai: null })), 1000);
+      return () => clearTimeout(t);
+    }
+  }, [aiPower]);
+
   const isWinning = playerPower > aiPower;
   const isTied = playerPower === aiPower && playerPower > 0;
   const isEmpty = cards.length === 0;
@@ -94,7 +134,10 @@ export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, isCorr
       <div className="relative z-10 flex-1 flex flex-col justify-between px-2 pb-2 gap-1.5 min-h-0">
 
         {/* AI SIDE */}
-        <div className="flex flex-col items-center gap-1 flex-1 justify-center min-h-0">
+        <div className="flex flex-col items-center gap-1 flex-1 justify-center min-h-0 relative">
+          <AnimatePresence>
+            {diff.ai !== null && diff.ai !== 0 && <FloatingNumber key={`ai-${cards.length}-${diff.ai}`} value={diff.ai} />}
+          </AnimatePresence>
           {aiCards.length > 0 ? (
             <div className="relative">
               <CardFromId
@@ -143,7 +186,10 @@ export function Slot({ id, name, icon, color, cards, canPlay, isImpacted, isCorr
         </div>
 
         {/* PLAYER SIDE */}
-        <div className="flex flex-col items-center gap-1 flex-1 justify-center min-h-0">
+        <div className="flex flex-col items-center gap-1 flex-1 justify-center min-h-0 relative">
+          <AnimatePresence>
+            {diff.player !== null && diff.player !== 0 && <FloatingNumber key={`pl-${cards.length}-${diff.player}`} value={diff.player} />}
+          </AnimatePresence>
           {playerCards.length > 0 ? (
             <div className="relative">
               <CardFromId

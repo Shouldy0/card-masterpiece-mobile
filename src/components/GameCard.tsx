@@ -3,6 +3,7 @@ import { CardDef, cardsById, CardType } from "@/game/cards";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { CARD_SIZES, RARITY_BORDERS } from "@/game/constants";
+import { Skull, Shield, Zap, TrendingUp } from "lucide-react";
 
 interface Props {
   card: CardDef;
@@ -80,7 +81,7 @@ export const GameCard = React.memo(function GameCard({
       <div className={cn("absolute top-0 inset-x-0 h-[2px] z-20 rounded-t-lg", f.bar)} />
 
       {/* Cost */}
-      <div className="absolute top-1.5 left-1.5 z-20 flex items-center justify-center rounded-full bg-black/70 size-6">
+      <div className="absolute top-1.5 left-1.5 z-20 flex items-center justify-center rounded-full bg-black/70 size-6 border border-white/5 shadow-xl">
         <span
           className={cn(
             "font-display font-bold",
@@ -90,6 +91,25 @@ export const GameCard = React.memo(function GameCard({
         >
           {card.cost}
         </span>
+      </div>
+
+      {/* Trait Badges */}
+      <div className="absolute top-1.5 right-1.5 z-20 flex flex-col gap-1">
+        {card.traits?.includes("growth") && (
+          <div className="size-4 rounded-sm bg-green-500/80 flex items-center justify-center shadow-lg ring-1 ring-white/20">
+            <TrendingUp className="size-2.5 text-white" />
+          </div>
+        )}
+        {card.traits?.includes("protector") && (
+          <div className="size-4 rounded-sm bg-blue-500/80 flex items-center justify-center shadow-lg ring-1 ring-white/20">
+            <Shield className="size-2.5 text-white" />
+          </div>
+        )}
+        {(card.traits?.includes("oppressive") || card.traits?.includes("executioner")) && (
+          <div className="size-4 rounded-sm bg-red-500/80 flex items-center justify-center shadow-lg ring-1 ring-white/20">
+            <Skull className="size-2.5 text-white" />
+          </div>
+        )}
       </div>
 
       {/* Bottom Info Area */}
