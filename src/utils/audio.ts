@@ -70,60 +70,94 @@ class SoundEngine {
     if (!this.ctx || this.muted) return;
     if (this.currentScene === scene) return;
 
-    // Immediately clear current scene state to prevent rapid overlapping
     const prevScene = this.currentScene;
     this.currentScene = scene;
-
-    this.stopSceneMusic(prevScene !== "none"); // Fade if transitioning, else hard stop
+    this.stopSceneMusic(prevScene !== "none");
 
     if (scene === "none") return;
 
     const session: BgmSession = { oscillators: [], gains: [], filters: [], interval: null };
     const now = this.ctx.currentTime;
 
-    // 1. DEEP DRONE LAYER
-    const droneFreqs = scene === "home" ? [55, 110, 82.41] : [41.2, 82.41, 61.74];
-    droneFreqs.forEach((freq, i) => {
+    // 1. DEEP CINEMATIC DRONE (Multi-oscillator for thickness)
+    const baseFreqs = scene === "home" ? [55, 110, 41.2] : [41.2, 82.41, 30.87];
+    baseFreqs.forEach((freq, i) => {
       const osc = this.ctx!.createOscillator();
       const gain = this.ctx!.createGain();
       const filter = this.ctx!.createBiquadFilter();
+      const panner = this.ctx!.createStereoPanner();
 
-      osc.type = "sine";
+      osc.type = i % 2 === 0 ? "sine" : "triangle";
       osc.frequency.setValueAtTime(freq, now);
-
-      const lfo = this.ctx!.createOscillator();
-      const lfoGain = this.ctx!.createGain();
-      lfo.frequency.setValueAtTime(0.1 + i * 0.05, now);
-      lfoGain.gain.setValueAtTime(2, now);
-      lfo.connect(lfoGain);
-      lfoGain.connect(osc.frequency);
-      lfo.start(now);
+      
+      // Detune for chorus effect
+      osc.detune.setValueAtTime((Math.random() - 0.5) * 15, now);
 
       filter.type = "lowpass";
-      filter.frequency.setValueAtTime(200, now);
+      filter.frequency.setValueAtTime(150, now);
+      filter.Q.setValueAtTime(5, now);
+
+      panner.pan.setValueAtTime((i - 1) * 0.5, now);
 
       gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(this.musicVol * 0.2, now + 4);
+      gain.gain.linearRampToValueAtTime(this.musicVol * 0.3, now + 5);
 
       osc.connect(filter);
-      filter.connect(gain);
+      filter.connect(panner);
+      panner.connect(gain);
       gain.connect(this.masterGain!);
 
       osc.start(now);
+      session.oscillators.push(osc);
+      session.gains.push(gain);
+    });
+
+    // 2. ETHEREAL PAD LAYER (Slow breathing)
+    const padFreqs = scene === "home" ? [220, 329.63, 440] : [196, 293.66, 392];
+    padFreqs.forEach((f, i) => {
+      const osc = this.ctx!.createOscillator();
+      const gain = this.ctx!.createGain();
+      const lfo = this.ctx!.createOscillator();
+      const lfoGain = this.ctx!.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(f, now);
+
+      lfo.frequency.setValueAtTime(0.05 + i * 0.02, now);
+      lfoGain.gain.setValueAtTime(this.musicVol * 0.1, now);
+      lfo.connect(lfoGain);
+      lfoGain.connect(gain.gain);
+      lfo.start(now);
+
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(this.musicVol * 0.15, now + 8);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain!);
+      osc.start(now);
+      
       session.oscillators.push(osc, lfo);
       session.gains.push(gain);
     });
 
-    // 2. GENERATIVE MELODY
-    const scale =
-      scene === "home" ? [220, 261.63, 329.63, 392, 440] : [196, 233.08, 293.66, 349.23];
-    session.interval = setInterval(
-      () => {
-        if (!this.ctx || this.muted || this.currentScene !== scene) return;
-        this.playGhostNote(scale[Math.floor(Math.random() * scale.length)]);
-      },
-      scene === "home" ? 5000 : 3000,
-    );
+    // 3. IMPROVED GENERATIVE MELODY (Less random, more musical)
+    const scales = {
+      home: [220, 261.63, 329.63, 392, 440, 523.25, 659.25], // A minor pentatonic
+      match: [196, 233.08, 293.66, 349.23, 392, 466.16, 587.33] // G minor
+    };
+    const scale = scales[scene];
+
+    session.interval = setInterval(() => {
+      if (!this.ctx || this.muted || this.currentScene !== scene) return;
+      
+      // Randomly decide notes count (1-3 for chords)
+      const count = Math.random() > 0.8 ? 2 : 1;
+      for(let i=0; i<count; i++) {
+        const note = scale[Math.floor(Math.random() * scale.length)];
+        const delay = Math.random() * 2000;
+        setTimeout(() => this.playGhostNote(note), delay);
+      }
+    }, scene === "home" ? 6000 : 4000);
 
     this.activeSession = session;
   }
@@ -135,32 +169,40 @@ class SoundEngine {
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
     const filter = this.ctx.createBiquadFilter();
+    const panner = this.ctx.createStereoPanner();
     const delay = this.ctx.createDelay();
     const feedback = this.ctx.createGain();
 
-    osc.type = "sine"; // Simpler sine for less overlap clutter
+    osc.type = "sine";
     osc.frequency.setValueAtTime(freq, now);
 
     filter.type = "lowpass";
-    filter.frequency.setValueAtTime(600, now);
+    filter.frequency.setValueAtTime(800, now);
+    filter.frequency.exponentialRampToValueAtTime(200, now + 4);
+
+    panner.pan.setValueAtTime((Math.random() - 0.5) * 1.6, now);
 
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(this.musicVol * 0.1, now + 1.5);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 6);
+    gain.gain.linearRampToValueAtTime(this.musicVol * 0.12, now + 2);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 8);
 
-    delay.delayTime.setValueAtTime(0.4, now);
-    feedback.gain.setValueAtTime(0.3, now);
+    delay.delayTime.setValueAtTime(0.5, now);
+    feedback.gain.setValueAtTime(0.4, now);
 
     osc.connect(filter);
-    filter.connect(gain);
+    filter.connect(panner);
+    panner.connect(gain);
+    
+    // Feedback loop for echo
     gain.connect(delay);
     delay.connect(feedback);
     feedback.connect(delay);
     delay.connect(this.masterGain);
+    
     gain.connect(this.masterGain);
 
     osc.start(now);
-    osc.stop(now + 6);
+    osc.stop(now + 8);
   }
 
   stopSceneMusic(fade = true) {
