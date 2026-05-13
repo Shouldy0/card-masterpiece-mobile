@@ -12,10 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VsRouteImport } from './routes/vs'
 import { Route as TitlesRouteImport } from './routes/titles'
 import { Route as StatsRouteImport } from './routes/stats'
+import { Route as SocialRouteImport } from './routes/social'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as RankedRouteImport } from './routes/ranked'
+import { Route as PuzzlesRouteImport } from './routes/puzzles'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PassRouteImport } from './routes/pass'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
@@ -29,6 +31,7 @@ import { Route as DeckRouteImport } from './routes/deck'
 import { Route as ConnectionRouteImport } from './routes/connection'
 import { Route as ComboRouteImport } from './routes/combo'
 import { Route as CollectionRouteImport } from './routes/collection'
+import { Route as CampaignRouteImport } from './routes/campaign'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -45,6 +48,11 @@ const TitlesRoute = TitlesRouteImport.update({
 const StatsRoute = StatsRouteImport.update({
   id: '/stats',
   path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SocialRoute = SocialRouteImport.update({
+  id: '/social',
+  path: '/social',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShopRoute = ShopRouteImport.update({
@@ -65,6 +73,11 @@ const SearchRoute = SearchRouteImport.update({
 const RankedRoute = RankedRouteImport.update({
   id: '/ranked',
   path: '/ranked',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PuzzlesRoute = PuzzlesRouteImport.update({
+  id: '/puzzles',
+  path: '/puzzles',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -132,6 +145,11 @@ const CollectionRoute = CollectionRouteImport.update({
   path: '/collection',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CampaignRoute = CampaignRouteImport.update({
+  id: '/campaign',
+  path: '/campaign',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -146,6 +164,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/campaign': typeof CampaignRoute
   '/collection': typeof CollectionRoute
   '/combo': typeof ComboRoute
   '/connection': typeof ConnectionRoute
@@ -159,10 +178,12 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/pass': typeof PassRoute
   '/profile': typeof ProfileRoute
+  '/puzzles': typeof PuzzlesRoute
   '/ranked': typeof RankedRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/shop': typeof ShopRoute
+  '/social': typeof SocialRoute
   '/stats': typeof StatsRoute
   '/titles': typeof TitlesRoute
   '/vs': typeof VsRoute
@@ -170,6 +191,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/campaign': typeof CampaignRoute
   '/collection': typeof CollectionRoute
   '/combo': typeof ComboRoute
   '/connection': typeof ConnectionRoute
@@ -183,10 +205,12 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/pass': typeof PassRoute
   '/profile': typeof ProfileRoute
+  '/puzzles': typeof PuzzlesRoute
   '/ranked': typeof RankedRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/shop': typeof ShopRoute
+  '/social': typeof SocialRoute
   '/stats': typeof StatsRoute
   '/titles': typeof TitlesRoute
   '/vs': typeof VsRoute
@@ -195,6 +219,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/campaign': typeof CampaignRoute
   '/collection': typeof CollectionRoute
   '/combo': typeof ComboRoute
   '/connection': typeof ConnectionRoute
@@ -208,10 +233,12 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/pass': typeof PassRoute
   '/profile': typeof ProfileRoute
+  '/puzzles': typeof PuzzlesRoute
   '/ranked': typeof RankedRoute
   '/search': typeof SearchRoute
   '/settings': typeof SettingsRoute
   '/shop': typeof ShopRoute
+  '/social': typeof SocialRoute
   '/stats': typeof StatsRoute
   '/titles': typeof TitlesRoute
   '/vs': typeof VsRoute
@@ -221,6 +248,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/campaign'
     | '/collection'
     | '/combo'
     | '/connection'
@@ -234,10 +262,12 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/pass'
     | '/profile'
+    | '/puzzles'
     | '/ranked'
     | '/search'
     | '/settings'
     | '/shop'
+    | '/social'
     | '/stats'
     | '/titles'
     | '/vs'
@@ -245,6 +275,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/campaign'
     | '/collection'
     | '/combo'
     | '/connection'
@@ -258,10 +289,12 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/pass'
     | '/profile'
+    | '/puzzles'
     | '/ranked'
     | '/search'
     | '/settings'
     | '/shop'
+    | '/social'
     | '/stats'
     | '/titles'
     | '/vs'
@@ -269,6 +302,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
+    | '/campaign'
     | '/collection'
     | '/combo'
     | '/connection'
@@ -282,10 +316,12 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/pass'
     | '/profile'
+    | '/puzzles'
     | '/ranked'
     | '/search'
     | '/settings'
     | '/shop'
+    | '/social'
     | '/stats'
     | '/titles'
     | '/vs'
@@ -294,6 +330,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  CampaignRoute: typeof CampaignRoute
   CollectionRoute: typeof CollectionRoute
   ComboRoute: typeof ComboRoute
   ConnectionRoute: typeof ConnectionRoute
@@ -307,10 +344,12 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   PassRoute: typeof PassRoute
   ProfileRoute: typeof ProfileRoute
+  PuzzlesRoute: typeof PuzzlesRoute
   RankedRoute: typeof RankedRoute
   SearchRoute: typeof SearchRoute
   SettingsRoute: typeof SettingsRoute
   ShopRoute: typeof ShopRoute
+  SocialRoute: typeof SocialRoute
   StatsRoute: typeof StatsRoute
   TitlesRoute: typeof TitlesRoute
   VsRoute: typeof VsRoute
@@ -339,6 +378,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StatsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/social': {
+      id: '/social'
+      path: '/social'
+      fullPath: '/social'
+      preLoaderRoute: typeof SocialRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shop': {
       id: '/shop'
       path: '/shop'
@@ -365,6 +411,13 @@ declare module '@tanstack/react-router' {
       path: '/ranked'
       fullPath: '/ranked'
       preLoaderRoute: typeof RankedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/puzzles': {
+      id: '/puzzles'
+      path: '/puzzles'
+      fullPath: '/puzzles'
+      preLoaderRoute: typeof PuzzlesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -458,6 +511,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/campaign': {
+      id: '/campaign'
+      path: '/campaign'
+      fullPath: '/campaign'
+      preLoaderRoute: typeof CampaignRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -478,6 +538,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  CampaignRoute: CampaignRoute,
   CollectionRoute: CollectionRoute,
   ComboRoute: ComboRoute,
   ConnectionRoute: ConnectionRoute,
@@ -491,10 +552,12 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   PassRoute: PassRoute,
   ProfileRoute: ProfileRoute,
+  PuzzlesRoute: PuzzlesRoute,
   RankedRoute: RankedRoute,
   SearchRoute: SearchRoute,
   SettingsRoute: SettingsRoute,
   ShopRoute: ShopRoute,
+  SocialRoute: SocialRoute,
   StatsRoute: StatsRoute,
   TitlesRoute: TitlesRoute,
   VsRoute: VsRoute,
