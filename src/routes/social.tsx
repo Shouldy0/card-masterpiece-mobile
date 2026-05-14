@@ -12,7 +12,6 @@ import {
   Send,
   Circle,
   Swords,
-  Copy,
   Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";

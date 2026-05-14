@@ -647,12 +647,9 @@ export const useGame = create<AppStore>()(
 
       campaignProgress: 0,
       completedPuzzles: [],
-      friends: [
-        { id: "f1", name: "Luna_Dream", status: "online", rank: "Custode Lucido" },
-        { id: "f2", name: "Void_Walker", status: "offline", rank: "Sognatore Esperto" },
-      ],
-      guild: { name: "I Senzavolto", level: 5, members: 24 },
-      messages: [{ from: "Luna_Dream", text: "Bella partita ieri!", time: "10:30" }],
+      friends: [],
+      guild: null,
+      messages: [],
 
       setOnboardingDone: () => set((s) => ({ player: { ...s.player, onboardingDone: true } })),
 
