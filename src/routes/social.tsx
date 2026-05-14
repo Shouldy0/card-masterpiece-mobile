@@ -4,16 +4,16 @@ import { MobileFrame } from "@/components/Common";
 import { BottomNav } from "@/components/BottomNav";
 import { useGame } from "@/game/store";
 import { useState } from "react";
-import { 
-  Users, 
-  MessageSquare, 
-  Shield, 
-  UserPlus, 
-  Send, 
-  Circle, 
-  Swords, 
+import {
+  Users,
+  MessageSquare,
+  Shield,
+  UserPlus,
+  Send,
+  Circle,
+  Swords,
   Copy,
-  Search
+  Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { sounds } from "@/utils/audio";
@@ -45,14 +45,16 @@ function Social() {
   return (
     <MobileFrame>
       <header className="px-4 pt-6 pb-2">
-        <h1 className="font-display text-xl gold-text tracking-widest uppercase mb-4">Hub Sociale</h1>
-        
+        <h1 className="font-display text-xl gold-text tracking-widest uppercase mb-4">
+          Hub Sociale
+        </h1>
+
         {/* Tab Selector */}
         <div className="flex bg-white/5 p-1 rounded-2xl border border-white/5">
           {[
             { id: "friends", icon: Users, label: "Amici" },
             { id: "chat", icon: MessageSquare, label: "Chat" },
-            { id: "guild", icon: Shield, label: "Gilda" }
+            { id: "guild", icon: Shield, label: "Gilda" },
           ].map((t) => (
             <button
               key={t.id}
@@ -62,7 +64,9 @@ function Social() {
               }}
               className={cn(
                 "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all",
-                activeTab === t.id ? "bg-gold text-black shadow-lg" : "text-white/40 hover:text-white"
+                activeTab === t.id
+                  ? "bg-gold text-black shadow-lg"
+                  : "text-white/40 hover:text-white",
               )}
             >
               <t.icon className="size-4" />
@@ -93,7 +97,7 @@ function Social() {
                     className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-3 text-[10px] text-white placeholder:text-white/20 focus:outline-none focus:border-gold/50"
                   />
                 </div>
-                <button 
+                <button
                   onClick={handleAddFriend}
                   className="px-4 rounded-xl bg-gold/10 border border-gold/30 text-gold hover:bg-gold hover:text-black transition-all"
                 >
@@ -103,20 +107,30 @@ function Social() {
 
               <div className="flex-1 overflow-y-auto space-y-3 pb-20 custom-scrollbar">
                 {friends.map((f) => (
-                  <div key={f.id} className="p-4 rounded-2xl bg-card/40 border border-white/5 flex items-center justify-between group">
+                  <div
+                    key={f.id}
+                    className="p-4 rounded-2xl bg-card/40 border border-white/5 flex items-center justify-between group"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="relative">
                         <div className="size-10 rounded-full bg-gradient-to-br from-mystic/40 to-abyss border border-white/10 flex items-center justify-center">
                           <Users className="size-4 text-white/30" />
                         </div>
-                        <Circle className={cn("absolute bottom-0 right-0 size-2.5 fill-current stroke-abyss stroke-2", f.status === "online" ? "text-emerald-400" : "text-white/20")} />
+                        <Circle
+                          className={cn(
+                            "absolute bottom-0 right-0 size-2.5 fill-current stroke-abyss stroke-2",
+                            f.status === "online" ? "text-emerald-400" : "text-white/20",
+                          )}
+                        />
                       </div>
                       <div>
                         <h4 className="text-xs font-bold text-white">{f.name}</h4>
-                        <p className="text-[8px] text-white/40 uppercase tracking-widest">{f.rank}</p>
+                        <p className="text-[8px] text-white/40 uppercase tracking-widest">
+                          {f.rank}
+                        </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-white/60 hover:text-gold transition-colors">
                         <Swords className="size-3.5" />
@@ -141,15 +155,22 @@ function Social() {
             >
               <div className="flex-1 overflow-y-auto space-y-4 pb-4 custom-scrollbar">
                 {messages.map((m, i) => (
-                  <div key={i} className={cn("flex flex-col", m.from === "Tu" ? "items-end" : "items-start")}>
+                  <div
+                    key={i}
+                    className={cn("flex flex-col", m.from === "Tu" ? "items-end" : "items-start")}
+                  >
                     <div className="flex items-center gap-2 mb-1 px-2">
                       <span className="text-[8px] font-black uppercase text-gold/60">{m.from}</span>
                       <span className="text-[7px] text-white/20">{m.time}</span>
                     </div>
-                    <div className={cn(
-                      "max-w-[80%] p-3 rounded-2xl text-[11px] leading-relaxed",
-                      m.from === "Tu" ? "bg-gold text-black rounded-tr-none" : "bg-white/5 text-white/80 border border-white/10 rounded-tl-none"
-                    )}>
+                    <div
+                      className={cn(
+                        "max-w-[80%] p-3 rounded-2xl text-[11px] leading-relaxed",
+                        m.from === "Tu"
+                          ? "bg-gold text-black rounded-tr-none"
+                          : "bg-white/5 text-white/80 border border-white/10 rounded-tl-none",
+                      )}
+                    >
                       {m.text}
                     </div>
                   </div>
@@ -162,11 +183,11 @@ function Social() {
                   <input
                     value={msgInput}
                     onChange={(e) => setMsgInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
                     placeholder="SCRIVI UN MESSAGGIO..."
                     className="flex-1 bg-transparent border-none pl-2 text-[10px] text-white placeholder:text-white/20 focus:outline-none"
                   />
-                  <button 
+                  <button
                     onClick={handleSend}
                     className="p-3 rounded-xl bg-gold text-black shadow-lg hover:scale-105 transition-all"
                   >
@@ -194,9 +215,13 @@ function Social() {
                     <div className="size-20 rounded-full bg-gold/10 border-2 border-gold/40 flex items-center justify-center mb-4">
                       <Shield className="size-10 text-gold" />
                     </div>
-                    <h2 className="font-display text-2xl text-white font-bold uppercase tracking-widest">{guild.name}</h2>
-                    <p className="text-[9px] text-gold/60 font-black uppercase tracking-[0.3em] mb-6">Livello Gilda {guild.level}</p>
-                    
+                    <h2 className="font-display text-2xl text-white font-bold uppercase tracking-widest">
+                      {guild.name}
+                    </h2>
+                    <p className="text-[9px] text-gold/60 font-black uppercase tracking-[0.3em] mb-6">
+                      Livello Gilda {guild.level}
+                    </p>
+
                     <div className="grid grid-cols-2 gap-4 w-full">
                       <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
                         <p className="text-[8px] text-white/30 uppercase mb-1">Membri</p>
@@ -210,14 +235,18 @@ function Social() {
                   </div>
 
                   <div className="space-y-3">
-                    <h5 className="text-[9px] font-black uppercase text-white/40 tracking-[0.3em] px-2">Obiettivo Settimanale</h5>
+                    <h5 className="text-[9px] font-black uppercase text-white/40 tracking-[0.3em] px-2">
+                      Obiettivo Settimanale
+                    </h5>
                     <div className="p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/20">
                       <div className="flex justify-between items-end mb-2">
-                        <span className="text-[10px] text-emerald-400 font-bold">Vittorie Collettive</span>
+                        <span className="text-[10px] text-emerald-400 font-bold">
+                          Vittorie Collettive
+                        </span>
                         <span className="text-[9px] text-white/40">124 / 200</span>
                       </div>
                       <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-400" style={{ width: '62%' }} />
+                        <div className="h-full bg-emerald-400" style={{ width: "62%" }} />
                       </div>
                     </div>
                   </div>
@@ -226,7 +255,9 @@ function Social() {
                 <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
                   <Shield className="size-16 text-white/10 mb-4" />
                   <h3 className="font-display text-lg text-white mb-2 uppercase">Nessuna Gilda</h3>
-                  <p className="text-[10px] text-white/40 leading-relaxed mb-8">Unisciti a una gilda per sbloccare sfide cooperative e premi esclusivi.</p>
+                  <p className="text-[10px] text-white/40 leading-relaxed mb-8">
+                    Unisciti a una gilda per sbloccare sfide cooperative e premi esclusivi.
+                  </p>
                   <button className="w-full py-4 rounded-2xl bg-gold text-black font-black uppercase tracking-widest text-[11px] shadow-lg">
                     Trova Gilda
                   </button>

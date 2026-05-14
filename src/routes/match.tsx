@@ -37,8 +37,8 @@ function Match() {
     ...territoryMeta[t.id],
   }));
 
-  const impacts = territoryList.map((t) =>
-    match?.board[t.id].some((c) => c.uid === revealing?.uid),
+  const impacts: boolean[] = territoryList.map((t) =>
+    (match?.board[t.id] ?? []).some((c) => revealing !== null && c.uid === revealing.uid),
   );
 
   useEffect(() => {
@@ -93,19 +93,20 @@ function Match() {
     }, 600);
   };
 
-  const handleDragPlayCard = (cardId: string, territory: TerritoryId) => {
+  const handleDragPlayCard = (cardId: string, territory?: TerritoryId) => {
     const card = cardsById[cardId];
     if (!card || card.cost > match.lucidity.player) {
       play("error");
       return;
     }
 
+    const targetTerritory = territory ?? "memoria";
     play("card_play");
     setGlobalImpact(1);
-    setRevealing({ uid: cardId, territory });
+    setRevealing({ uid: cardId, territory: targetTerritory });
 
     setTimeout(() => {
-      playCard(cardId, territory);
+      playCard(cardId, targetTerritory);
       setGlobalImpact(0);
       setRevealing(null);
       setSelected(null);
@@ -163,7 +164,10 @@ function Match() {
     }
   };
 
-  const [hpDiff, setHpDiff] = useState<{ player: number | null; ai: number | null }>({ player: null, ai: null });
+  const [hpDiff, setHpDiff] = useState<{ player: number | null; ai: number | null }>({
+    player: null,
+    ai: null,
+  });
   const tutorial = getTutorialContent();
   const prevHP = useRef({ player: match.hp.player, ai: match.hp.ai });
   const prevTrauma = useRef({ player: match.trauma.player, ai: match.trauma.ai });
@@ -171,14 +175,14 @@ function Match() {
   useEffect(() => {
     if (match.hp.player !== prevHP.current.player) {
       const diff = match.hp.player - prevHP.current.player;
-      setHpDiff(prev => ({ ...prev, player: diff }));
+      setHpDiff((prev) => ({ ...prev, player: diff }));
       if (diff < 0) {
         play("damage");
         setGlobalImpact(1);
       } else if (diff > 0) {
         play("heal");
       }
-      setTimeout(() => setHpDiff(prev => ({ ...prev, player: null })), 1500);
+      setTimeout(() => setHpDiff((prev) => ({ ...prev, player: null })), 1500);
     }
     prevHP.current.player = match.hp.player;
   }, [match.hp.player, play]);
@@ -186,12 +190,12 @@ function Match() {
   useEffect(() => {
     if (match.hp.ai !== prevHP.current.ai) {
       const diff = match.hp.ai - prevHP.current.ai;
-      setHpDiff(prev => ({ ...prev, ai: diff }));
+      setHpDiff((prev) => ({ ...prev, ai: diff }));
       if (diff < 0) {
         play("damage");
         setGlobalImpact(1);
       }
-      setTimeout(() => setHpDiff(prev => ({ ...prev, ai: null })), 1500);
+      setTimeout(() => setHpDiff((prev) => ({ ...prev, ai: null })), 1500);
     }
     prevHP.current.ai = match.hp.ai;
   }, [match.hp.ai, play]);
@@ -214,9 +218,13 @@ function Match() {
     if (tutorialStep === 1) setTutorialStep(2);
   };
 
-  const actionLabel =
-    isResolving ? "ATTENDI" :
-    match.isTutorial && tutorialStep === 1 ? "CAPITO" : selected ? "GIOCA" : "FINE TURNO";
+  const actionLabel = isResolving
+    ? "ATTENDI"
+    : match.isTutorial && tutorialStep === 1
+      ? "CAPITO"
+      : selected
+        ? "GIOCA"
+        : "FINE TURNO";
 
   return (
     <div
@@ -261,7 +269,7 @@ function Match() {
                 exit={{ opacity: 0 }}
                 className={cn(
                   "absolute right-10 top-10 font-display text-lg font-black z-50",
-                  hpDiff.ai > 0 ? "text-green-400" : "text-rose"
+                  hpDiff.ai > 0 ? "text-green-400" : "text-rose",
                 )}
               >
                 {hpDiff.ai > 0 ? `+${hpDiff.ai}` : hpDiff.ai}
@@ -272,7 +280,6 @@ function Match() {
 
         {/* Separator */}
         <div className="mx-3 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
-
 
         {/* CENTER: Battlefield slots */}
         <div className="relative flex-1 flex flex-col">
@@ -299,7 +306,9 @@ function Match() {
                     key={t.id}
                     className={cn(
                       "absolute top-0 bottom-0 transition-all duration-300",
-                      activeResolvingLane === t.id ? "bg-white/5 ring-4 ring-white/20 z-50" : "opacity-0"
+                      activeResolvingLane === t.id
+                        ? "bg-white/5 ring-4 ring-white/20 z-50"
+                        : "opacity-0",
                     )}
                     style={{
                       left: `${(i / 3) * 100}%`,
@@ -383,7 +392,7 @@ function Match() {
                     exit={{ opacity: 0 }}
                     className={cn(
                       "absolute left-10 top-0 font-display text-lg font-black z-50",
-                      hpDiff.player > 0 ? "text-green-400" : "text-rose"
+                      hpDiff.player > 0 ? "text-green-400" : "text-rose",
                     )}
                   >
                     {hpDiff.player > 0 ? `+${hpDiff.player}` : hpDiff.player}
@@ -394,13 +403,19 @@ function Match() {
 
             <div className="flex flex-col items-end gap-1">
               <div className="flex items-center gap-1.5">
-                <span className="font-display text-[9px] font-bold text-cyan-400 uppercase tracking-widest mr-1">Lucidità</span>
+                <span className="font-display text-[9px] font-bold text-cyan-400 uppercase tracking-widest mr-1">
+                  Lucidità
+                </span>
                 <div className="flex items-center gap-1">
                   {Array.from({ length: match.maxLucidity }).map((_, i) => (
                     <motion.div
                       key={i}
                       initial={false}
-                      animate={i < match.lucidity.player ? { scale: 1, opacity: 1 } : { scale: 0.8, opacity: 0.3 }}
+                      animate={
+                        i < match.lucidity.player
+                          ? { scale: 1, opacity: 1 }
+                          : { scale: 0.8, opacity: 0.3 }
+                      }
                       className={cn(
                         "size-2.5 rotate-45 border transition-all duration-300",
                         i < match.lucidity.player
@@ -415,7 +430,8 @@ function Match() {
                 </span>
               </div>
               <div className="font-display text-[8px] text-white/30 tracking-[0.2em] uppercase">
-                Turno <span className="text-white/80 font-bold">{match.turn}</span> / {match.maxTurns}
+                Turno <span className="text-white/80 font-bold">{match.turn}</span> /{" "}
+                {match.maxTurns}
               </div>
             </div>
           </div>
@@ -432,11 +448,15 @@ function Match() {
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <Info className="size-4" />
-                    <span className="font-display text-[10px] font-black uppercase tracking-widest">{tutorial.title}</span>
+                    <span className="font-display text-[10px] font-black uppercase tracking-widest">
+                      {tutorial.title}
+                    </span>
                   </div>
                   <p className="text-[11px] font-medium leading-tight mb-2">{tutorial.desc}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-[8px] opacity-60 font-bold tracking-widest uppercase">{tutorial.target}</span>
+                    <span className="text-[8px] opacity-60 font-bold tracking-widest uppercase">
+                      {tutorial.target}
+                    </span>
                   </div>
                 </motion.div>
               )}
@@ -444,61 +464,95 @@ function Match() {
 
             {/* Selected Card Info Panel */}
             <AnimatePresence>
-              {selected && (() => {
-                const selCard = cardsById[selected];
-                if (!selCard) return null;
-                const traitLabels = (selCard.traits || []).map(t => t.toUpperCase().replace('_', ' '));
-                const effectLabel = selCard.effect.kind !== 'none' ? selCard.text : null;
-                return (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                    className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl p-3 mb-2 shadow-2xl"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className={cn("size-2 rounded-full",
-                          selCard.type === "archetipo" ? "bg-purple-500" :
-                          selCard.type === "ricordo" ? "bg-yellow-500" :
-                          selCard.type === "maschera" ? "bg-red-500" :
-                          selCard.type === "oblio" ? "bg-blue-500" :
-                          selCard.type === "sogno" ? "bg-cyan-400" : "bg-emerald-500"
-                        )} />
-                        <h4 className="font-display text-xs font-bold text-white uppercase tracking-wider">{selCard.name}</h4>
-                        <span className={cn("text-[7px] font-bold uppercase px-1.5 py-0.5 rounded border border-current",
-                          selCard.type === "archetipo" ? "text-purple-400" :
-                          selCard.type === "ricordo" ? "text-yellow-400" :
-                          selCard.type === "maschera" ? "text-red-400" :
-                          selCard.type === "oblio" ? "text-blue-400" :
-                          selCard.type === "sogno" ? "text-cyan-400" : "text-emerald-400"
-                        )}>{selCard.type}</span>
+              {selected &&
+                (() => {
+                  const selCard = cardsById[selected];
+                  if (!selCard) return null;
+                  const traitLabels = (selCard.traits || []).map((t) =>
+                    t.toUpperCase().replace("_", " "),
+                  );
+                  const effectLabel = selCard.effect.kind !== "none" ? selCard.text : null;
+                  return (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                      className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl p-3 mb-2 shadow-2xl"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={cn(
+                              "size-2 rounded-full",
+                              selCard.type === "archetipo"
+                                ? "bg-purple-500"
+                                : selCard.type === "ricordo"
+                                  ? "bg-yellow-500"
+                                  : selCard.type === "maschera"
+                                    ? "bg-red-500"
+                                    : selCard.type === "oblio"
+                                      ? "bg-blue-500"
+                                      : selCard.type === "sogno"
+                                        ? "bg-cyan-400"
+                                        : "bg-emerald-500",
+                            )}
+                          />
+                          <h4 className="font-display text-xs font-bold text-white uppercase tracking-wider">
+                            {selCard.name}
+                          </h4>
+                          <span
+                            className={cn(
+                              "text-[7px] font-bold uppercase px-1.5 py-0.5 rounded border border-current",
+                              selCard.type === "archetipo"
+                                ? "text-purple-400"
+                                : selCard.type === "ricordo"
+                                  ? "text-yellow-400"
+                                  : selCard.type === "maschera"
+                                    ? "text-red-400"
+                                    : selCard.type === "oblio"
+                                      ? "text-blue-400"
+                                      : selCard.type === "sogno"
+                                        ? "text-cyan-400"
+                                        : "text-emerald-400",
+                            )}
+                          >
+                            {selCard.type}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-[8px] text-white/50">Costo</span>
+                          <span className="font-display text-[10px] font-bold text-cyan-400">
+                            {selCard.cost}
+                          </span>
+                          <span className="text-[8px] text-white/50 ml-1">Potere</span>
+                          <span className="font-display text-[10px] font-bold text-gold">
+                            {selCard.power}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-[8px] text-white/50">Costo</span>
-                        <span className="font-display text-[10px] font-bold text-cyan-400">{selCard.cost}</span>
-                        <span className="text-[8px] text-white/50 ml-1">Potere</span>
-                        <span className="font-display text-[10px] font-bold text-gold">{selCard.power}</span>
-                      </div>
-                    </div>
-                    {effectLabel && (
-                      <p className="text-[8px] text-white/90 bg-white/5 rounded px-2 py-1 mb-1 leading-tight">
-                        {effectLabel}
-                      </p>
-                    )}
-                    {traitLabels.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {traitLabels.map((t, i) => (
-                          <span key={i} className="text-[6.5px] bg-mystic/20 border border-mystic/30 text-mystic-glow px-1.5 py-0.5 rounded">{t}</span>
-                        ))}
-                      </div>
-                    )}
-                    {!effectLabel && traitLabels.length === 0 && (
-                      <p className="text-[7px] text-white/50 italic">{selCard.text}</p>
-                    )}
-                  </motion.div>
-                );
-              })()}
+                      {effectLabel && (
+                        <p className="text-[8px] text-white/90 bg-white/5 rounded px-2 py-1 mb-1 leading-tight">
+                          {effectLabel}
+                        </p>
+                      )}
+                      {traitLabels.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {traitLabels.map((t, i) => (
+                            <span
+                              key={i}
+                              className="text-[6.5px] bg-mystic/20 border border-mystic/30 text-mystic-glow px-1.5 py-0.5 rounded"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {!effectLabel && traitLabels.length === 0 && (
+                        <p className="text-[7px] text-white/50 italic">{selCard.text}</p>
+                      )}
+                    </motion.div>
+                  );
+                })()}
             </AnimatePresence>
 
             <div className="flex items-center gap-3">
@@ -517,7 +571,9 @@ function Match() {
               <div className="absolute bottom-3 right-3 z-30">
                 <ActionButton
                   label={actionLabel}
-                  onClick={match.isTutorial && tutorialStep === 1 ? handleTutorialNext : handleEndTurn}
+                  onClick={
+                    match.isTutorial && tutorialStep === 1 ? handleTutorialNext : handleEndTurn
+                  }
                   disabled={isResolving}
                   sublabel={isResolving ? "..." : selected ? undefined : `Turno ${match.turn}`}
                 />
@@ -542,82 +598,88 @@ function Match() {
               animate={{ scale: 1.1, y: 0, opacity: 1 }}
               transition={{ duration: 0.4, type: "spring", stiffness: 200, damping: 20 }}
             >
-              <CardFromId id={revealing.uid} size="xl" glow className="card-activating" />
+              <div className="card-activating">
+                <CardFromId id={revealing.uid} size="xl" glow />
+              </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
       {/* Card Inspection Modal */}
       <AnimatePresence>
-        {inspectedCard && (() => {
-          const card = cardsById[inspectedCard];
-          if (!card) return null;
-          return (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-abyss/90 backdrop-blur-md"
-              onClick={() => setInspectedCard(null)}
-            >
+        {inspectedCard &&
+          (() => {
+            const card = cardsById[inspectedCard];
+            if (!card) return null;
+            return (
               <motion.div
-                initial={{ scale: 0.9, y: 20, opacity: 0 }}
-                animate={{ scale: 1, y: 0, opacity: 1 }}
-                exit={{ scale: 1.1, opacity: 0 }}
-                className="relative w-full max-w-sm bg-card/10 border border-white/10 rounded-[3rem] p-8 shadow-2xl flex flex-col items-center text-center"
-                onClick={(e) => e.stopPropagation()}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-abyss/90 backdrop-blur-md"
+                onClick={() => setInspectedCard(null)}
               >
-                <button 
-                  onClick={() => setInspectedCard(null)}
-                  className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+                <motion.div
+                  initial={{ scale: 0.9, y: 20, opacity: 0 }}
+                  animate={{ scale: 1, y: 0, opacity: 1 }}
+                  exit={{ scale: 1.1, opacity: 0 }}
+                  className="relative w-full max-w-sm bg-card/10 border border-white/10 rounded-[3rem] p-8 shadow-2xl flex flex-col items-center text-center"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <X className="size-5 text-white/50" />
-                </button>
+                  <button
+                    onClick={() => setInspectedCard(null)}
+                    className="absolute top-6 right-6 p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+                  >
+                    <X className="size-5 text-white/50" />
+                  </button>
 
-                <div className="mb-6">
-                  <CardFromId id={inspectedCard} size="lg" glow />
-                </div>
-
-                <h2 className="font-display text-2xl text-white font-bold uppercase tracking-widest mb-1">
-                  {card.name}
-                </h2>
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="text-[10px] font-bold uppercase text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded border border-cyan-400/20">
-                    Costo {card.cost}
-                  </span>
-                  <span className="text-[10px] font-bold uppercase text-gold bg-gold/10 px-2 py-0.5 rounded border border-gold/20">
-                    Potere {card.power}
-                  </span>
-                </div>
-
-                <div className="w-full space-y-4 text-left">
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
-                    <p className="text-[13px] text-white/80 leading-relaxed italic">
-                      "{card.text}"
-                    </p>
+                  <div className="mb-6">
+                    <CardFromId id={inspectedCard} size="lg" glow />
                   </div>
 
-                  {card.traits && card.traits.length > 0 && (
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      {card.traits.map(t => (
-                        <div key={t} className="px-3 py-1 rounded-full bg-mystic/20 border border-mystic/30 text-[10px] font-bold text-mystic-glow uppercase tracking-tighter">
-                          {t.replace('_', ' ')}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                  <h2 className="font-display text-2xl text-white font-bold uppercase tracking-widest mb-1">
+                    {card.name}
+                  </h2>
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="text-[10px] font-bold uppercase text-cyan-400 bg-cyan-400/10 px-2 py-0.5 rounded border border-cyan-400/20">
+                      Costo {card.cost}
+                    </span>
+                    <span className="text-[10px] font-bold uppercase text-gold bg-gold/10 px-2 py-0.5 rounded border border-gold/20">
+                      Potere {card.power}
+                    </span>
+                  </div>
 
-                <button
-                  onClick={() => setInspectedCard(null)}
-                  className="mt-8 w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-white/50 hover:bg-white/10 transition-all"
-                >
-                  Chiudi Ispezione
-                </button>
+                  <div className="w-full space-y-4 text-left">
+                    <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
+                      <p className="text-[13px] text-white/80 leading-relaxed italic">
+                        "{card.text}"
+                      </p>
+                    </div>
+
+                    {card.traits && card.traits.length > 0 && (
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {card.traits.map((t) => (
+                          <div
+                            key={t}
+                            className="px-3 py-1 rounded-full bg-mystic/20 border border-mystic/30 text-[10px] font-bold text-mystic-glow uppercase tracking-tighter"
+                          >
+                            {t.replace("_", " ")}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => setInspectedCard(null)}
+                    className="mt-8 w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.3em] text-white/50 hover:bg-white/10 transition-all"
+                  >
+                    Chiudi Ispezione
+                  </button>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          );
-        })()}
+            );
+          })()}
       </AnimatePresence>
     </div>
   );

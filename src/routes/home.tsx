@@ -123,8 +123,12 @@ function Home() {
                   <Map className="size-20 text-gold" />
                 </div>
                 <div className="relative h-full flex flex-col justify-center px-6 text-left">
-                  <h3 className="font-display text-lg gold-text tracking-widest uppercase mb-1">Campagna</h3>
-                  <p className="text-[9px] text-white/40 uppercase tracking-widest">Il Risveglio del Sognatore</p>
+                  <h3 className="font-display text-lg gold-text tracking-widest uppercase mb-1">
+                    Campagna
+                  </h3>
+                  <p className="text-[9px] text-white/40 uppercase tracking-widest">
+                    Il Risveglio del Sognatore
+                  </p>
                 </div>
               </motion.button>
 
@@ -136,7 +140,9 @@ function Home() {
               >
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
                   <Puzzle className="size-8 text-mystic-glow mb-2" />
-                  <h3 className="font-display text-[10px] text-white tracking-widest uppercase">Puzzle</h3>
+                  <h3 className="font-display text-[10px] text-white tracking-widest uppercase">
+                    Puzzle
+                  </h3>
                 </div>
               </motion.button>
 
@@ -148,7 +154,9 @@ function Home() {
               >
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
                   <Gamepad2 className="size-8 text-emerald-400 mb-2" />
-                  <h3 className="font-display text-[10px] text-white tracking-widest uppercase">Battaglia</h3>
+                  <h3 className="font-display text-[10px] text-white tracking-widest uppercase">
+                    Battaglia
+                  </h3>
                 </div>
               </motion.button>
             </div>

@@ -1,18 +1,26 @@
 import { motion } from "framer-motion";
 import { CardFromId } from "@/components/GameCard";
-import { cardsById } from "@/game/cards";
+import { cardsById, TerritoryId } from "@/game/cards";
 
 interface Props {
   cards: string[];
   selected: string | null;
   playerLucidity: number;
   onSelect: (id: string) => void;
-  onDragToPlay?: (id: string) => void;
+  onDragToPlay?: (id: string, territory?: TerritoryId) => void;
   onRepress?: (id: string) => void;
   onInfo?: (id: string) => void;
 }
 
-export function PlayerHand({ cards, selected, playerLucidity, onSelect, onDragToPlay, onRepress, onInfo }: Props) {
+export function PlayerHand({
+  cards,
+  selected,
+  playerLucidity,
+  onSelect,
+  onDragToPlay,
+  onRepress,
+  onInfo,
+}: Props) {
   const n = cards.length;
   if (n === 0) return <div className="h-[130px]" />;
 

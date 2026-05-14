@@ -76,25 +76,34 @@ function Profile() {
 
       <div className="mt-8 flex flex-col items-center px-4">
         <div className="relative mb-4">
-          <div className={cn("size-28 rounded-full flex items-center justify-center bg-black/40 backdrop-blur-md transition-all duration-500", FRAMES[player.frameId])}>
+          <div
+            className={cn(
+              "size-28 rounded-full flex items-center justify-center bg-black/40 backdrop-blur-md transition-all duration-500",
+              FRAMES[player.frameId],
+            )}
+          >
             <CurrentAvatar className={cn("size-12", avatarColor)} />
           </div>
-          <button 
+          <button
             onClick={() => setIsCustomizing(true)}
             className="absolute bottom-0 right-0 size-8 rounded-full bg-gold text-black flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
           >
             <Edit2 className="size-4" />
           </button>
         </div>
-        
+
         <div className="text-center">
-          <h2 className="font-display text-2xl text-foreground font-bold tracking-tight">Dreamer</h2>
+          <h2 className="font-display text-2xl text-foreground font-bold tracking-tight">
+            Dreamer
+          </h2>
           <p className="text-[10px] text-gold/60 font-black uppercase tracking-[0.4em] mb-4">
-             {player.title || "Sognatore"}
+            {player.title || "Sognatore"}
           </p>
-          
+
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Livello {player.level}</span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-widest">
+              Livello {player.level}
+            </span>
           </div>
           <div className="h-2 w-48 overflow-hidden rounded-full bg-white/5 border border-white/5 mx-auto">
             <motion.div
@@ -195,12 +204,16 @@ function Profile() {
               className="relative h-[80vh] bg-abyss rounded-t-[3rem] border-t border-gold/30 p-6 flex flex-col"
             >
               <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-8" />
-              <h3 className="font-display text-xl text-gold text-center tracking-widest uppercase mb-8">Personalizzazione</h3>
-              
+              <h3 className="font-display text-xl text-gold text-center tracking-widest uppercase mb-8">
+                Personalizzazione
+              </h3>
+
               <div className="flex-1 overflow-y-auto space-y-8 pb-10 custom-scrollbar">
                 {/* Avatars */}
                 <section>
-                  <h4 className="text-[10px] font-black uppercase text-white/40 tracking-[0.3em] mb-4">Avatar</h4>
+                  <h4 className="text-[10px] font-black uppercase text-white/40 tracking-[0.3em] mb-4">
+                    Avatar
+                  </h4>
                   <div className="grid grid-cols-4 gap-4">
                     {player.ownedAvatars.map((id) => {
                       const A = AVATARS[id]?.icon || Eye;
@@ -213,7 +226,9 @@ function Profile() {
                           }}
                           className={cn(
                             "aspect-square rounded-2xl flex items-center justify-center transition-all",
-                            player.avatarId === id ? "bg-gold text-black shadow-lg scale-110" : "bg-white/5 text-white/40 border border-white/5"
+                            player.avatarId === id
+                              ? "bg-gold text-black shadow-lg scale-110"
+                              : "bg-white/5 text-white/40 border border-white/5",
                           )}
                         >
                           <A className="size-6" />
@@ -225,7 +240,9 @@ function Profile() {
 
                 {/* Frames */}
                 <section>
-                  <h4 className="text-[10px] font-black uppercase text-white/40 tracking-[0.3em] mb-4">Cornici</h4>
+                  <h4 className="text-[10px] font-black uppercase text-white/40 tracking-[0.3em] mb-4">
+                    Cornici
+                  </h4>
                   <div className="grid grid-cols-4 gap-4">
                     {player.ownedFrames.map((id) => (
                       <button
@@ -236,7 +253,9 @@ function Profile() {
                         }}
                         className={cn(
                           "aspect-square rounded-2xl border-2 flex items-center justify-center transition-all",
-                          player.frameId === id ? "border-gold bg-gold/10" : "border-white/10 bg-white/5"
+                          player.frameId === id
+                            ? "border-gold bg-gold/10"
+                            : "border-white/10 bg-white/5",
                         )}
                       >
                         <div className={cn("size-8 rounded-full", FRAMES[id])} />
@@ -247,7 +266,9 @@ function Profile() {
 
                 {/* Titles */}
                 <section>
-                  <h4 className="text-[10px] font-black uppercase text-white/40 tracking-[0.3em] mb-4">Titoli</h4>
+                  <h4 className="text-[10px] font-black uppercase text-white/40 tracking-[0.3em] mb-4">
+                    Titoli
+                  </h4>
                   <div className="space-y-2">
                     {player.ownedTitles.map((id) => (
                       <button
@@ -258,10 +279,14 @@ function Profile() {
                         }}
                         className={cn(
                           "w-full p-4 rounded-xl flex items-center justify-between transition-all",
-                          player.title === id ? "bg-gold text-black" : "bg-white/5 text-white/60 border border-white/5"
+                          player.title === id
+                            ? "bg-gold text-black"
+                            : "bg-white/5 text-white/60 border border-white/5",
                         )}
                       >
-                        <span className="text-[10px] font-bold uppercase tracking-widest">{id}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest">
+                          {id}
+                        </span>
                         {player.title === id && <Check className="size-4" />}
                       </button>
                     ))}
@@ -270,7 +295,9 @@ function Profile() {
 
                 {/* Backgrounds */}
                 <section>
-                  <h4 className="text-[10px] font-black uppercase text-white/40 tracking-[0.3em] mb-4">Sfondi</h4>
+                  <h4 className="text-[10px] font-black uppercase text-white/40 tracking-[0.3em] mb-4">
+                    Sfondi
+                  </h4>
                   <div className="grid grid-cols-3 gap-3">
                     {player.ownedBgs.map((id) => (
                       <button
@@ -281,11 +308,13 @@ function Profile() {
                         }}
                         className={cn(
                           "h-20 rounded-xl border flex flex-col items-center justify-center gap-2 overflow-hidden relative",
-                          player.bgId === id ? "border-gold" : "border-white/10"
+                          player.bgId === id ? "border-gold" : "border-white/10",
                         )}
                       >
                         <div className={cn("absolute inset-0", BGS[id])} />
-                        <span className="relative z-10 text-[8px] font-bold uppercase text-white/80">{id}</span>
+                        <span className="relative z-10 text-[8px] font-bold uppercase text-white/80">
+                          {id}
+                        </span>
                       </button>
                     ))}
                   </div>

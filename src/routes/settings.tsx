@@ -12,13 +12,13 @@ export const Route = createFileRoute("/settings")({ component: Settings });
 const tabs = ["Gioco", "Audio", "Grafica", "Account"] as const;
 
 function Settings() {
-  const { settings, toggleSetting, setUser, resetPlayer } = useGame();
+  const { settings, toggleSetting, setUser, resetPlayer, restartTutorial } = useGame();
   const [tab, setTab] = useState<(typeof tabs)[number]>("Gioco");
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      sounds.playSfx("whoosh");
+      sounds.play("whoosh");
       if (auth) {
         await signOut(auth);
       }
@@ -33,12 +33,12 @@ function Settings() {
 
   const handleSoundToggle = (v: boolean) => {
     toggleSetting("soundOn", v);
-    sounds.setSoundEnabled(v);
+    sounds.setVolumes(settings.musicVolume, settings.sfxVolume, !v);
   };
 
   const handleMusicVol = (v: number) => {
     toggleSetting("musicVolume", v);
-    sounds.setMusicVolume(v);
+    sounds.setVolumes(v, settings.sfxVolume, !settings.soundOn);
   };
 
   const handleSfxVol = (v: number) => {

@@ -233,7 +233,7 @@ export const useComboGame = create<ComboState>()(
         }
 
         setTimeout(() => {
-          let scored = DeckEngine.evaluate([char, sett, act], activeVariant);
+          const scored = DeckEngine.evaluate([char, sett, act], activeVariant);
 
           // Apply event modifiers to score
           if (event?.type === "double_points") scored.score *= 2;
@@ -286,7 +286,7 @@ export const useComboGame = create<ComboState>()(
         }
 
         setTimeout(() => {
-          let scored = DeckEngine.evaluate([char, sett, act], activeVariant);
+          const scored = DeckEngine.evaluate([char, sett, act], activeVariant);
 
           if (event?.type === "double_points") scored.score *= 2;
           if (event?.type === "chaos")

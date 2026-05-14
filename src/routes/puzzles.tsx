@@ -9,9 +9,27 @@ import { sounds } from "@/utils/audio";
 export const Route = createFileRoute("/puzzles")({ component: Puzzles });
 
 const PUZZLES = [
-  { id: "p1", title: "Sinergia Sospesa", difficulty: "Facile", task: "Vinci controllando Sogno con una sola carta.", reward: "50 Frammenti" },
-  { id: "p2", title: "Il Sacrificio", difficulty: "Medio", task: "Vinci Trauma sacrificando la tua carta più forte.", reward: "Busta Base" },
-  { id: "p3", title: "Riflesso Oscuro", difficulty: "Difficile", task: "Usa il potere dell'avversario contro di lui.", reward: "Busta Rara" },
+  {
+    id: "p1",
+    title: "Sinergia Sospesa",
+    difficulty: "Facile",
+    task: "Vinci controllando Sogno con una sola carta.",
+    reward: "50 Frammenti",
+  },
+  {
+    id: "p2",
+    title: "Il Sacrificio",
+    difficulty: "Medio",
+    task: "Vinci Trauma sacrificando la tua carta più forte.",
+    reward: "Busta Base",
+  },
+  {
+    id: "p3",
+    title: "Riflesso Oscuro",
+    difficulty: "Difficile",
+    task: "Usa il potere dell'avversario contro di lui.",
+    reward: "Busta Rara",
+  },
 ];
 
 function Puzzles() {
@@ -46,7 +64,9 @@ function Puzzles() {
               }}
               className={cn(
                 "w-full p-5 rounded-3xl border text-left transition-all relative overflow-hidden group",
-                isDone ? "bg-emerald-500/10 border-emerald-500/30" : "bg-card/40 border-white/5 hover:border-white/20"
+                isDone
+                  ? "bg-emerald-500/10 border-emerald-500/30"
+                  : "bg-card/40 border-white/5 hover:border-white/20",
               )}
             >
               {isDone && (
@@ -54,13 +74,19 @@ function Puzzles() {
                   <CheckCircle2 className="size-5" />
                 </div>
               )}
-              
+
               <div className="flex items-center gap-2 mb-3">
                 <Brain className={cn("size-4", isDone ? "text-emerald-400" : "text-mystic")} />
-                <span className={cn(
-                  "text-[9px] font-black uppercase tracking-widest",
-                  p.difficulty === "Facile" ? "text-emerald-400" : p.difficulty === "Medio" ? "text-yellow-400" : "text-rose"
-                )}>
+                <span
+                  className={cn(
+                    "text-[9px] font-black uppercase tracking-widest",
+                    p.difficulty === "Facile"
+                      ? "text-emerald-400"
+                      : p.difficulty === "Medio"
+                        ? "text-yellow-400"
+                        : "text-rose",
+                  )}
+                >
                   {p.difficulty}
                 </span>
               </div>
@@ -88,7 +114,9 @@ function Puzzles() {
             <Zap className="size-5 text-mystic-glow" />
           </div>
           <div>
-            <h4 className="text-[10px] font-black uppercase text-white tracking-widest">Puzzles Settimanali</h4>
+            <h4 className="text-[10px] font-black uppercase text-white tracking-widest">
+              Puzzles Settimanali
+            </h4>
             <p className="text-[8px] text-white/40">Nuovi enigmi ogni lunedì alle 04:00</p>
           </div>
         </div>

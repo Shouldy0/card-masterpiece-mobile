@@ -62,7 +62,9 @@ export function EnemyTopBar({
         {/* Trauma Enemy */}
         <div className="flex flex-col gap-0.5 w-12 mr-1">
           <div className="flex items-center justify-between">
-            <span className="font-display text-[6px] uppercase tracking-wider text-rose/80">Trauma</span>
+            <span className="font-display text-[6px] uppercase tracking-wider text-rose/80">
+              Trauma
+            </span>
             <span className="font-display text-[7px] font-bold text-rose">{trauma}%</span>
           </div>
           <div className="w-full h-0.5 rounded-full bg-white/10 overflow-hidden">

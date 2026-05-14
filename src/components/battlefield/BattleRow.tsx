@@ -13,7 +13,7 @@ interface Props {
   territories: TerritoryMeta[];
   board: Record<TerritoryId, PlayedCard[]>;
   selected: string | null;
-  impacts: Record<string, number>;
+  impacts: boolean[];
   onPlay: (territory: TerritoryId) => void;
   onInfo?: (id: string) => void;
 }
@@ -21,7 +21,7 @@ interface Props {
 export function BattleRow({ territories, board, selected, impacts, onPlay, onInfo }: Props) {
   return (
     <div className="flex-1 flex gap-2 px-2 min-h-0 pb-1">
-      {territories.map((t) => (
+      {territories.map((t, i) => (
         <Slot
           key={t.id}
           id={t.id}
@@ -30,7 +30,7 @@ export function BattleRow({ territories, board, selected, impacts, onPlay, onInf
           color={t.color}
           cards={board[t.id]}
           canPlay={selected !== null}
-          isImpacted={!!impacts[t.id]}
+          isImpacted={impacts[i]}
           isCorrupted={isLaneCorrupted(board[t.id])}
           onDrop={() => onPlay(t.id)}
           onInfo={onInfo}

@@ -980,7 +980,7 @@ export const CARDS: CardDef[] = [
     unlockLevel: 10,
     art: "/cards/eternita_eco.png?v=3",
   },
-  
+
   // --- CARTE SPECIALI (NON COLLEZIONABILI) ---
   {
     id: "x_pensiero_intrusivo",

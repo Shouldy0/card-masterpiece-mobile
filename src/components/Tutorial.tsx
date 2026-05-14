@@ -3,35 +3,52 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "@/game/store";
 import { useNavigate } from "@tanstack/react-router";
 import { sounds } from "@/utils/audio";
-import { Sparkles, Brain, BookOpen, Zap, Trophy, ChevronRight, X, Layout, ShoppingBag, User, CheckCircle2, AlertCircle } from "lucide-react";
+import {
+  Sparkles,
+  Brain,
+  BookOpen,
+  Zap,
+  Trophy,
+  ChevronRight,
+  X,
+  Layout,
+  ShoppingBag,
+  User,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const STEPS = [
   {
     type: "concept",
     title: "La Reverie",
-    content: "Sei un Sognatore. La Reverie è il tuo campo di battaglia mentale dove i pensieri diventano realtà sotto forma di carte chiamate Memorie.",
+    content:
+      "Sei un Sognatore. La Reverie è il tuo campo di battaglia mentale dove i pensieri diventano realtà sotto forma di carte chiamate Memorie.",
     icon: <Sparkles className="size-12 text-gold" />,
     color: "gold",
   },
   {
     type: "concept",
     title: "Le Risorse",
-    content: "La Sincronia rappresenta la tua connessione mentale (HP). Se scende a zero, il sogno finisce. La Lucidità è l'energia che aumenta ogni turno per giocare carte.",
+    content:
+      "La Sincronia rappresenta la tua connessione mentale (HP). Se scende a zero, il sogno finisce. La Lucidità è l'energia che aumenta ogni turno per giocare carte.",
     icon: <Zap className="size-12 text-emerald-400" />,
     color: "emerald",
   },
   {
     type: "ui",
     title: "Navigare la Mente",
-    content: "Usa la barra in basso: Home per combattere, Mente per il mazzo, Negozio per nuove memorie e Profilo per i tuoi progressi.",
+    content:
+      "Usa la barra in basso: Home per combattere, Mente per il mazzo, Negozio per nuove memorie e Profilo per i tuoi progressi.",
     icon: <Layout className="size-12 text-blue-400" />,
     color: "blue",
   },
   {
     type: "battle",
     title: "I Territori",
-    content: "Combatti in 3 zone: Memoria, Trauma e Sogno. Controllarne 2 su 3 alla fine del Turno 6 ti darà la vittoria assoluta.",
+    content:
+      "Combatti in 3 zone: Memoria, Trauma e Sogno. Controllarne 2 su 3 alla fine del Turno 6 ti darà la vittoria assoluta.",
     icon: <Brain className="size-12 text-purple-400" />,
     color: "purple",
   },
@@ -42,7 +59,7 @@ const STEPS = [
     options: [
       "Distruggendo tutte le carte nemiche",
       "Controllando almeno 2 territori su 3 al Turno 6",
-      "Avendo più Lucidità dell'avversario"
+      "Avendo più Lucidità dell'avversario",
     ],
     correct: 1,
   },
@@ -53,10 +70,10 @@ const STEPS = [
     options: [
       "Diminuisce progressivamente",
       "Resta sempre uguale",
-      "Aumenta di 1 ogni turno (1, 2, 3...)"
+      "Aumenta di 1 ogni turno (1, 2, 3...)",
     ],
     correct: 2,
-  }
+  },
 ];
 
 export function TutorialOverlay() {
@@ -72,7 +89,7 @@ export function TutorialOverlay() {
 
   const next = () => {
     if (step.type === "quiz" && quizFeedback !== "correct") return;
-    
+
     if (isLast) {
       sounds.play("victory");
       setOnboardingDone();
@@ -86,6 +103,7 @@ export function TutorialOverlay() {
   };
 
   const handleQuizOption = (idx: number) => {
+    if (!step.options) return;
     if (idx === step.correct) {
       setQuizFeedback("correct");
       sounds.play("confirm");
@@ -155,28 +173,38 @@ export function TutorialOverlay() {
           ) : (
             <div className="mt-6 mb-8">
               <div className="flex justify-center mb-6">
-                <div className={cn(
-                  "p-3 rounded-full bg-white/5",
-                  quizFeedback === "correct" ? "text-green-400" : quizFeedback === "wrong" ? "text-rose" : "text-gold"
-                )}>
-                  {quizFeedback === "correct" ? <CheckCircle2 className="size-10" /> : <AlertCircle className="size-10" />}
+                <div
+                  className={cn(
+                    "p-3 rounded-full bg-white/5",
+                    quizFeedback === "correct"
+                      ? "text-green-400"
+                      : quizFeedback === "wrong"
+                        ? "text-rose"
+                        : "text-gold",
+                  )}
+                >
+                  {quizFeedback === "correct" ? (
+                    <CheckCircle2 className="size-10" />
+                  ) : (
+                    <AlertCircle className="size-10" />
+                  )}
                 </div>
               </div>
               <h3 className="font-display text-lg text-white mb-6 leading-tight">
                 {step.question}
               </h3>
               <div className="space-y-2 text-left">
-                {step.options.map((opt, i) => (
+                {(step.options ?? []).map((opt, i) => (
                   <button
                     key={i}
                     onClick={() => handleQuizOption(i)}
                     className={cn(
                       "w-full p-4 rounded-2xl text-xs font-medium border transition-all",
-                      quizFeedback === "correct" && i === step.correct 
-                        ? "bg-green-500/20 border-green-500 text-green-200" 
-                        : quizFeedback === "wrong" && i !== step.correct 
+                      quizFeedback === "correct" && i === step.correct
+                        ? "bg-green-500/20 border-green-500 text-green-200"
+                        : quizFeedback === "wrong" && i !== step.correct
                           ? "bg-white/5 border-white/5 text-white/40"
-                          : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10"
+                          : "bg-white/5 border-white/10 text-white/70 hover:bg-white/10",
                     )}
                   >
                     {opt}
@@ -192,12 +220,16 @@ export function TutorialOverlay() {
               disabled={step.type === "quiz" && quizFeedback !== "correct"}
               className={cn(
                 "w-full py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-2 group transition-all",
-                (step.type === "quiz" && quizFeedback !== "correct")
+                step.type === "quiz" && quizFeedback !== "correct"
                   ? "bg-white/5 text-white/20 border border-white/5"
-                  : "bg-gold text-black shadow-[0_0_30px_rgba(255,215,0,0.3)] active:scale-95"
+                  : "bg-gold text-black shadow-[0_0_30px_rgba(255,215,0,0.3)] active:scale-95",
               )}
             >
-              {isLast ? "Risveglia la tua Mente" : quizFeedback === "correct" ? "Procedi" : "Continua il Rituale"}
+              {isLast
+                ? "Risveglia la tua Mente"
+                : quizFeedback === "correct"
+                  ? "Procedi"
+                  : "Continua il Rituale"}
               <ChevronRight className="size-4 group-hover:translate-x-1 transition-transform" />
             </button>
             <button

@@ -3,7 +3,7 @@
  * Robust implementation to prevent overlapping and ensure smooth transitions.
  */
 
-type SceneMusic = "home" | "match" | "none";
+type SceneMusic = "home" | "match" | "none" | "end" | "vs";
 
 interface BgmSession {
   oscillators: OscillatorNode[];
@@ -89,7 +89,7 @@ class SoundEngine {
 
       osc.type = i % 2 === 0 ? "sine" : "triangle";
       osc.frequency.setValueAtTime(freq, now);
-      
+
       // Detune for chorus effect
       osc.detune.setValueAtTime((Math.random() - 0.5) * 15, now);
 
@@ -135,29 +135,32 @@ class SoundEngine {
       osc.connect(gain);
       gain.connect(this.masterGain!);
       osc.start(now);
-      
+
       session.oscillators.push(osc, lfo);
       session.gains.push(gain);
     });
 
     // 3. IMPROVED GENERATIVE MELODY (Less random, more musical)
-    const scales = {
+    const scales: Record<string, number[]> = {
       home: [220, 261.63, 329.63, 392, 440, 523.25, 659.25], // A minor pentatonic
-      match: [196, 233.08, 293.66, 349.23, 392, 466.16, 587.33] // G minor
+      match: [196, 233.08, 293.66, 349.23, 392, 466.16, 587.33], // G minor
     };
-    const scale = scales[scene];
+    const scale = scales[scene] || scales.match;
 
-    session.interval = setInterval(() => {
-      if (!this.ctx || this.muted || this.currentScene !== scene) return;
-      
-      // Randomly decide notes count (1-3 for chords)
-      const count = Math.random() > 0.8 ? 2 : 1;
-      for(let i=0; i<count; i++) {
-        const note = scale[Math.floor(Math.random() * scale.length)];
-        const delay = Math.random() * 2000;
-        setTimeout(() => this.playGhostNote(note), delay);
-      }
-    }, scene === "home" ? 6000 : 4000);
+    session.interval = setInterval(
+      () => {
+        if (!this.ctx || this.muted || this.currentScene !== scene) return;
+
+        // Randomly decide notes count (1-3 for chords)
+        const count = Math.random() > 0.8 ? 2 : 1;
+        for (let i = 0; i < count; i++) {
+          const note = scale[Math.floor(Math.random() * scale.length)];
+          const delay = Math.random() * 2000;
+          setTimeout(() => this.playGhostNote(note), delay);
+        }
+      },
+      scene === "home" ? 6000 : 4000,
+    );
 
     this.activeSession = session;
   }
@@ -192,13 +195,13 @@ class SoundEngine {
     osc.connect(filter);
     filter.connect(panner);
     panner.connect(gain);
-    
+
     // Feedback loop for echo
     gain.connect(delay);
     delay.connect(feedback);
     feedback.connect(delay);
     delay.connect(this.masterGain);
-    
+
     gain.connect(this.masterGain);
 
     osc.start(now);
@@ -240,7 +243,7 @@ class SoundEngine {
     if (this.muted || !this.ctx || !this.masterGain) return;
 
     const now = this.ctx.currentTime;
-    
+
     // Check for pre-loaded assets first
     let assetKey: string | null = null;
     if (type === "tick" || type === "click") assetKey = "click";
@@ -255,7 +258,7 @@ class SoundEngine {
     }
 
     // Procedural SFX for better impact
-    switch(type) {
+    switch (type) {
       case "card_play":
       case "ripple": {
         const osc = this.ctx.createOscillator();

@@ -29,7 +29,7 @@ export function ActionButton({ label, onClick, disabled, sublabel }: Props) {
           <div className="ritual-button-distortion" />
         </>
       )}
-      
+
       <span
         className={cn(
           "font-display text-[11px] font-bold tracking-[0.2em] uppercase z-10",

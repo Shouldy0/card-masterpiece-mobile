@@ -118,8 +118,16 @@ export function createInitialMatch(playerDeck: string[], aiDeckOverride?: string
     board: { memoria: [], trauma: [], sogno: [] },
     buffs: { player: 0, ai: 0 },
     weakens: { player: 0, ai: 0 },
-    localBuffs: { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } },
-    localWeakens: { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } },
+    localBuffs: {
+      memoria: { player: 0, ai: 0 },
+      trauma: { player: 0, ai: 0 },
+      sogno: { player: 0, ai: 0 },
+    },
+    localWeakens: {
+      memoria: { player: 0, ai: 0 },
+      trauma: { player: 0, ai: 0 },
+      sogno: { player: 0, ai: 0 },
+    },
     log: ["La Reverie ha inizio…"],
     status: "playing",
     aiStyle: pickAiStyle(),
@@ -186,7 +194,7 @@ interface AppStore {
   friends: { id: string; name: string; status: "online" | "offline"; rank: string }[];
   guild: { name: string; level: number; members: number } | null;
   messages: { from: string; text: string; time: string }[];
-  
+
   setCampaignProgress: (v: number) => void;
   setPuzzleCompleted: (id: string) => void;
   addFriend: (name: string) => void;
@@ -217,6 +225,10 @@ interface AppStore {
   claimPassReward: (id: string, gold?: number) => void;
   activatePremiumPass: () => void;
   claimRankReward: (id: string) => void;
+  setOnboardingDone: () => void;
+  setOnboardingPackOpened: (v: boolean) => void;
+  setTutorialStep: (n: number) => void;
+  restartTutorial: () => void;
 }
 
 export function isLaneCorrupted(cardsInLane: PlayedCard[]): boolean {
@@ -248,8 +260,8 @@ function powerWithRules(
   const isProtected = neighbors.some((n) => cardsById[n.cardId]?.traits?.includes("protector"));
 
   // --- GLOBAL buffs/weakens (turn-based, reset each turn) ---
-  let globalBuff = state.buffs[side];
-  let globalWeaken = isProtected ? 0 : state.weakens[enemySide];
+  const globalBuff = state.buffs[side];
+  const globalWeaken = isProtected ? 0 : state.weakens[enemySide];
 
   // --- LOCAL AURAS from ally cards in this territory (buff_self, local target) ---
   let localBuff = 0;
@@ -260,7 +272,9 @@ function powerWithRules(
       if (def.effect.kind === "buff_self" && (def.effect as any).target === "local") {
         let amt = def.effect.amount;
         if (def.traits?.includes("synergy_buff")) {
-          const myTypeCount = board.filter((b) => b.side === side && cardsById[b.cardId]?.type === def.type).length;
+          const myTypeCount = board.filter(
+            (b) => b.side === side && cardsById[b.cardId]?.type === def.type,
+          ).length;
           if (myTypeCount >= 2) amt += 1;
         }
         localBuff += amt;
@@ -381,18 +395,24 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
       for (let i = 0; i < card.effect.amount; i++) {
         state.hand[enemySide].push("x_pensiero_intrusivo");
       }
-      state.log.push(`${side === "player" ? "Hai" : "L'avversario ha"} inflitto un Pensiero Intrusivo!`);
+      state.log.push(
+        `${side === "player" ? "Hai" : "L'avversario ha"} inflitto un Pensiero Intrusivo!`,
+      );
       break;
     case "trauma_enemy":
       state.trauma[enemySide] = Math.min(100, (state.trauma[enemySide] || 0) + card.effect.amount);
-      state.log.push(`${card.name} infligge ${card.effect.amount}% Trauma all'avversario! (${state.trauma[enemySide]}%)`);
+      state.log.push(
+        `${card.name} infligge ${card.effect.amount}% Trauma all'avversario! (${state.trauma[enemySide]}%)`,
+      );
       break;
     case "steal_lucidity":
       const stolen = Math.min(card.effect.amount, state.lucidity[enemySide]);
       if (stolen > 0) {
         state.lucidity[enemySide] = Math.max(0, state.lucidity[enemySide] - stolen);
         state.lucidity[side] = Math.min(state.maxLucidity, state.lucidity[side] + stolen);
-        state.log.push(`${card.name} ruba ${stolen} Lucidità! (+${stolen} a te, -${stolen} al nemico)`);
+        state.log.push(
+          `${card.name} ruba ${stolen} Lucidità! (+${stolen} a te, -${stolen} al nemico)`,
+        );
       } else {
         state.log.push(`${card.name}: l'avversario non ha Lucidità da rubare.`);
       }
@@ -426,8 +446,16 @@ function applyEffect(state: MatchState, card: CardDef, side: Side, territory: Te
     if (card.traits?.includes("resetter")) {
       state.buffs = { player: 0, ai: 0 };
       state.weakens = { player: 0, ai: 0 };
-      state.localBuffs = { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } };
-      state.localWeakens = { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } };
+      state.localBuffs = {
+        memoria: { player: 0, ai: 0 },
+        trauma: { player: 0, ai: 0 },
+        sogno: { player: 0, ai: 0 },
+      };
+      state.localWeakens = {
+        memoria: { player: 0, ai: 0 },
+        trauma: { player: 0, ai: 0 },
+        sogno: { player: 0, ai: 0 },
+      };
       state.log.push(`${card.name} ha azzerato gli effetti attivi.`);
     }
   }
@@ -446,7 +474,9 @@ function processEndTurnTriggers(state: MatchState) {
     state.repressed[side].forEach((rep) => {
       rep.turns += 1;
       state.trauma[side] = Math.min(100, state.trauma[side] + 5);
-      state.log.push(`${side === "player" ? "Un ricordo represso pulsa" : "Un'ombra si agita"} (Trauma +5).`);
+      state.log.push(
+        `${side === "player" ? "Un ricordo represso pulsa" : "Un'ombra si agita"} (Trauma +5).`,
+      );
     });
   });
 }
@@ -454,9 +484,11 @@ function processEndTurnTriggers(state: MatchState) {
 function checkPsychosis(state: MatchState) {
   (["player", "ai"] as Side[]).forEach((side) => {
     if (state.trauma[side] >= 100) {
-      state.log.push(`⚠️ ${side === "player" ? "Hai" : "L'avversario ha"} subito un CROLLO PSICOTICO!`);
+      state.log.push(
+        `⚠️ ${side === "player" ? "Hai" : "L'avversario ha"} subito un CROLLO PSICOTICO!`,
+      );
       state.psychosisCount[side] += 1;
-      
+
       const currentHandSize = state.hand[side].length;
       state.deck[side].push(...state.hand[side]);
       state.deck[side] = shuffle(state.deck[side]);
@@ -475,12 +507,14 @@ function checkPsychosis(state: MatchState) {
       });
       if (myCards.length > 0) {
         const target = myCards[Math.floor(Math.random() * myCards.length)];
-        state.board[target.territory] = state.board[target.territory].filter((c) => c.uid !== target.uid);
+        state.board[target.territory] = state.board[target.territory].filter(
+          (c) => c.uid !== target.uid,
+        );
         state.log.push(`La psicosi ha frammentato una carta in ${target.territory}.`);
       }
 
       state.trauma[side] = 0;
-      state.hp[side] = Math.max(1, state.hp[side] - 5); 
+      state.hp[side] = Math.max(1, state.hp[side] - 5);
     }
   });
 }
@@ -522,8 +556,12 @@ function aiTurn(state: MatchState) {
     } else {
       const scored = tIds
         .map((t) => {
-          const aiP = state.board[t].filter((c) => c.side === "ai").reduce((s, c) => s + c.power, 0);
-          const plP = state.board[t].filter((c) => c.side === "player").reduce((s, c) => s + c.power, 0);
+          const aiP = state.board[t]
+            .filter((c) => c.side === "ai")
+            .reduce((s, c) => s + c.power, 0);
+          const plP = state.board[t]
+            .filter((c) => c.side === "player")
+            .reduce((s, c) => s + c.power, 0);
           const diff = aiP - plP;
           return { t, score: diff * -0.8 + Math.random() * 1.5 };
         })
@@ -582,6 +620,13 @@ export const useGame = create<AppStore>()(
         rankRewardsClaimed: [],
         ownedCosmetics: ["default_board"],
         onboardingDone: false,
+        avatarId: "default",
+        frameId: "none",
+        bgId: "default",
+        ownedAvatars: ["default", "archetipo_icon", "maschera_icon"],
+        ownedFrames: ["none", "gold_border", "mystic_glow"],
+        ownedBgs: ["default", "nebula", "abyss"],
+        ownedTitles: ["Sognatore", "Cercatore di Verità", "Ombra Errante"],
       },
       onboardingPackOpened: false,
       tutorialStep: 0,
@@ -606,35 +651,112 @@ export const useGame = create<AppStore>()(
         { id: "f2", name: "Void_Walker", status: "offline", rank: "Sognatore Esperto" },
       ],
       guild: { name: "I Senzavolto", level: 5, members: 24 },
-      messages: [
-        { from: "Luna_Dream", text: "Bella partita ieri!", time: "10:30" },
-      ],
+      messages: [{ from: "Luna_Dream", text: "Bella partita ieri!", time: "10:30" }],
 
       setOnboardingDone: () => set((s) => ({ player: { ...s.player, onboardingDone: true } })),
-      setOnboardingPackOpened: (v) => set({ onboardingPackOpened: v }),
-      setTutorialStep: (n) => set({ tutorialStep: n }),
-      
+
+      setOnboardingPackOpened: (v: boolean) => set({ onboardingPackOpened: v }),
+
+      setTutorialStep: (n: number) => set({ tutorialStep: n }),
+
       setCampaignProgress: (v) => set({ campaignProgress: v }),
       setPuzzleCompleted: (id) => set((s) => ({ completedPuzzles: [...s.completedPuzzles, id] })),
-      
-      addFriend: (name) => set((s) => ({ 
-        friends: [...s.friends, { id: Math.random().toString(), name, status: "offline", rank: "Novizio" }] 
-      })),
 
-      sendMessage: (text) => set((s) => ({
-        messages: [...s.messages, { from: "Tu", text, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]
-      })),
+      addFriend: (name) =>
+        set((s) => ({
+          friends: [
+            ...s.friends,
+            { id: Math.random().toString(), name, status: "offline", rank: "Novizio" },
+          ],
+        })),
 
-      setProfileItem: (type, id) => set((s) => ({
-        player: { ...s.player, [type]: id }
-      })),
-      
+      sendMessage: (text) =>
+        set((s) => ({
+          messages: [
+            ...s.messages,
+            {
+              from: "Tu",
+              text,
+              time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            },
+          ],
+        })),
+
+      setProfileItem: (type, id) =>
+        set((s) => ({
+          player: { ...s.player, [type]: id },
+        })),
+
       startCampaignMatch: (nodeId: number) => {
         const campaignDecks: Record<number, string[]> = {
-          1: ["v4_apatia", "v3_nostalgia", "o3_giocattolo", "c1_giullare", "s3_nuvola", "s5_stella", "v8_solitudine", "b7_pioggia", "o1_chiave_antica", "o9_nebbia", "c3_vittima", "c8_eremita", "b2_silenzio", "b4_neve", "s1_miraggio"],
-          2: ["v2_ossessione", "v7_rancore", "o10_anello", "c9_mostro", "b5_cenere_blu", "s4_visione", "v9_coraggio", "o7_primo_volo", "c11_ombra_riflessa", "b8_fantasma", "s2_aurora", "v6_empatia", "o6_giardino", "c14_corruttore_silenzioso", "b9_rovine"],
-          3: ["v1_ambizione", "v5_follia", "o5_cenere", "c10_boia", "b3_oblio", "b6_abisso", "s6_isole", "c13_bestia_repressa", "v10_armonia", "o2_bosco_sacro", "c2_re_caduto", "b1_vuoto", "c12_traditore_latente", "c20_oro_sepolto", "s10_infinito"],
-          4: ["v5_follia", "v5_follia", "b6_abisso", "b6_abisso", "c10_boia", "o5_cenere", "s10_infinito", "s10_infinito", "v1_ambizione", "v1_ambizione", "c13_bestia_repressa", "c13_bestia_repressa", "b3_oblio", "b3_oblio", "o2_bosco_sacro"]
+          1: [
+            "v4_apatia",
+            "v3_nostalgia",
+            "o3_giocattolo",
+            "c1_giullare",
+            "s3_nuvola",
+            "s5_stella",
+            "v8_solitudine",
+            "b7_pioggia",
+            "o1_chiave_antica",
+            "o9_nebbia",
+            "c3_vittima",
+            "c8_eremita",
+            "b2_silenzio",
+            "b4_neve",
+            "s1_miraggio",
+          ],
+          2: [
+            "v2_ossessione",
+            "v7_rancore",
+            "o10_anello",
+            "c9_mostro",
+            "b5_cenere_blu",
+            "s4_visione",
+            "v9_coraggio",
+            "o7_primo_volo",
+            "c11_ombra_riflessa",
+            "b8_fantasma",
+            "s2_aurora",
+            "v6_empatia",
+            "o6_giardino",
+            "c14_corruttore_silenzioso",
+            "b9_rovine",
+          ],
+          3: [
+            "v1_ambizione",
+            "v5_follia",
+            "o5_cenere",
+            "c10_boia",
+            "b3_oblio",
+            "b6_abisso",
+            "s6_isole",
+            "c13_bestia_repressa",
+            "v10_armonia",
+            "o2_bosco_sacro",
+            "c2_re_caduto",
+            "b1_vuoto",
+            "c12_traditore_latente",
+            "c20_oro_sepolto",
+            "s10_infinito",
+          ],
+          4: [
+            "v5_follia",
+            "v5_follia",
+            "b6_abisso",
+            "b6_abisso",
+            "c10_boia",
+            "o5_cenere",
+            "s10_infinito",
+            "s10_infinito",
+            "v1_ambizione",
+            "v1_ambizione",
+            "c13_bestia_repressa",
+            "c13_bestia_repressa",
+            "b3_oblio",
+            "b3_oblio",
+            "o2_bosco_sacro",
+          ],
         };
         const match = createInitialMatch(get().player.deck, campaignDecks[nodeId]);
         match.matchType = "campaign";
@@ -649,7 +771,7 @@ export const useGame = create<AppStore>()(
         match.puzzleId = puzzleId;
         match.isTutorial = true;
         match.log = [`Risolvi il puzzle: ${puzzleId}`];
-        
+
         if (puzzleId === "p1") {
           // Scenario: Avversario domina Sogno con 10 potere. Tu devi vincere con 1 mossa.
           match.board.sogno = [{ uid: "ai_p1", cardId: "b3_oblio", side: "ai", power: 8 }];
@@ -667,7 +789,7 @@ export const useGame = create<AppStore>()(
       restartTutorial: () => {
         set((s) => ({
           player: { ...s.player, onboardingDone: false },
-          tutorialStep: 0
+          tutorialStep: 0,
         }));
       },
 
@@ -748,8 +870,16 @@ export const useGame = create<AppStore>()(
           }
           m.buffs = { player: 0, ai: 0 };
           m.weakens = { player: 0, ai: 0 };
-          m.localBuffs = { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } };
-          m.localWeakens = { memoria: { player: 0, ai: 0 }, trauma: { player: 0, ai: 0 }, sogno: { player: 0, ai: 0 } };
+          m.localBuffs = {
+            memoria: { player: 0, ai: 0 },
+            trauma: { player: 0, ai: 0 },
+            sogno: { player: 0, ai: 0 },
+          };
+          m.localWeakens = {
+            memoria: { player: 0, ai: 0 },
+            trauma: { player: 0, ai: 0 },
+            sogno: { player: 0, ai: 0 },
+          };
           m.turn += 1;
           m.lucidity.player = Math.min(m.maxLucidity, m.turn);
           m.lucidity.ai = Math.min(m.maxLucidity, m.turn);
@@ -765,7 +895,7 @@ export const useGame = create<AppStore>()(
       exitMatch: () => {
         const { match, player, user } = get();
         if (!match) return;
-        let updatedPlayer = { ...player };
+        const updatedPlayer = { ...player };
         if (match.status === "ended") {
           const rewards = getMatchRewards(match.result);
           updatedPlayer.xp += rewards.xp;

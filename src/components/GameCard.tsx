@@ -62,7 +62,7 @@ export const GameCard = React.memo(function GameCard({
       )}
     >
       <div className="living-card-reflection" />
-      
+
       {/* Art */}
       <div className="absolute inset-0 bg-[#0a0a0c]">
         {!imgError ? (
@@ -147,19 +147,21 @@ export const GameCard = React.memo(function GameCard({
       </div>
 
       {/* Power */}
-      <div className={cn(
-        "absolute bottom-1.5 right-1.5 z-30 flex items-center justify-center rounded size-6 ring-1 shadow-lg",
-        isPowered ? "bg-green-900/90 ring-green-400/60" :
-        isWeakened ? "bg-red-900/90 ring-red-400/60" :
-        "bg-black/80 ring-white/10"
-      )}>
+      <div
+        className={cn(
+          "absolute bottom-1.5 right-1.5 z-30 flex items-center justify-center rounded size-6 ring-1 shadow-lg",
+          isPowered
+            ? "bg-green-900/90 ring-green-400/60"
+            : isWeakened
+              ? "bg-red-900/90 ring-red-400/60"
+              : "bg-black/80 ring-white/10",
+        )}
+      >
         <span
           className={cn(
             "font-display font-extrabold",
             isSm ? "text-[13px]" : "text-[12px]",
-            isPowered ? "text-green-300" :
-            isWeakened ? "text-red-300" :
-            f.power,
+            isPowered ? "text-green-300" : isWeakened ? "text-red-300" : f.power,
           )}
         >
           {displayPower}
