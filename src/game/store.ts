@@ -192,7 +192,7 @@ interface AppStore {
   campaignProgress: number;
   completedPuzzles: string[];
   friends: { id: string; name: string; status: "online" | "offline"; rank: string }[];
-  guild: { name: string; level: number; members: number } | null;
+  guild: { name: string; level: number; members: number; rank: string; weeklyWins: number; weeklyGoal: number } | null;
   messages: { from: string; text: string; time: string }[];
 
   setCampaignProgress: (v: number) => void;

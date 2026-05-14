@@ -228,7 +228,7 @@ function Social() {
                       </div>
                       <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
                         <p className="text-[8px] text-white/30 uppercase mb-1">Rango Gilda</p>
-                        <p className="text-sm font-bold text-gold">Top 100</p>
+                        <p className="text-sm font-bold text-gold">{guild.rank}</p>
                       </div>
                     </div>
                   </div>
@@ -242,10 +242,15 @@ function Social() {
                         <span className="text-[10px] text-emerald-400 font-bold">
                           Vittorie Collettive
                         </span>
-                        <span className="text-[9px] text-white/40">124 / 200</span>
+                        <span className="text-[9px] text-white/40">
+                          {guild.weeklyWins} / {guild.weeklyGoal}
+                        </span>
                       </div>
                       <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-400" style={{ width: "62%" }} />
+                        <div
+                          className="h-full bg-emerald-400"
+                          style={{ width: `${(guild.weeklyWins / guild.weeklyGoal) * 100}%` }}
+                        />
                       </div>
                     </div>
                   </div>

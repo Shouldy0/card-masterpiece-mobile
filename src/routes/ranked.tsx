@@ -83,26 +83,12 @@ function Ranked() {
       <div className="mt-5 mx-4">
         <p className="text-[10px] uppercase tracking-widest text-gold">Top Sognatori</p>
         <div className="mt-2 space-y-1">
-          {[
-            { r: 1, n: "Veglia Eterna", p: 4820 },
-            { r: 2, n: "Eco Lontano", p: 4310 },
-            { r: 3, n: "Maschera Vuota", p: 3980 },
-            { r: 4, n: "Sussurro", p: 3640 },
-            { r: 5, n: "Tu (Dreamer)", p: player.rankPoints, me: true },
-          ].map((u) => (
-            <div
-              key={u.r}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 ${u.me ? "gold-frame bg-mystic/30" : "bg-card/40"}`}
-            >
-              <span
-                className={`font-display text-sm w-5 ${u.r <= 3 ? "text-gold" : "text-muted-foreground"}`}
-              >
-                #{u.r}
-              </span>
-              <span className="flex-1 text-xs">{u.n}</span>
-              <span className="font-display text-xs text-gold">{u.p.toLocaleString("it-IT")}</span>
-            </div>
-          ))}
+          <div className="flex flex-col items-center justify-center p-8 bg-card/40 rounded-xl border border-white/5">
+            <Crown className="size-8 text-white/10 mb-2" />
+            <p className="text-[10px] text-white/40 uppercase tracking-widest text-center">
+              Classifica in fase di sincronizzazione...
+            </p>
+          </div>
         </div>
       </div>
 
