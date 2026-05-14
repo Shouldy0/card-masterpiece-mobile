@@ -200,6 +200,7 @@ interface AppStore {
   addFriend: (name: string) => void;
   sendMessage: (text: string) => void;
   setProfileItem: (type: "avatarId" | "frameId" | "bgId" | "title", id: string) => void;
+  importDeck: (code: string) => boolean;
   startCampaignMatch: (nodeId: number) => void;
   startPuzzleMatch: (puzzleId: string) => void;
   startMatch: () => void;
@@ -682,11 +683,24 @@ export const useGame = create<AppStore>()(
           ],
         })),
 
-      setProfileItem: (type, id) =>
-        set((s) => ({
-          player: { ...s.player, [type]: id },
-        })),
+      setProfileItem: (type, id) => set((s) => ({
+        player: { ...s.player, [type]: id }
+      })),
 
+      importDeck: (code) => {
+        try {
+          const deck = JSON.parse(atob(code));
+          if (Array.isArray(deck)) {
+            set((s) => ({ player: { ...s.player, deck } }));
+            sounds.play("victory");
+            return true;
+          }
+        } catch (e) {
+          sounds.play("error");
+        }
+        return false;
+      },
+      
       startCampaignMatch: (nodeId: number) => {
         const campaignDecks: Record<number, string[]> = {
           1: [

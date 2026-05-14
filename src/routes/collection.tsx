@@ -146,6 +146,21 @@ function Collection() {
 
                 <motion.button
                   whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    const code = prompt("Inserisci il codice mazzo:");
+                    if (code && useGame.getState().importDeck(code)) {
+                      alert("Mazzo importato con successo!");
+                    } else if (code) {
+                      alert("Codice mazzo non valido.");
+                    }
+                  }}
+                  className="size-10 rounded-xl bg-gold/5 ring-1 ring-gold/20 flex items-center justify-center hover:bg-gold/10 transition-colors"
+                >
+                  <Download className="size-4 text-gold/60" />
+                </motion.button>
+
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
                   className="size-10 rounded-xl bg-gold/5 ring-1 ring-gold/20 flex items-center justify-center hover:bg-gold/10 transition-colors"
                 >
                   <Filter className="size-4 text-gold/60" />
